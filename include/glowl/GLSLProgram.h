@@ -14,12 +14,10 @@
 class GLSLProgram
 {
 private:
-	GLSLProgram(GLSLProgram &cpy) {}
-
-	GLuint handle;
-	bool linkStatus;
-	bool computeShader;
-	std::string shaderlog;
+	GLuint m_handle;
+	bool m_link_status;
+	bool m_compute_shader;
+	std::string m_shaderlog;
 
 	GLuint getUniformLocation(const char *name);
 public:
@@ -48,6 +46,10 @@ public:
 	void setUniform(const char *name, bool b);
 	void printActiveUniforms();
 	void printActiveAttributes();
+
+private:
+	/* Private copy constructor. No going around deleting copies of OpenGL Object with identical handles! */
+	GLSLProgram(GLSLProgram &cpy) {}
 };
 
 #endif

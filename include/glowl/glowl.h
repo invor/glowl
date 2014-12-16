@@ -3,6 +3,7 @@
 
 #include "framebufferObject.h"
 #include "GLSLProgram.h"
+#include "mesh.h"
 #include "texture.h"
 #include "texture2D.h"
 
