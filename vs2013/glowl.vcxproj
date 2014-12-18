@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\framebufferObject.cpp" />
     <ClCompile Include="..\src\GLSLProgram.cpp" />
+    <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\shaderStorageBufferObject.cpp" />
     <ClCompile Include="..\src\texture2D.cpp" />
   </ItemGroup>
@@ -176,6 +177,7 @@
     <ClInclude Include="..\include\glowl\framebufferObject.h" />
     <ClInclude Include="..\include\glowl\glowl.h" />
     <ClInclude Include="..\include\glowl\GLSLProgram.h" />
+    <ClInclude Include="..\include\glowl\mesh.h" />
     <ClInclude Include="..\include\glowl\shaderStorageBufferObject.h" />
     <ClInclude Include="..\include\glowl\texture.h" />
     <ClInclude Include="..\include\glowl\texture2D.h" />
