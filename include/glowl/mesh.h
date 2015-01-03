@@ -3,7 +3,7 @@
 
 /*	Include system libraries */
 #include <string>
-#include <glew.h>
+#include <GL/glew.h>
 #include <iostream>
 
 class Mesh

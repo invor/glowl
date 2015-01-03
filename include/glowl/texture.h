@@ -1,7 +1,7 @@
 #ifndef texture_h
 #define texture_h
 
-#include <glew.h>
+#include <GL/glew.h>
 #include <iostream>
 
 class Texture
