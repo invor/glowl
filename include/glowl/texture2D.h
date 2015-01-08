@@ -14,13 +14,22 @@
 *
 * \author Michael Becher
 *
-* \date 19th September 2013
+* \date 8h January 2015
 */
 class Texture2D : public Texture
 {
 public:
-	Texture2D() {}
-	Texture2D(std::string in_filename) : Texture(in_filename) {}
+	/**
+	* \brief Constructor that creates and loads a 2D texture.
+	* \param internal_format Specifies the internal format of the texture (e.g. GL_RGBA32F)
+	* \param dim_x Specifies the width of the texture in pixels.
+	* \param dim_y Specifies the height of the texture in pixels.
+	* \param format Specifies the format of the texture (e.g. GL_RGBA)
+	* \param type Specifies the type of the texture (e.g. GL_FLOAT)
+	* \param data Pointer to the actual texture data.
+	*/
+	Texture2D(std::string name, GLint internal_format, unsigned int width, unsigned int height, GLenum format, GLenum type, GLvoid * data);
+	Texture2D(Texture2D &) = delete;
 
 	/**
 	* \brief Bind the texture.
@@ -35,18 +44,6 @@ public:
 	void texParameteri(GLenum pname, GLenum param);
 
 	/**
-	* \brief Create and load the texture.
-	* \param internal_format Specifies the internal format of the texture (e.g. GL_RGBA32F)
-	* \param dim_x Specifies the width of the texture in pixels.
-	* \param dim_y Specifies the height of the texture in pixels.
-	* \param format Specifies the format of the texture (e.g. GL_RGBA)
-	* \param type Specifies the type of the texture (e.g. GL_FLOAT)
-	* \param data Pointer to the actual texture data.
-	* \return Returns true if the texture was succesfully created, false otherwise
-	*/
-	bool load(GLint internal_format, int dim_x, int dim_y, GLenum format, GLenum type, GLvoid * data);
-
-	/**
 	* \brief Reload the texture with a new size but unchanged format and type.
 	* \note Will not work if load() hasn't been called on this object yet.
 	* \param dim_x Specifies the new width of the texture in pixels.
@@ -54,7 +51,7 @@ public:
 	* \param data Pointer to the new texture data.
 	* \return Returns true if the texture was succesfully created, false otherwise
 	*/
-	bool reload(int dim_x, int dim_y, GLvoid * data);
+	bool reload(unsigned int width, unsigned int height, GLvoid * data);
 
 	/**
 	* \brief Reload the texture with any new format, type and size.
@@ -67,10 +64,15 @@ public:
 	* \param data Pointer to the new texture data.
 	* \return Returns true if the texture was succesfully created, false otherwise
 	*/
-	bool reload(GLenum internal_format, int dim_x, int dim_y, GLenum format, GLenum type, GLvoid * data);
+	bool reload(GLenum internal_format, unsigned int width, unsigned int height, GLenum format, GLenum type, GLvoid * data);
+
+	unsigned int getWidth();
+
+	unsigned int getHeight();
 
 private:
-	Texture2D(Texture2D &cpy) {}
+	unsigned int m_width;
+	unsigned int m_height;
 };
 
 #endif

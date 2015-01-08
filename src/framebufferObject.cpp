@@ -1,19 +1,5 @@
 #include "framebufferObject.h"
 
-FramebufferObject::FramebufferObject() : m_handle(0), m_depthbuffer(0), m_stencilbuffer(0), m_width(0), m_height(0)
-{
-}
-
-FramebufferObject::~FramebufferObject()
-{
-	/*	Delete framebuffer resources. Texture delete themselves when the vector is destroyed. */	
-	if (m_depthbuffer != 0) glDeleteRenderbuffers(1, &m_depthbuffer);
-
-	/*	Delete framebuffer object */
-	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-	glDeleteFramebuffers(1, &m_handle);
-}
-
 FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool has_stencil) : m_width(width), m_height(height)
 {
 	glGenFramebuffers(1, &m_handle);
@@ -38,6 +24,16 @@ FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+FramebufferObject::~FramebufferObject()
+{
+	/*	Delete framebuffer resources. Texture delete themselves when the vector is destroyed. */	
+	if (m_depthbuffer != 0) glDeleteRenderbuffers(1, &m_depthbuffer);
+
+	/*	Delete framebuffer object */
+	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
+	glDeleteFramebuffers(1, &m_handle);
+}
+
 bool FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum format, GLenum type)
 {	
 	GLint maxAttachments;
@@ -45,16 +41,15 @@ bool FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum form
 
 	if(m_colorbuffers.size() == (GLuint) maxAttachments) 
 	{
-		std::cout<<"Maximum amount of color attachments reached.\n";
+		m_log.append("Maximum amount of color attachments reached.\n");
 		return false;
 	}
 
 	unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
-	std::shared_ptr<Texture2D> new_color_attachment(new Texture2D( "fbo_"+std::to_string(m_handle)+"_color_attachment_"+std::to_string(bufsSize) ));
+	std::shared_ptr<Texture2D> new_color_attachment(new Texture2D("fbo_"+std::to_string(m_handle)+"_color_attachment_"+std::to_string(bufsSize), internalFormat, m_width, m_height, format, type, NULL));
 	m_colorbuffers.push_back(new_color_attachment);
-	
-	if(!new_color_attachment->load(internalFormat, m_width, m_height, format, type, NULL)) return false;
-	new_color_attachment->bindTexture();
+
+	m_colorbuffers.back()->bindTexture();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -62,9 +57,8 @@ bool FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum form
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+bufsSize, GL_TEXTURE_2D, new_color_attachment->getHandle(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+bufsSize, GL_TEXTURE_2D, m_colorbuffers.back()->getHandle(), 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
 
 	return true;
 }
@@ -74,7 +68,7 @@ void FramebufferObject::bind()
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		std::cout<<"Tried to use incomplete FBO. Fallback to default FBO.\n";
+		m_log.append("Tried to use incomplete FBO. Fallback to default FBO.\n");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	else
@@ -134,8 +128,11 @@ bool FramebufferObject::checkStatus()
 
 void FramebufferObject::resize(int new_width, int new_height)
 {
-	for (std::vector<std::shared_ptr<Texture2D>>::iterator itr = m_colorbuffers.begin(); itr != m_colorbuffers.end(); ++itr)
+	m_width = new_width;
+	m_height = new_height;
+
+	for(auto& colorbuffer : m_colorbuffers)
 	{
-		(*itr)->reload(new_width, new_height, NULL);
+		colorbuffer->reload(m_width, m_height, NULL);
 	}
 }

@@ -19,8 +19,8 @@ protected:
 	GLenum m_format;
 	GLenum m_type;
 public:
-	Texture() {}
-	Texture(std::string name) : m_name(name) {}
+	Texture(std::string name, GLint internal_format, GLenum format, GLenum type)
+		: m_name(name), m_internal_format(internal_format), m_format(format), m_type(type) {}
 	~Texture() {glDeleteTextures(1,&m_handle);}
 
 	virtual void bindTexture() const = 0;

@@ -26,9 +26,6 @@
 class FramebufferObject
 {
 private:
-	/*	Private copy constructor. Don't wanna go around copying objects with OpenGL handles. */
-	FramebufferObject(FramebufferObject&);
-
 	/** Handle of the FBO */
 	GLuint m_handle;
 	/** Colorbuffers attached to the FBO */
@@ -43,11 +40,14 @@ private:
 	/** Height of the framebuffer i.e. it's color attachments */
 	int m_height;
 
+	std::string m_log;
+
 public:
-	FramebufferObject();
+	FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
 	~FramebufferObject();
 
-	FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
+	/*	Private copy constructor. Don't wanna go around copying objects with OpenGL handles. */
+	FramebufferObject(FramebufferObject& cpy) = delete;
 
 	/**
 	* \brief Adds one color attachment to the framebuffer.
@@ -122,6 +122,8 @@ public:
 	* \return Returns height.
 	*/
 	int getHeight() {return m_height;}
+
+	const std::string& getLog() {return m_log;}
 };
 
 #endif
