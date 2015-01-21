@@ -29,7 +29,7 @@ public:
 	* \param data Pointer to the actual texture data.
 	*/
 	Texture2D(std::string name, GLint internal_format, unsigned int width, unsigned int height, GLenum format, GLenum type, GLvoid * data);
-	Texture2D(Texture2D &) = delete;
+	Texture2D(const Texture2D &) = delete;
 
 	/**
 	* \brief Bind the texture.

@@ -4,12 +4,12 @@
 #include <GL/glew.h>
 //	OpenGL Math Library
 #include <glm/glm.hpp>
-#include <glm/core/type_vec3.hpp>
+#include <glm/detail/type_vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>
-#include <iostream>
+//#include <iostream>
 
 class GLSLProgram
 {
@@ -23,6 +23,9 @@ private:
 public:
 	GLSLProgram();
 	~GLSLProgram();
+
+	/* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
+	GLSLProgram(const GLSLProgram &cpy) = delete;
 
 	void init();
 	bool compileShaderFromString(const std::string * const source, GLenum shaderType);
@@ -47,9 +50,6 @@ public:
 	void printActiveUniforms();
 	void printActiveAttributes();
 
-private:
-	/* Private copy constructor. No going around deleting copies of OpenGL Object with identical handles! */
-	GLSLProgram(GLSLProgram &cpy) {}
 };
 
 #endif

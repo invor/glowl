@@ -17,9 +17,14 @@ FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool
 	{
 		m_depthbuffer = 0;
 	}
+
 	/*
 	/	TODO: stencilbuffer
 	*/
+	if(0 && has_stencil)
+	{
+		has_stencil = !has_stencil;
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

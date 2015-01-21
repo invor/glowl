@@ -6,7 +6,7 @@
 
 /*	Include system libraries */
 #include <vector>
-#include <iostream>
+//#include <iostream>
 #include <string>
 #include <memory>
 
@@ -46,8 +46,8 @@ public:
 	FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
 	~FramebufferObject();
 
-	/*	Private copy constructor. Don't wanna go around copying objects with OpenGL handles. */
-	FramebufferObject(FramebufferObject& cpy) = delete;
+	/*	Deleted copy constructor (C++11). Don't wanna go around copying objects with OpenGL handles. */
+	FramebufferObject(const FramebufferObject& cpy) = delete;
 
 	/**
 	* \brief Adds one color attachment to the framebuffer.

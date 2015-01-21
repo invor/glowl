@@ -1,4 +1,4 @@
-#ifndef glwol_h
+#ifndef glowl_h
 #define glowl_h
 
 #include "framebufferObject.h"

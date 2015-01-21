@@ -1,5 +1,7 @@
 #include "GLSLProgram.h"
 
+#include <iostream>
+
 GLSLProgram::GLSLProgram() : m_link_status(false), m_compute_shader(false)
 {
 }

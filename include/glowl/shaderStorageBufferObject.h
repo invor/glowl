@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 
 /*	std includes */
-#include <iostream>
+//#include <iostream>
 #include <vector>
 
 class ShaderStorageBufferObject
@@ -13,7 +13,8 @@ public:
 	ShaderStorageBufferObject(unsigned int size, const GLvoid * data);
 	~ShaderStorageBufferObject();
 
-	ShaderStorageBufferObject(ShaderStorageBufferObject& cpy) = delete;
+	/* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
+	ShaderStorageBufferObject(const ShaderStorageBufferObject& cpy) = delete;
 
 	bool reload(unsigned int size, GLuint index, const GLvoid * data);
 	void reset();

@@ -4,7 +4,7 @@
 /*	Include system libraries */
 #include <string>
 #include <GL/glew.h>
-#include <iostream>
+//#include <iostream>
 
 class Mesh
 {
@@ -24,6 +24,9 @@ public:
 	Mesh();
 	~Mesh();
 
+	/* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
+	Mesh(const Mesh &cpy) = delete;
+
 	Mesh(const std::string name);
 
 	bool bufferDataFromArray(const GLvoid* vertex_data, const GLuint *index_data, const GLsizei va_size, const GLsizei vi_size, GLenum mesh_type);
@@ -36,9 +39,6 @@ public:
 
 	const std::string getName() {return m_name;}
 
-private:
-	/* Private copy constructor. No going around deleting copies of OpenGL Object with identical handles! */
-	Mesh(Mesh &cpy) {}
 };
 
 #endif
