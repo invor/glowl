@@ -76,6 +76,10 @@ bool GLSLProgram::compileShaderFromString(const std::string * const source, GLen
 
 	/* Attach shader to program */
 	glAttachShader(m_handle, shader);
+	/* Flag shader program for deletion.
+	 * It will only be actually deleted after the program is deleted. (See destructor for program deletion.
+	 */
+	glDeleteShader(shader);
 
 	return true;
 }

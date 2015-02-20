@@ -89,3 +89,8 @@ UpgradeLog*.XML
 
 vs2013/include
 vs2013/lib
+
+#################
+## Output binary
+#################
+lib/*
