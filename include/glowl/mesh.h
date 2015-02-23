@@ -29,7 +29,38 @@ public:
 
 	Mesh(const std::string name);
 
-	bool bufferDataFromArray(const GLvoid* vertex_data, const GLuint *index_data, const GLsizei va_size, const GLsizei vi_size, GLenum mesh_type);
+	template<typename VertexContainer, typename IndexContainer>
+	bool bufferDataFromArray(const VertexContainer &vertices, const IndexContainer &indices, GLenum mesh_type)
+	{
+		if(vertices.size() < 1 || indices.size() < 1)
+			return false;
+
+		auto va_size = sizeof(VertexContainer::value_type) * vertices.size();
+		auto vi_size = sizeof(IndexContainer::value_type) * indices.size();
+
+		if(m_va_handle == 0 || m_vbo_handle == 0 || m_ibo_handle == 0)
+		{
+			glGenVertexArrays(1, &m_va_handle);
+			glGenBuffers(1, &m_vbo_handle);
+			glGenBuffers(1, &m_ibo_handle);
+		}
+
+		glBindVertexArray(m_va_handle);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vbo_handle);
+		glBufferData(GL_ARRAY_BUFFER, va_size, vertices.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_handle);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vi_size, indices.data(), GL_STATIC_DRAW);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		m_num_vertices = (vi_size/sizeof(GLuint));
+		m_mesh_type = mesh_type;
+
+		return true;
+	}
+
+	bool bufferDataFromArray(const GLvoid* vertex_data, const GLuint* index_data, const GLsizei va_size, const GLsizei vi_size, GLenum mesh_type);
 
 	void draw(int num_instances = 1);
 
