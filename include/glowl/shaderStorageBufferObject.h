@@ -14,7 +14,7 @@ public:
 
 	template<typename Container>
 	ShaderStorageBufferObject(const Container &datastorage)
-		: m_handle(0), m_size(datastorage.size() * sizeof(Container::value_type)), m_reset_data(m_size,-1), m_written_size(0)
+		: m_handle(0), m_size(datastorage.size() * sizeof(Container::value_type)), m_written_size(0)
 	{
 		/* make clang++ compiler 'unused variable' warning go away */
 		if(0 && m_written_size)
@@ -35,7 +35,6 @@ public:
 	ShaderStorageBufferObject(const ShaderStorageBufferObject& cpy) = delete;
 
 	bool reload(unsigned int size, GLuint index, const GLvoid * data);
-	void reset();
 
 	bool map(void *& memory_ptr);
 	void unmap();
@@ -48,9 +47,6 @@ private:
 
 	/**	Overall size of the buffer */
 	GLuint m_size;
-
-	/** Buffer filled with reset data */
-	std::vector<GLint> m_reset_data;
 
 	/**
 	/	Size of the data that has actually been written to the buffer.

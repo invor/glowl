@@ -14,7 +14,7 @@
 *
 * \author Michael Becher
 *
-* \date 8h January 2015
+* \date 29th October 2015
 */
 class Texture2D : public Texture
 {
@@ -42,6 +42,21 @@ public:
 	* \param param Specifies the value that the parameter is set to.
 	*/
 	void texParameteri(GLenum pname, GLenum param);
+
+	/**
+	 * \brief Set several texture parameters at once
+	 * \param pname_param_pairs List of parameter name and parameter value pairs (e.g. {{GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE},{...,...},...}
+	 */
+	template<typename Container>
+	void texParameteri(const Container& pname_param_pairs)
+	{
+		glBindTexture(GL_TEXTURE_2D, m_handle);
+
+		for(auto& pname_param : pname_param_pairs)
+			glTexParameteri(GL_TEXTURE_2D, pname_param.first, pname_param.second);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	/**
 	* \brief Reload the texture with a new size but unchanged format and type.

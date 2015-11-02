@@ -54,7 +54,7 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER,0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		m_num_vertices = (vi_size/sizeof(GLuint));
+		m_num_vertices = (GLuint)(vi_size/sizeof(GLuint));
 		m_mesh_type = mesh_type;
 
 		return true;
