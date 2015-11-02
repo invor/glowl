@@ -76,6 +76,10 @@ bool GLSLProgram::compileShaderFromString(const std::string * const source, GLen
 
 	/* Attach shader to program */
 	glAttachShader(m_handle, shader);
+	/* Flag shader program for deletion.
+	 * It will only be actually deleted after the program is deleted. (See destructor for program deletion.
+	 */
+	glDeleteShader(shader);
 
 	return true;
 }
@@ -170,6 +174,11 @@ void GLSLProgram::bindFragDataLocation(GLuint location, const char *name)
 void GLSLProgram::setUniform(const char *name, const glm::vec2 &v)
 {
 	glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(v));
+}
+
+void GLSLProgram::setUniform(const char *name, const glm::ivec2 &v)
+{
+	glUniform2iv(getUniformLocation(name), 1, glm::value_ptr(v));
 }
 
 void GLSLProgram::setUniform(const char *name, const glm::vec3 &v)

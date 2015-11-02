@@ -71,12 +71,12 @@ bool FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum form
 void FramebufferObject::bind()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		m_log.append("Tried to use incomplete FBO. Fallback to default FBO.\n");
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-	else
+	//	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	//	{
+	//		m_log.append("Tried to use incomplete FBO. Fallback to default FBO.\n");
+	//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//	}
+	//	else
 	{
 		unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
 		GLenum* drawBufs = new GLenum[bufsSize];
@@ -91,11 +91,11 @@ void FramebufferObject::bind()
 void FramebufferObject::bindToRead(unsigned int index)
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER,m_handle);
-	GLenum* drawBufs = new GLenum[1];
+	GLenum readBuffer;
 	if(index < static_cast<unsigned int>(m_colorbuffers.size()))
-		drawBufs[index] = (GL_COLOR_ATTACHMENT0+index);
+		readBuffer = (GL_COLOR_ATTACHMENT0+index);
 
-	glDrawBuffers(1, drawBufs);
+	glReadBuffer(readBuffer);
 }
 
 void FramebufferObject::bindToDraw()

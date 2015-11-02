@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 //	OpenGL Math Library
 #include <glm/glm.hpp>
-#include <glm/detail/type_vec3.hpp>
+#include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -39,6 +39,7 @@ public:
 	void bindAttribLocation(GLuint location, const char *name);
 	void bindFragDataLocation(GLuint location, const char *name);
 	void setUniform(const char *name, const glm::vec2 &v);
+	void setUniform(const char *name, const glm::ivec2 &v);
 	void setUniform(const char *name, const glm::vec3 &v);
 	void setUniform(const char *name, const glm::vec4 &v);
 	void setUniform(const char *name, const glm::mat4 &m);
