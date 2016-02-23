@@ -65,6 +65,8 @@ bool FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum form
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+bufsSize, GL_TEXTURE_2D, m_colorbuffers.back()->getHandle(), 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	m_drawBufs.push_back(GL_COLOR_ATTACHMENT0+bufsSize);
+
 	return true;
 }
 
@@ -77,15 +79,26 @@ void FramebufferObject::bind()
 	//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//	}
 	//	else
-	{
-		unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
-		GLenum* drawBufs = new GLenum[bufsSize];
-		for(GLuint i=0; i < bufsSize; i++)
-		{
-			drawBufs[i] = (GL_COLOR_ATTACHMENT0+i);
-		}
-		glDrawBuffers(bufsSize, drawBufs);
-	}
+	//{
+	//	unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
+	//	GLenum* drawBufs = new GLenum[bufsSize];
+	//	for(GLuint i=0; i < bufsSize; i++)
+	//	{
+	//		drawBufs[i] = (GL_COLOR_ATTACHMENT0+i);
+	//	}
+	//	glDrawBuffers(bufsSize, drawBufs);
+	//
+	//	delete drawBufs;
+	//}
+
+	glDrawBuffers( static_cast<unsigned int>(m_drawBufs.size()) , m_drawBufs.data());
+}
+
+void FramebufferObject::bind(std::vector<GLenum> draw_buffers)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
+
+	glDrawBuffers( static_cast<unsigned int>(draw_buffers.size()) , draw_buffers.data());
 }
 
 void FramebufferObject::bindToRead(unsigned int index)

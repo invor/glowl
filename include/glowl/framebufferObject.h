@@ -40,6 +40,9 @@ private:
 	/** Height of the framebuffer i.e. it's color attachments */
 	int m_height;
 
+	/** List of all draw buffer targets (i.e. all color attachments) */
+	std::vector<GLenum> m_drawBufs;
+
 	std::string m_log;
 
 public:
@@ -67,6 +70,8 @@ public:
 			including all available colobuffers in it.
 	*/
 	void bind();
+
+	void bind(std::vector<GLenum> draw_buffers);
 
 	/**
 	 * \brief Bind the framebuffer to GL_READ_FRAMEBUFFER

@@ -1,5 +1,5 @@
 #ifndef texture3D_h
-#define texture2D_h
+#define texture3D_h
 
 #include "texture.h"
 

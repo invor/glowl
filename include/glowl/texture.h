@@ -22,7 +22,7 @@ protected:
 public:
 	Texture(std::string name, GLint internal_format, GLenum format, GLenum type)
 		: m_name(name), m_internal_format(internal_format), m_format(format), m_type(type) {}
-	~Texture() {glDeleteTextures(1,&m_handle);}
+	virtual ~Texture() {glDeleteTextures(1,&m_handle);}
 	Texture(const Texture &) = delete;
 
 	virtual void bindTexture() const = 0;
