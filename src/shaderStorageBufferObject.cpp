@@ -20,7 +20,7 @@ ShaderStorageBufferObject::~ShaderStorageBufferObject()
 	glDeleteBuffers(1,&m_handle);
 }
 
-bool ShaderStorageBufferObject::reload(unsigned int size, GLuint index, const GLvoid * data)
+void ShaderStorageBufferObject::reload(unsigned int size, GLuint index, const GLvoid * data)
 {
 	m_size = size;
 
@@ -28,8 +28,7 @@ bool ShaderStorageBufferObject::reload(unsigned int size, GLuint index, const GL
 	glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, 0);
 
-	/* TODO: check for errors and maybe don't return true? */
-	return true;
+	/* TODO: check for errors */
 }
 
 bool ShaderStorageBufferObject::map(void *& memory_ptr)

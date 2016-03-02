@@ -35,14 +35,14 @@ void Texture3D::texParameteri(GLenum pname, GLenum param)
 	glBindTexture(GL_TEXTURE_3D,0);
 }
 
-bool Texture3D::reload(unsigned int width, unsigned int height, unsigned int depth, GLvoid * data)
+void Texture3D::reload(unsigned int width, unsigned int height, unsigned int depth, GLvoid * data)
 {
 	glBindTexture(GL_TEXTURE_3D, m_handle);
 	glTexImage3D(GL_TEXTURE_3D, 0, m_internal_format, m_width, m_height, m_depth, 0, m_format, m_type, data);
 	glBindTexture(GL_TEXTURE_3D,0);
 }
 
-bool Texture3D::reload(GLenum internal_format, unsigned int width, unsigned int height, unsigned int depth, GLenum format, GLenum type, GLvoid * data)
+void Texture3D::reload(GLenum internal_format, unsigned int width, unsigned int height, unsigned int depth, GLenum format, GLenum type, GLvoid * data)
 {
 	m_internal_format = internal_format;
 	m_format = format;

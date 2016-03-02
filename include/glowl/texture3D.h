@@ -55,9 +55,8 @@ public:
 	* \param height Specifies the new height of the texture in pixels.
 	* \param depth Specifies the new depth of the texture in pixels.
 	* \param data Pointer to the new texture data.
-	* \return Returns true if the texture was succesfully created, false otherwise
 	*/
-	bool reload(unsigned int width, unsigned int height, unsigned int depth, GLvoid * data);
+	void reload(unsigned int width, unsigned int height, unsigned int depth, GLvoid * data);
 
 	/**
 	* \brief Reload the texture with any new format, type and size.
@@ -69,9 +68,8 @@ public:
 	* \param format Specifies the new format of the texture (e.g. GL_RGBA32F)
 	* \param type Specifies the new type of the texture (e.g. GL_FLOAT)
 	* \param data Pointer to the new texture data.
-	* \return Returns true if the texture was succesfully created, false otherwise
 	*/
-	bool reload(GLenum internal_format, unsigned int width, unsigned int height, unsigned int depth, GLenum format, GLenum type, GLvoid * data);
+	void reload(GLenum internal_format, unsigned int width, unsigned int height, unsigned int depth, GLenum format, GLenum type, GLvoid * data);
 
 	unsigned int getWidth();
 	unsigned int getHeight();

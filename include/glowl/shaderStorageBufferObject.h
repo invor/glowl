@@ -34,7 +34,17 @@ public:
 	/* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
 	ShaderStorageBufferObject(const ShaderStorageBufferObject& cpy) = delete;
 
-	bool reload(unsigned int size, GLuint index, const GLvoid * data);
+	void reload(unsigned int size, GLuint index, const GLvoid * data);
+
+	template<typename Container>
+	void reload(const Container& datastorage)
+	{
+		m_size = datastorage.size() * sizeof(Container::value_type);
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_handle);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, m_size, datastorage.data(), GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
+	}
 
 	bool map(void *& memory_ptr);
 	void unmap();
