@@ -181,6 +181,16 @@ void GLSLProgram::setUniform(const char *name, const glm::ivec2 &v)
 	glUniform2iv(getUniformLocation(name), 1, glm::value_ptr(v));
 }
 
+void GLSLProgram::setUniform(const char *name, const glm::ivec3 &v)
+{
+	glUniform3iv(getUniformLocation(name), 1, glm::value_ptr(v));
+}
+
+void GLSLProgram::setUniform(const char *name, const glm::ivec4 &v)
+{
+	glUniform4iv(getUniformLocation(name), 1, glm::value_ptr(v));
+}
+
 void GLSLProgram::setUniform(const char *name, const glm::vec3 &v)
 {
 	glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
