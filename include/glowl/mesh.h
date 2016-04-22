@@ -13,18 +13,18 @@ private:
 	GLuint m_num_vertices;
 	GLenum m_mesh_type;
 
-	/*	Handle of the vertex array on the GPU */
+	/**	Handle of the vertex array on the GPU */
 	GLuint m_va_handle;
-	/*	Handle of the vertex buffer object on the GPU */
+	/**	Handle of the vertex buffer object on the GPU */
 	GLuint m_vbo_handle;
-	/*	Handle of the index buffer object  on the GPU */
+	/**	Handle of the index buffer object  on the GPU */
 	GLuint m_ibo_handle;
 
 public:
 	Mesh();
 	~Mesh();
 
-	/* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
+	/** Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
 	Mesh(const Mesh &cpy) = delete;
 
 	Mesh(const std::string name);
@@ -69,6 +69,10 @@ public:
 	void setVertexAttribLPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* pointer);
 
 	const std::string getName() {return m_name;}
+
+	const GLuint getVboHandle() {return m_vbo_handle;}
+
+	const GLuint getIboHandle() {return m_ibo_handle;}
 
 };
 
