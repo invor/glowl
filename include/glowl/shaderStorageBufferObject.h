@@ -14,7 +14,7 @@ public:
 
 	template<typename Container>
 	ShaderStorageBufferObject(const Container &datastorage)
-		: m_handle(0), m_size(datastorage.size() * sizeof(Container::value_type)), m_written_size(0)
+		: m_handle(0), m_size(static_cast<GLuint>(datastorage.size() * sizeof(Container::value_type))), m_written_size(0)
 	{
 		/* make clang++ compiler 'unused variable' warning go away */
 		if(0 && m_written_size)
@@ -39,7 +39,7 @@ public:
 	template<typename Container>
 	void reload(const Container& datastorage)
 	{
-		m_size = datastorage.size() * sizeof(Container::value_type);
+		m_size = static_cast<uint>(datastorage.size() * sizeof(Container::value_type));
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_handle);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, m_size, datastorage.data(), GL_DYNAMIC_DRAW);

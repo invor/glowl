@@ -12,8 +12,10 @@ Texture2D::Texture2D(std::string name, GLint internal_format, unsigned int width
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, m_width, m_height, 0, format, type, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,0);
 
 	if (glGetError() == GL_NO_ERROR)
@@ -36,8 +38,11 @@ void Texture2D::texParameteri(GLenum pname, GLenum param)
 
 bool Texture2D::reload(unsigned int width, unsigned int height, GLvoid * data)
 {
+	m_width = width;
+	m_height = height;
+
 	glBindTexture(GL_TEXTURE_2D, m_handle);
-	glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, width, height, 0, m_format, m_type, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_format, m_type, data);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	if (glGetError() == GL_NO_ERROR) return true;
@@ -46,6 +51,8 @@ bool Texture2D::reload(unsigned int width, unsigned int height, GLvoid * data)
 
 bool Texture2D::reload(GLenum internal_format, unsigned int width, unsigned int height, GLenum format, GLenum type, GLvoid * data)
 {
+	m_width = width;
+	m_height = height;
 	m_internal_format = internal_format;
 	m_format = format;
 	m_type = type;

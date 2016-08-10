@@ -26,6 +26,8 @@ public:
 	*/
 	void bindTexture() const;
 
+	void bindImage(GLuint unit, GLenum access) const;
+
 	/**
 	* \brief Set a texture parameter.
 	* \param pname Specifies the parameter to be set.
