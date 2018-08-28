@@ -1,8 +1,8 @@
-#ifndef framebufferObject_h
-#define framebufferObject_h
+#ifndef FramebufferObject_hpp
+#define FramebufferObject_hpp
 
 /*	Include space-lion files */
-#include "texture2D.h"
+#include "Texture2D.hpp"
 
 /*	Include system libraries */
 #include <vector>
@@ -20,8 +20,6 @@
 * creation and adding of several color attachments and use it for rendering.
 *
 * \author Michael Becher
-*
-* \date 11th November 2014
 */
 class FramebufferObject
 {
@@ -52,6 +50,12 @@ public:
 	/*	Deleted copy constructor (C++11). Don't wanna go around copying objects with OpenGL handles. */
 	FramebufferObject(const FramebufferObject& cpy) = delete;
 
+	FramebufferObject(FramebufferObject&& other) = delete;
+
+	FramebufferObject& operator=(const FramebufferObject& rhs) = delete;
+
+	FramebufferObject& operator=(FramebufferObject&& rhs) = delete;
+
 	/**
 	* \brief Adds one color attachment to the framebuffer.
 	* \note New colorbuffers are added at the end of the colorbuffer vector.
@@ -65,13 +69,15 @@ public:
 	bool createColorAttachment(GLenum internalFormat, GLenum format, GLenum type);
 
 	/**
-	* \brief Bind this framebuffer object.
-	* \note Checks framebuffer completeness before binding and sets glDrawBuffers
-			including all available colobuffers in it.
+	* \brief Bind this framebuffer object with all its color attachments
 	*/
 	void bind();
 
-	void bind(std::vector<GLenum> draw_buffers);
+	/**
+	* \brief Bind this framebuffer object with a given set of draw buffers
+	*/
+	void bind(const std::vector<GLenum>& draw_buffers);
+	void bind(std::vector<GLenum>&& draw_buffers);
 
 	/**
 	 * \brief Bind the framebuffer to GL_READ_FRAMEBUFFER
@@ -106,7 +112,7 @@ public:
 	* \brief Check the framebuffer object for completeness.
 	* \return Returns true if the framebuffer object is complete, false otherwise.
 	*/
-	bool checkStatus();
+	bool checkStatus() const;
 
 	/**
 	* \brief Resize the framebuffer object, i.e. it's color attachments.
@@ -120,15 +126,15 @@ public:
 	* \brief Get the width of the framebuffer object's color attachments
 	* \return Returns widths.
 	*/
-	int getWidth() {return m_width;}
+	int getWidth() const {return m_width;}
 
 	/**
 	* \brief Get the height of the framebuffer object's color attachments
 	* \return Returns height.
 	*/
-	int getHeight() {return m_height;}
+	int getHeight() const {return m_height;}
 
-	const std::string& getLog() {return m_log;}
+	const std::string& getLog() const {return m_log;}
 };
 
-#endif
+#endif // !FramebufferObject_hpp

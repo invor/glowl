@@ -94,14 +94,14 @@ bool GLSLProgram::link()
 	if(status == GL_FALSE)
 	{
 		GLint logLen = 0;
-		m_shaderlog = "";
+		//m_shaderlog = "";
 		glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLen);
 		if(logLen > 0)
 		{
 			char *log = new char[logLen];
 			GLsizei written;
 			glGetProgramInfoLog(m_handle, logLen, &written, log);
-			m_shaderlog = log;
+			m_shaderlog.append(log);
 			delete [] log;
 		}
 		return false;
@@ -270,4 +270,14 @@ void GLSLProgram::printActiveAttributes()
 		std::cout<< location << " - " << attributeName << "\n";
 	}
 	delete [] attributeName;
+}
+
+void GLSLProgram::setId(const std::string& id)
+{
+	m_id = id;
+}
+
+std::string GLSLProgram::getId()
+{
+	return m_id;
 }
