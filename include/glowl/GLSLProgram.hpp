@@ -1,7 +1,7 @@
 #ifndef GLSLProgram_h
 #define GLSLProgram_h
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 //	OpenGL Math Library
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
@@ -20,6 +20,9 @@
 */
 class GLSLProgram
 {
+public:
+	enum ShaderType { VertexShader, TessellationControl, TessellationEvaluation, GeometryShader, FragmentShader, ComputeShader };
+
 private:
 	GLuint m_handle;
 	bool m_link_status;

@@ -1,7 +1,7 @@
 #ifndef fetol_shaderStorageBufferObject_h
 #define fetol_shaderStorageBufferObject_h
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 /*	std includes */
 #include <iostream>

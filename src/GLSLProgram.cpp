@@ -1,4 +1,4 @@
-#include "GLSLProgram.h"
+#include "GLSLProgram.hpp"
 
 #include <iostream>
 

@@ -1,7 +1,8 @@
 #ifndef Texture_hpp
 #define Texture_hpp
 
-#include <GL/glew.h>
+#include <glad/glad.h>
+
 #include <string>
 #include <vector>
 

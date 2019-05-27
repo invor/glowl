@@ -1,7 +1,7 @@
 #ifndef VertexLayout_hpp
 #define VertexLayout_hpp
 
-#include "GL\glew.h"
+#include <glad/glad.h>
 
 /**
 * \struct VertexLayout
@@ -57,6 +57,64 @@ bool operator==(VertexLayout const& lhs, VertexLayout const& rhs)
 	}
 
 	return rtn;
+}
+
+
+static constexpr size_t computeByteSize(GLenum value_type)
+{
+	size_t retval = 0;
+
+	switch (value_type)
+	{
+	case GL_BYTE:
+		retval = 1;
+		break;
+	case GL_SHORT:
+		retval = 2;
+		break;
+	case GL_INT:
+		retval = 4;
+		break;
+	case GL_FIXED:
+		retval = 4;
+		break;
+	case GL_FLOAT:
+		retval = 4;
+		break;
+	case GL_HALF_FLOAT:
+		retval = 2;
+		break;
+	case GL_DOUBLE:
+		retval = 8;
+		break;
+	case GL_UNSIGNED_BYTE:
+		retval = 1;
+		break;
+	case GL_UNSIGNED_SHORT:
+		retval = 2;
+		break;
+	case GL_UNSIGNED_INT:
+		retval = 4;
+		break;
+	case GL_INT_2_10_10_10_REV:
+		retval = 4;
+		break;
+	case GL_UNSIGNED_INT_2_10_10_10_REV:
+		retval = 4;
+		break;
+	case GL_UNSIGNED_INT_10F_11F_11F_REV:
+		retval = 4;
+		break;
+	default:
+		break;
+	}
+
+	return retval;
+}
+
+static size_t computeAttributeByteSize(VertexLayout::Attribute attrib_desc)
+{
+	return computeByteSize(attrib_desc.type) * attrib_desc.size;
 }
 
 #endif // !VertexLayout_hpp

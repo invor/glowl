@@ -3,7 +3,7 @@
 
 #include "BufferObject.hpp"
 #include "FramebufferObject.hpp"
-#include "GLSLProgram.h"
+#include "GLSLProgram.hpp"
 #include "Mesh.hpp"
 #include "ShaderStorageBufferObject.hpp"
 #include "Texture.hpp"

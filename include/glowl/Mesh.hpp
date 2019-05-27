@@ -1,10 +1,11 @@
 #ifndef Mesh_hpp
 #define Mesh_hpp
 
+#include <glad/glad.h>
+
 /*	Include system libraries */
 #include <string>
 #include <vector>
-#include <GL/glew.h>
 //#include <iostream>
 
 #include "BufferObject.hpp"
@@ -22,34 +23,25 @@ class Mesh
 public:
 	typedef std::unique_ptr<BufferObject> BufferObjectPtr;
 
+	template<typename VertexPtr, typename IndexPtr>
+	Mesh(
+		std::vector<VertexPtr> const& vertex_data,
+		std::vector<size_t> const&    vertex_data_byte_sizes,
+		IndexPtr const                index_data,
+		GLsizeiptr const              index_data_byte_size,
+		VertexLayout const&           vertex_descriptor,
+		GLenum const                  index_type = GL_UNSIGNED_INT,
+		GLenum const                  usage = GL_STATIC_DRAW,
+		GLenum const                  primitive_type = GL_TRIANGLES);
+
 	template<typename VertexContainer, typename IndexContainer>
-	Mesh(VertexContainer const& vertices,
-		IndexContainer const&	indices,
-		VertexLayout const&		vertex_descriptor,
-		GLenum					indices_type = GL_UNSIGNED_INT,
-		GLenum					usage = GL_STATIC_DRAW,
-		GLenum					primitive_type = GL_TRIANGLES);
-
-	Mesh(GLvoid const*		vertex_data,
-		GLsizeiptr			vertex_data_byte_size,
-		GLvoid const*		index_data,
-		GLsizeiptr			index_data_byte_size,
-		VertexLayout const& vertex_descriptor,
-		GLenum				indices_type = GL_UNSIGNED_INT,
-		GLenum				usage = GL_STATIC_DRAW,
-		GLenum				primitive_type = GL_TRIANGLES);
-
-	/**
-	* Hybrid C-interface Mesh constructor for non-interleaved data with one vertex buffer object per vertex attribute.
-	*/
-	Mesh(std::vector<uint8_t*> const&	vertex_data,
-		std::vector<size_t> const&		vertex_data_byte_sizes,
-		GLvoid const*					index_data,
-		GLsizeiptr						index_data_byte_size,
-		VertexLayout const&				vertex_descriptor,
-		GLenum							indices_type = GL_UNSIGNED_INT,
-		GLenum							usage = GL_STATIC_DRAW,
-		GLenum							primitive_type = GL_TRIANGLES);
+	Mesh(
+		std::vector<VertexContainer> const& vertex_data,
+		IndexContainer const&               index_data,
+		VertexLayout const&                 vertex_descriptor,
+		GLenum const                        index_type = GL_UNSIGNED_INT,
+		GLenum const                        usage = GL_STATIC_DRAW,
+		GLenum const                        primitive_type = GL_TRIANGLES);
 
 	~Mesh() { glDeleteVertexArrays(1, &m_va_handle); }
 
@@ -63,42 +55,6 @@ public:
 
 	template<typename IndexContainer>
 	void bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset);
-
-	template<typename VertexContainer>
-	void rebufferVertexData(size_t vbo_idx, VertexContainer const& vertices);
-
-	void rebufferVertexData(size_t vbo_idx, GLvoid const* vertex_data, GLsizeiptr vertex_data_byte_size) {
-		if (vbo_idx < m_vbos.size())
-			m_vbos[vbo_idx]->rebuffer(vertex_data, vertex_data_byte_size);
-	}
-
-	template<typename VertexContainer>
-	void rebufferVertexData(VertexContainer const& vertices, VertexLayout descriptor);
-
-	template<typename IndexContainer>
-	void rebufferIndexData(IndexContainer const& indices);
-
-	void rebufferIndexData(GLvoid const* index_data, GLsizeiptr	index_data_byte_size){
-		m_ibo.rebuffer(index_data, index_data_byte_size);
-
-		GLsizeiptr vi_size = index_data_byte_size;
-
-		switch (m_indices_type)
-		{
-		case GL_UNSIGNED_INT:
-			m_indices_cnt = static_cast<GLuint>(vi_size / 4);
-			break;
-		case GL_UNSIGNED_SHORT:
-			m_indices_cnt = static_cast<GLuint>(vi_size / 2);
-			break;
-		case GL_UNSIGNED_BYTE:
-			m_indices_cnt = static_cast<GLuint>(vi_size / 1);
-			break;
-		}
-	}
-
-	template<typename IndexContainer>
-	void rebufferIndexData(IndexContainer const& indices, GLenum indices_type, GLenum primitive_type);
 
 	void bindVertexArray() const { glBindVertexArray(m_va_handle); }
 
@@ -117,7 +73,7 @@ public:
 
 	GLuint getIndicesCount() const { return m_indices_cnt; }
 
-	GLenum getIndicesType() const { return m_indices_type; }
+	GLenum getIndexType() const { return m_indices_type; }
 
 	GLenum getPrimitiveType() const { return m_primitive_type; }
 
@@ -135,32 +91,86 @@ public:
 
 private:
 	
-	std::vector<BufferObjectPtr>	m_vbos;
-	BufferObject					m_ibo;
-	GLuint							m_va_handle;
+	std::vector<BufferObjectPtr> m_vbos;
+	BufferObject                 m_ibo;
+	GLuint                       m_va_handle;
 
-	VertexLayout					m_vertex_descriptor;
+	VertexLayout                 m_vertex_descriptor;
 
-	GLuint							m_indices_cnt;
-	GLenum							m_indices_type;
-	GLenum							m_usage;
-	GLenum							m_primitive_type;
+	GLuint                       m_indices_cnt;
+	GLenum                       m_indices_type;
+	GLenum                       m_usage;
+	GLenum                       m_primitive_type;
 };
 
 
-template<typename VertexContainer, typename IndexContainer>
+template<typename VertexPtr, typename IndexPtr>
 Mesh::Mesh(
-	VertexContainer const&	vertices,
-	IndexContainer const&	indices,
-	VertexLayout const&		vertex_descriptor,
-	GLenum					indices_type,
-	GLenum					usage,
-	GLenum					primitive_type)
-	: m_ibo(GL_ELEMENT_ARRAY_BUFFER, indices, usage), //TODO ibo generation in constructor might fail? needs a bound vao?
+	std::vector<VertexPtr> const& vertex_data,
+	std::vector<size_t> const&    vertex_data_byte_sizes,
+	IndexPtr const                index_data,
+	GLsizeiptr const              index_data_byte_size,
+	VertexLayout const&           vertex_descriptor,
+	GLenum const                  indices_type,
+	GLenum const                  usage,
+	GLenum const                  primitive_type)
+	: m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
 	m_vertex_descriptor(vertex_descriptor),
 	m_va_handle(0), m_indices_cnt(0), m_indices_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
 {
-	m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertices, m_usage));
+	for (unsigned int i = 0; i < vertex_data.size(); ++i)
+		m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
+
+	glGenVertexArrays(1, &m_va_handle);
+
+	// set attribute pointer and vao state
+	glBindVertexArray(m_va_handle);
+
+	m_ibo.bind();
+
+	// TODO check if vertex buffer count matches attribute count, throw exception if not?
+	GLuint attrib_idx = 0;
+	for (auto& attribute : vertex_descriptor.attributes)
+	{
+		m_vbos[attrib_idx]->bind();
+
+		glEnableVertexAttribArray(attrib_idx);
+		glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, vertex_descriptor.byte_size, reinterpret_cast<GLvoid*>(attribute.offset));
+
+		attrib_idx++;
+	}
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	switch (m_indices_type)
+	{
+	case GL_UNSIGNED_INT:
+		m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
+		break;
+	case GL_UNSIGNED_SHORT:
+		m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 2);
+		break;
+	case GL_UNSIGNED_BYTE:
+		m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
+		break;
+	}
+}
+
+template<typename VertexContainer, typename IndexContainer>
+Mesh::Mesh(
+	std::vector<VertexContainer> const&	vertex_data,
+	IndexContainer const&               index_data,
+	VertexLayout const&                 vertex_descriptor,
+	GLenum                              indices_type,
+	GLenum                              usage,
+	GLenum                              primitive_type)
+	: m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, usage), //TODO ibo generation in constructor might fail? needs a bound vao?
+	m_vertex_descriptor(vertex_descriptor),
+	m_va_handle(0), m_indices_cnt(0), m_indices_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
+{
+	for (unsigned int i = 0; i < vertex_data.size(); ++i)
+		m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
 
 	glGenVertexArrays(1, &m_va_handle);
 
@@ -179,7 +189,7 @@ Mesh::Mesh(
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	GLuint vi_size = static_cast<GLuint>(indices.size() * sizeof(IndexContainer::value_type));
+	GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(IndexContainer::value_type));
 
 	switch (m_indices_type)
 	{
@@ -205,87 +215,6 @@ template<typename IndexContainer>
 void Mesh::bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset) {
 	// TODO check type against current index type
 	m_ibo.bufferSubData<IndexContainer>(indices, byte_offset);
-}
-
-template<typename VertexContainer>
-void Mesh::rebufferVertexData(size_t vbo_idx, VertexContainer const& vertices) {
-	if (vbo_idx < m_vbos.size())
-		m_vbos[vbo_idx]->rebuffer(vertices);
-}
-
-template<typename VertexContainer>
-void Mesh::rebufferVertexData(VertexContainer const& vertices, VertexLayout descriptor) {
-	m_vbos.clear();
-
-	m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertices, m_usage));
-
-	m_vertex_descriptor = descriptor;
-
-	glBindVertexArray(m_va_handle);
-	m_vbos.back()->bind();
-	GLuint attrib_idx = 0;
-	for (auto& attribute : m_vertex_descriptor.attributes)
-	{
-		glEnableVertexAttribArray(attrib_idx);
-		glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, m_vertex_descriptor.byte_size, reinterpret_cast<GLvoid*>(attribute.offset));
-
-		attrib_idx++;
-	}
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	auto err = glGetError();
-	if (err != GL_NO_ERROR) {
-		std::cerr << "Error - Mesh - rebufferVertexData: " << err << std::endl;
-	}
-}
-
-template<typename IndexContainer>
-void Mesh::rebufferIndexData(IndexContainer const& indices) {
-	m_ibo.rebuffer(indices);
-
-	GLuint vi_size = static_cast<GLuint>(indices.size() * sizeof(IndexContainer::value_type));
-
-	switch (m_indices_type)
-	{
-	case GL_UNSIGNED_INT:
-		m_indices_cnt = static_cast<GLuint>(vi_size / 4);
-		break;
-	case GL_UNSIGNED_SHORT:
-		m_indices_cnt = static_cast<GLuint>(vi_size / 2);
-		break;
-	case GL_UNSIGNED_BYTE:
-		m_indices_cnt = static_cast<GLuint>(vi_size / 1);
-		break;
-	}
-}
-
-template<typename IndexContainer>
-void Mesh::rebufferIndexData(IndexContainer const& indices, GLenum indices_type, GLenum primitive_type) {
-	m_ibo.rebuffer(indices);
-
-	m_indices_type = indices_type;
-	m_primitive_type = primitive_type;
-
-	GLuint vi_size = static_cast<GLuint>(indices.size() * sizeof(IndexContainer::value_type));
-
-	switch (m_indices_type)
-	{
-	case GL_UNSIGNED_INT:
-		m_indices_cnt = static_cast<GLuint>(vi_size / 4);
-		break;
-	case GL_UNSIGNED_SHORT:
-		m_indices_cnt = static_cast<GLuint>(vi_size / 2);
-		break;
-	case GL_UNSIGNED_BYTE:
-		m_indices_cnt = static_cast<GLuint>(vi_size / 1);
-		break;
-	}
-
-	auto err = glGetError();
-	if (err != GL_NO_ERROR) {
-		std::cerr << "Error - Mesh - rebufferIndexData: " << err << std::endl;
-	}
 }
 
 #endif // !Mesh_hpp

@@ -1,9 +1,9 @@
 #ifndef BufferObject_hpp
 #define BufferObject_hpp
 
-#include <iostream>
+#include <glad/glad.h>
 
-#include <GL/glew.h>
+#include <iostream>
 
 /**
 * \class BufferObject
@@ -23,6 +23,11 @@ public:
 		glBindBuffer(m_target, m_handle);
 		glBufferData(m_target, m_byte_size, datastorage.data(), m_usage);
 		glBindBuffer(m_target, 0);
+
+        auto err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::cerr << "Error - BufferObject - Construction: " << err << std::endl;
+        }
 	}
 
 	BufferObject(GLenum target, GLvoid const* data, GLsizeiptr byte_size, GLenum usage = GL_DYNAMIC_DRAW)
@@ -32,6 +37,11 @@ public:
 		glBindBuffer(m_target, m_handle);
 		glBufferData(m_target, m_byte_size, data, m_usage);
 		glBindBuffer(m_target, 0);
+
+        auto err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::cerr << "Error - BufferObject - Construction: " << err << std::endl;
+        }
 	}
 
 	~BufferObject()
