@@ -14,7 +14,7 @@ struct VertexLayout
 {
 	struct Attribute
 	{
-		Attribute(GLenum type, GLint size, GLboolean normalized, GLsizei offset)
+		Attribute(GLint size, GLenum type, GLboolean normalized, GLsizei offset)
 			: size(size), type(type), normalized(normalized), offset(offset) {}
 
 		GLint size;
