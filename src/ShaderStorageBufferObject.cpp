@@ -1,3 +1,10 @@
+/*
+ * ShaderStorageBufferObject.cpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #include "ShaderStorageBufferObject.hpp"
 
 ShaderStorageBufferObject::ShaderStorageBufferObject(unsigned int size, const GLvoid * data)

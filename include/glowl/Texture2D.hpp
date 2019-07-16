@@ -1,3 +1,10 @@
+/*
+ * Texture2D.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef Texture2D_hpp
 #define Texture2D_hpp
 

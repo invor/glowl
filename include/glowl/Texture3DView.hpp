@@ -1,3 +1,10 @@
+/*
+ * Texture3Dview.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef Texture3DView_hpp
 #define Texture3DView_hpp
 

@@ -1,4 +1,11 @@
-#include "../glowl/TextureCubemapArray.hpp"
+/*
+ * TextureCubemapArray.cpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
+#include "TextureCubemapArray.hpp"
 
 #include <cassert>
 

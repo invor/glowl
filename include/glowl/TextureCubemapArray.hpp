@@ -1,3 +1,10 @@
+/*
+ * TextureCubemapArray.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef TextureCubemapArray_hpp
 #define TextureCubemapArray_hpp
 

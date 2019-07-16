@@ -1,3 +1,10 @@
+/*
+ * Texture3D.cpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #include "Texture3D.hpp"
 
 #include <cassert>

@@ -1,3 +1,10 @@
+/*
+ * Texture.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef Texture_hpp
 #define Texture_hpp
 

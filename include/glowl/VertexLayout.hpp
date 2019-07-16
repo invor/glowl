@@ -1,3 +1,10 @@
+/*
+ * VertexLayout.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef VertexLayout_hpp
 #define VertexLayout_hpp
 

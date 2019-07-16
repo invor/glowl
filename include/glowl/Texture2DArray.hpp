@@ -1,3 +1,10 @@
+/*
+ * Texture2DArray.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef Texture2DArray_hpp
 #define Texture2DArray_hpp
 

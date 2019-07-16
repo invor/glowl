@@ -1,3 +1,10 @@
+/*
+ * Texture3D.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef Texture3D_hpp
 #define Texture3D_hpp
 

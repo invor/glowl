@@ -1,3 +1,10 @@
+/*
+ * GLSLProgram.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef GLSLProgram_h
 #define GLSLProgram_h
 

@@ -1,3 +1,10 @@
+/*
+ * FramebufferObject.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef FramebufferObject_hpp
 #define FramebufferObject_hpp
 

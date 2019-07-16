@@ -1,3 +1,10 @@
+/*
+ * ShaderStorageBufferObject.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef fetol_shaderStorageBufferObject_h
 #define fetol_shaderStorageBufferObject_h
 

@@ -1,3 +1,10 @@
+/*
+ * FramebufferObject.cpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #include "FramebufferObject.hpp"
 
 FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool has_stencil) : m_width(width), m_height(height)

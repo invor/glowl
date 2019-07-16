@@ -1,3 +1,10 @@
+/*
+ * GLSLProgram.cpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #include "GLSLProgram.hpp"
 
 #include <iostream>

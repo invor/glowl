@@ -1,3 +1,10 @@
+/*
+ * Mesh.hpp
+ * 
+ * MIT License
+ * Copyright (c) 2019 Michael Becher
+ */
+
 #ifndef Mesh_hpp
 #define Mesh_hpp
 
