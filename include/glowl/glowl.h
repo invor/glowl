@@ -5,7 +5,6 @@
 #include "FramebufferObject.hpp"
 #include "GLSLProgram.hpp"
 #include "Mesh.hpp"
-#include "ShaderStorageBufferObject.hpp"
 #include "Texture.hpp"
 #include "Texture2D.hpp"
 #include "Texture2DArray.hpp"
