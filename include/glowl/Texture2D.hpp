@@ -10,7 +10,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 #include "Texture.hpp"
 
@@ -87,7 +87,7 @@ inline Texture2D::Texture2D(std::string id, TextureLayout const& layout, GLvoid 
     GLsizei levels = 1;
 
     if (generateMipmap) {
-        levels = 1 + static_cast<GLsizei>(floor(log2(std::max(m_width, m_height))));
+        levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
     }
 
     glTexStorage2D(GL_TEXTURE_2D, levels, m_internal_format, m_width, m_height);
@@ -147,7 +147,7 @@ inline void Texture2D::reload(TextureLayout const& layout, GLvoid * data, bool g
     GLsizei levels = 1;
 
     if (generateMipmap){
-        levels = 1 + static_cast<GLsizei>(floor(log2(std::max(m_width, m_height))));
+        levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
     }
 
     glTexStorage2D(GL_TEXTURE_2D, levels, m_internal_format, m_width, m_height);

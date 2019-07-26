@@ -10,7 +10,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 #include "Texture.hpp"
 
@@ -88,7 +88,7 @@ inline Texture2DArray::Texture2DArray(std::string id,
 
     GLsizei levels = 1;
 
-    levels = std::min(layout.levels, 1 + static_cast<GLsizei>(floor(log2(std::max(m_width, m_height)))));
+    levels = std::min(layout.levels, 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height)))));
 
     glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, m_internal_format, m_width, m_height, m_layers);
 
