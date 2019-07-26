@@ -92,8 +92,12 @@ public:
 	template<typename VertexContainer>
 	void bufferVertexSubData(size_t vbo_idx, VertexContainer const& vertices, GLsizeiptr byte_offset);
 
+    void bufferVertexSubData(size_t idx, GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset);
+
 	template<typename IndexContainer>
 	void bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset);
+
+    void bufferIndexSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset);
 
 	void bindVertexArray() const { glBindVertexArray(m_va_handle); }
 
@@ -144,7 +148,7 @@ private:
 
 
 template<typename VertexPtr, typename IndexPtr>
-Mesh::Mesh(
+inline Mesh::Mesh(
 	std::vector<VertexPtr> const& vertex_data,
 	std::vector<size_t> const&    vertex_data_byte_sizes,
 	IndexPtr const                index_data,
@@ -197,7 +201,7 @@ Mesh::Mesh(
 }
 
 template<typename VertexContainer, typename IndexContainer>
-Mesh::Mesh(
+inline Mesh::Mesh(
 	std::vector<VertexContainer> const&	vertex_data,
 	IndexContainer const&               index_data,
 	VertexLayout const&                 vertex_descriptor,
@@ -245,15 +249,28 @@ Mesh::Mesh(
 }
 
 template<typename VertexContainer>
-void Mesh::bufferVertexSubData(size_t vbo_idx, VertexContainer const& vertices, GLsizeiptr byte_offset) {
+inline void Mesh::bufferVertexSubData(size_t vbo_idx, VertexContainer const& vertices, GLsizeiptr byte_offset) {
 	if (vbo_idx < m_vbos.size())
 		m_vbos[vbo_idx]->bufferSubData<VertexContainer>(vertices, byte_offset);
 }
 
+inline void Mesh::bufferVertexSubData(size_t idx, GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
+{
+    if (idx < m_vbos.size())
+    {
+        m_vbos[idx]->bufferSubData(data, byte_size, byte_offset);
+    }
+}
+
 template<typename IndexContainer>
-void Mesh::bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset) {
+inline void Mesh::bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset) {
 	// TODO check type against current index type
 	m_ibo.bufferSubData<IndexContainer>(indices, byte_offset);
+}
+
+inline void Mesh::bufferIndexSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
+{
+    m_ibo.bufferSubData(data, byte_size, byte_offset);
 }
 
 }
