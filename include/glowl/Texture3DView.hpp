@@ -11,6 +11,9 @@
 #include "Texture.hpp"
 #include "Texture3D.hpp"
 
+namespace glowl
+{
+
 /**
 * \class TextureCubemapArray
 *
@@ -21,6 +24,12 @@
 class Texture3DView : public Texture
 {
 public:
+    /**
+    * \brief Texture3DView constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	Texture3DView(std::string id,
 		Texture3D const& source_texture,
 		TextureLayout const& layout,
@@ -106,6 +115,8 @@ inline unsigned int Texture3DView::getHeight()
 inline unsigned int Texture3DView::getDepth()
 {
     return m_depth;
+}
+
 }
 
 #endif // !Texture3DView_hpp

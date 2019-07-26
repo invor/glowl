@@ -12,6 +12,9 @@
 
 #include "Texture.hpp"
 
+namespace glowl
+{
+
 /**
 * \class TextureCubemapArray
 *
@@ -22,6 +25,12 @@
 class TextureCubemapArray : public Texture
 {
 public:
+    /**
+    * \brief TextureCubemapArray constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	TextureCubemapArray(std::string id,
 		GLint internal_format,
 		unsigned int width,
@@ -186,6 +195,8 @@ inline unsigned int TextureCubemapArray::getHeigth() const
 inline unsigned int TextureCubemapArray::getLayers() const
 {
     return m_layers;
+}
+
 }
 
 #endif // !TextureCubemapArray_hpp

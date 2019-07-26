@@ -13,6 +13,9 @@
 
 #include "Texture.hpp"
 
+namespace glowl
+{
+
 /**
 * \class Texture2DArray
 *
@@ -23,6 +26,12 @@
 class Texture2DArray : public Texture
 {
 public:
+    /**
+    * \brief Texture2DArray constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	Texture2DArray(std::string id,
 					TextureLayout const& layout,
 					GLvoid* data,
@@ -132,6 +141,8 @@ inline unsigned int Texture2DArray::getHeigth() const
 inline unsigned int Texture2DArray::getLayers() const
 {
     return m_layers;
+}
+
 }
 
 #endif // !Texture2DArray_hpp

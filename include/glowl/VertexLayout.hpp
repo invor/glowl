@@ -10,6 +10,9 @@
 
 #include <glad/glad.h>
 
+namespace glowl
+{
+
 /**
 * \struct VertexLayout
 *
@@ -122,6 +125,8 @@ static constexpr size_t computeByteSize(GLenum value_type)
 static size_t computeAttributeByteSize(VertexLayout::Attribute attrib_desc)
 {
 	return computeByteSize(attrib_desc.type) * attrib_desc.size;
+}
+
 }
 
 #endif // !VertexLayout_hpp

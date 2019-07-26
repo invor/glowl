@@ -17,6 +17,8 @@
 #include <string>
 #include <memory>
 
+namespace glowl
+{
 
 /**
 * \class FramebufferObject
@@ -51,6 +53,12 @@ private:
 	std::string m_log;
 
 public:
+    /**
+    * \brief FramebufferObject constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
 	~FramebufferObject();
 
@@ -329,5 +337,6 @@ inline void FramebufferObject::resize(int new_width, int new_height)
     }
 }
 
+}
 
 #endif // !FramebufferObject_hpp

@@ -12,6 +12,9 @@
 
 #include <iostream>
 
+namespace glowl
+{
+
 /**
 * \class BufferObject
 *
@@ -22,9 +25,21 @@
 class BufferObject
 {
 public:
+    /**
+    * \brief BufferObject constructor that uses std containers as input.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	template<typename Container>
     BufferObject(GLenum target, Container const& datastorage, GLenum usage = GL_DYNAMIC_DRAW);
 
+    /**
+    * \brief Bufferobject constructor that uses data pointer and byte size as input.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
     BufferObject(GLenum target, GLvoid const* data, GLsizeiptr byte_size, GLenum usage = GL_DYNAMIC_DRAW);
 
     ~BufferObject();
@@ -192,6 +207,8 @@ inline GLenum BufferObject::getTarget() const {
 
 inline GLsizeiptr BufferObject::getByteSize() const {
     return m_byte_size;
+}
+
 }
 
 #endif // !BufferObject_hpp

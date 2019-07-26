@@ -18,7 +18,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>
-//#include <iostream>
+
+
+namespace glowl
+{
 
 /**
 * \class GLSLProgram
@@ -43,6 +46,12 @@ private:
 
 	GLuint getUniformLocation(const char *name);
 public:
+    /**
+    * \brief GLSLProgram constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	GLSLProgram();
 	~GLSLProgram();
 
@@ -362,6 +371,8 @@ inline void GLSLProgram::setId(const std::string& id)
 inline std::string GLSLProgram::getId() const
 {
     return m_id;
+}
+
 }
 
 #endif // !GLSLProgram_hpp

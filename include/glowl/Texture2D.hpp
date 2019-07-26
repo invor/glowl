@@ -13,6 +13,9 @@
 
 #include "Texture.hpp"
 
+namespace glowl
+{
+
 /**
 * \class Texture2D
 *
@@ -30,6 +33,9 @@ public:
 	* \param layout A TextureLayout struct that specifies size, format and parameters for the texture
 	* \param data Pointer to the actual texture data.
 	* \param generateMipmap Specifies whether a mipmap will be created for the texture
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
 	*/
 	Texture2D(std::string id, TextureLayout const& layout, GLvoid * data, bool generateMipmap = false);
 	Texture2D(const Texture2D&) = delete;
@@ -176,6 +182,8 @@ inline unsigned int Texture2D::getWidth() const
 inline unsigned int Texture2D::getHeight() const
 {
     return m_height;
+}
+
 }
 
 #endif // !Texture2D_hpp

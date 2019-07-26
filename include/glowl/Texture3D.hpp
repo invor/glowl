@@ -12,6 +12,9 @@
 
 #include "Texture.hpp"
 
+namespace glowl
+{
+
 /**
 * \class Texture3D
 *
@@ -25,6 +28,12 @@
 class Texture3D : public Texture
 {
 public:
+    /**
+    * \brief Texture3D constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	Texture3D(std::string id, TextureLayout const& layout, GLvoid * data);
 	Texture3D(const Texture3D&) = delete;
 	Texture3D(Texture3D&& other) = delete;
@@ -163,6 +172,8 @@ inline unsigned int Texture3D::getHeight()
 inline unsigned int Texture3D::getDepth()
 {
     return m_depth;
+}
+
 }
 
 #endif // !Texture3D_hpp

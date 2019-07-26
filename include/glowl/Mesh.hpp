@@ -8,15 +8,34 @@
 #ifndef Mesh_hpp
 #define Mesh_hpp
 
+// Include glad for OpenGL types and functions
 #include <glad/glad.h>
 
-/*	Include system libraries */
+// Include std libs
 #include <string>
 #include <vector>
-//#include <iostream>
 
+// Include glowl files
 #include "BufferObject.hpp"
 #include "VertexLayout.hpp"
+
+namespace glowl
+{
+
+/**
+ * \struct DrawElementsCommand
+ *
+ * \brief Convenience object for using indirect draw calls.
+ *
+ */
+struct DrawElementsCommand
+{
+    GLuint cnt;
+    GLuint instance_cnt;
+    GLuint first_idx;
+    GLuint base_vertex;
+    GLuint base_instance;
+};
 
 /**
 * \class Mesh
@@ -28,8 +47,15 @@
 class Mesh
 {
 public:
-	typedef std::unique_ptr<BufferObject> BufferObjectPtr;
 
+    typedef std::unique_ptr<BufferObject> BufferObjectPtr;
+
+    /**
+    * \brief Mesh constructor that requires data pointers and byte sizes as input.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	template<typename VertexPtr, typename IndexPtr>
 	Mesh(
 		std::vector<VertexPtr> const& vertex_data,
@@ -41,6 +67,12 @@ public:
 		GLenum const                  usage = GL_STATIC_DRAW,
 		GLenum const                  primitive_type = GL_TRIANGLES);
 
+    /**
+    * \brief Mesh constructor that requires std containers as input.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
 	template<typename VertexContainer, typename IndexContainer>
 	Mesh(
 		std::vector<VertexContainer> const& vertex_data,
@@ -222,6 +254,8 @@ template<typename IndexContainer>
 void Mesh::bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset) {
 	// TODO check type against current index type
 	m_ibo.bufferSubData<IndexContainer>(indices, byte_offset);
+}
+
 }
 
 #endif // !Mesh_hpp

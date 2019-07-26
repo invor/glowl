@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+namespace glowl
+{
+
 struct TextureLayout
 {
 	TextureLayout()
@@ -118,5 +121,7 @@ public:
 	GLenum getFormat() const { return m_format; }
 	GLenum getType() const { return m_type; }
 };
+
+}
 
 #endif
