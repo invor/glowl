@@ -108,7 +108,7 @@ public:
 	 */
 	void draw(GLsizei instance_cnt = 1) {
 		glBindVertexArray(m_va_handle);
-		glDrawElementsInstanced(m_primitive_type, m_indices_cnt, m_indices_type, nullptr, instance_cnt);
+		glDrawElementsInstanced(m_primitive_type, m_indices_cnt, m_index_type, nullptr, instance_cnt);
 		glBindVertexArray(0);
 	}
 
@@ -116,7 +116,7 @@ public:
 
 	GLuint getIndicesCount() const { return m_indices_cnt; }
 
-	GLenum getIndexType() const { return m_indices_type; }
+	GLenum getIndexType() const { return m_index_type; }
 
 	GLenum getPrimitiveType() const { return m_primitive_type; }
 
@@ -141,7 +141,7 @@ private:
 	VertexLayout                 m_vertex_descriptor;
 
 	GLuint                       m_indices_cnt;
-	GLenum                       m_indices_type;
+	GLenum                       m_index_type;
 	GLenum                       m_usage;
 	GLenum                       m_primitive_type;
 };
@@ -159,7 +159,7 @@ inline Mesh::Mesh(
 	GLenum const                  primitive_type)
 	: m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
 	m_vertex_descriptor(vertex_descriptor),
-	m_va_handle(0), m_indices_cnt(0), m_indices_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
+	m_va_handle(0), m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
 {
 	for (unsigned int i = 0; i < vertex_data.size(); ++i)
 		m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
@@ -186,7 +186,7 @@ inline Mesh::Mesh(
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	switch (m_indices_type)
+	switch (m_index_type)
 	{
 	case GL_UNSIGNED_INT:
 		m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
@@ -210,7 +210,7 @@ inline Mesh::Mesh(
 	GLenum                              primitive_type)
 	: m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, usage), //TODO ibo generation in constructor might fail? needs a bound vao?
 	m_vertex_descriptor(vertex_descriptor),
-	m_va_handle(0), m_indices_cnt(0), m_indices_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
+	m_va_handle(0), m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
 {
 	for (unsigned int i = 0; i < vertex_data.size(); ++i)
 		m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
@@ -232,9 +232,9 @@ inline Mesh::Mesh(
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(IndexContainer::value_type));
+	GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(typename IndexContainer::value_type));
 
-	switch (m_indices_type)
+	switch (m_index_type)
 	{
 	case GL_UNSIGNED_INT:
 		m_indices_cnt = static_cast<GLuint>(vi_size / 4);

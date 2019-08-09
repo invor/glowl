@@ -82,7 +82,10 @@ private:
 
 template<typename Container>
 inline BufferObject::BufferObject(GLenum target, Container const& datastorage, GLenum usage)
-    : m_target(target), m_handle(0), m_byte_size(static_cast<GLsizeiptr>(datastorage.size() * sizeof(Container::value_type))), m_usage(usage)
+    : m_target(target),
+    m_handle(0), 
+    m_byte_size(static_cast<GLsizeiptr>(datastorage.size() * sizeof(typename Container::value_type))), 
+    m_usage(usage)
 {
     glGenBuffers(1, &m_handle);
     glBindBuffer(m_target, m_handle);
@@ -118,7 +121,7 @@ template<typename Container>
 inline void BufferObject::bufferSubData(Container const& datastorage, GLsizeiptr byte_offset) const
 {
     // check if feasible
-    if ((byte_offset + static_cast<GLsizeiptr>(datastorage.size() * sizeof(Container::value_type))) > m_byte_size)
+    if ((byte_offset + static_cast<GLsizeiptr>(datastorage.size() * sizeof(typename Container::value_type))) > m_byte_size)
     {
         // error message
         std::cerr << "Error - BufferObject - bufferSubData: given data too large for buffer." << std::endl;
@@ -126,7 +129,7 @@ inline void BufferObject::bufferSubData(Container const& datastorage, GLsizeiptr
     }
 
     glBindBuffer(m_target, m_handle);
-    glBufferSubData(m_target, byte_offset, datastorage.size() * sizeof(Container::value_type), datastorage.data());
+    glBufferSubData(m_target, byte_offset, datastorage.size() * sizeof(typename Container::value_type), datastorage.data());
     glBindBuffer(m_target, 0);
 }
 
@@ -147,7 +150,7 @@ inline void BufferObject::bufferSubData(GLvoid const* data, GLsizeiptr byte_size
 
 template<typename Container>
 inline void BufferObject::rebuffer(Container const& datastorage) {
-    m_byte_size = static_cast<GLsizeiptr>(datastorage.size() * sizeof(Container::value_type));
+    m_byte_size = static_cast<GLsizeiptr>(datastorage.size() * sizeof(typename Container::value_type));
     glBindBuffer(m_target, m_handle);
     glBufferData(m_target, m_byte_size, datastorage.data(), m_usage);
     glBindBuffer(m_target, 0);
