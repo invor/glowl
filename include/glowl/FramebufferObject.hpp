@@ -50,6 +50,9 @@ private:
 	/** List of all draw buffer targets (i.e. all color attachments) */
 	std::vector<GLenum> m_drawBufs;
 
+    /** Optional debug label, used as glObjectLabel in DEBUG */
+    std::string m_debug_label;
+
 	std::string m_log;
 
 public:
@@ -60,6 +63,15 @@ public:
     * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
     */
 	FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
+
+    /**
+    * \brief FramebufferObject constructor.
+    *
+    * Note: Active OpenGL context required for construction.
+    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    */
+    FramebufferObject(std::string const& debug_label, int width, int height, bool has_depth = false, bool has_stencil = false);
+
 	~FramebufferObject();
 
 	/*	Deleted copy constructor (C++11). Don't wanna go around copying objects with OpenGL handles. */
@@ -179,6 +191,15 @@ inline FramebufferObject::FramebufferObject(int width, int height, bool has_dept
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+inline FramebufferObject::FramebufferObject(std::string const & debug_label, int width, int height, bool has_depth, bool has_stencil)
+    : FramebufferObject(width,height,has_depth,has_stencil)
+{
+    m_debug_label = debug_label;
+#if _DEBUG
+    glObjectLabel(GL_FRAMEBUFFER, this->m_handle, static_cast<GLsizei>(m_debug_label.length()), m_debug_label.c_str());
+#endif
 }
 
 inline FramebufferObject::~FramebufferObject()
