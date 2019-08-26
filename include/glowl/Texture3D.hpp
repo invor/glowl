@@ -1,6 +1,6 @@
 /*
  * Texture3D.hpp
- * 
+ *
  * MIT License
  * Copyright (c) 2019 Michael Becher
  */
@@ -15,164 +15,164 @@
 namespace glowl
 {
 
-/**
-* \class Texture3D
-*
-* \brief Encapsulates basic 3D texure functionality.
-*
-* This class encapsulates basic 3D functionality including creation of a 3D texture,
-* texture updates and texture binding.
-*
-* \author Michael Becher
-*/
-class Texture3D : public Texture
-{
-public:
     /**
-    * \brief Texture3D constructor.
+    * \class Texture3D
     *
-    * Note: Active OpenGL context required for construction.
-    * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+    * \brief Encapsulates basic 3D texure functionality.
+    *
+    * This class encapsulates basic 3D functionality including creation of a 3D texture,
+    * texture updates and texture binding.
+    *
+    * \author Michael Becher
     */
-	Texture3D(std::string id, TextureLayout const& layout, GLvoid * data);
-	Texture3D(const Texture3D&) = delete;
-	Texture3D(Texture3D&& other) = delete;
-	Texture3D& operator=(const Texture3D& rhs) = delete;
-	Texture3D& operator=(Texture3D&& rhs) = delete;
-
-	/**
-	* \brief Bind the texture.
-	*/
-	void bindTexture() const;
-
-	void updateMipmaps();
-
-	/**
-	* \brief Reload the texture.
-	* \param data Pointer to the new texture data.
-	*/
-	void reload(TextureLayout const& layout, GLvoid * data);
-
-	TextureLayout getTextureLayout() const;
-
-	unsigned int getWidth();
-	unsigned int getHeight();
-	unsigned int getDepth();
-
-private:
-	unsigned int m_width;
-	unsigned int m_height;
-	unsigned int m_depth;
-};
-
-inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid * data)
-    : Texture(
-        id, 
-        layout.internal_format,
-        layout.format,
-        layout.type,
-        layout.levels),
-    m_width(layout.width),
-    m_height(layout.height),
-    m_depth(layout.depth)
-{
-    glGenTextures(1, &m_name);
-
-    glBindTexture(GL_TEXTURE_3D, m_name);
-
-    for (auto& pname_pvalue : layout.int_parameters){
-        glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
-    }
-
-    for (auto& pname_pvalue : layout.float_parameters){
-        glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
-    }
-
-    glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
-
-    if (data != nullptr){
-        glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
-    }
-
-    glBindTexture(GL_TEXTURE_3D, 0);
-
-    m_texture_handle = glGetTextureHandleARB(m_name);
-
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
+    class Texture3D : public Texture
     {
-        // "Do something cop!"
-        std::cerr << "GL error during 3D texture (id:" << id << ") creation: " << err << std::endl;
-    }
-}
+    public:
+        /**
+        * \brief Texture3D constructor.
+        *
+        * Note: Active OpenGL context required for construction.
+        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+        */
+        Texture3D(std::string id, TextureLayout const& layout, GLvoid * data);
+        Texture3D(const Texture3D&) = delete;
+        Texture3D(Texture3D&& other) = delete;
+        Texture3D& operator=(const Texture3D& rhs) = delete;
+        Texture3D& operator=(Texture3D&& rhs) = delete;
 
-inline void Texture3D::bindTexture() const
-{
-    glBindTexture(GL_TEXTURE_3D, m_name);
-}
+        /**
+        * \brief Bind the texture.
+        */
+        void bindTexture() const;
 
-inline void Texture3D::updateMipmaps()
-{
-    glBindTexture(GL_TEXTURE_3D, m_name);
-    glGenerateMipmap(GL_TEXTURE_3D);
-    glBindTexture(GL_TEXTURE_3D, 0);
-}
+        void updateMipmaps();
 
-inline void Texture3D::reload(TextureLayout const& layout, GLvoid * data)
-{
-    m_width = layout.width;
-    m_height = layout.height;
-    m_depth = layout.depth;
-    m_internal_format = layout.internal_format;
-    m_format = layout.format;
-    m_type = layout.type;
+        /**
+        * \brief Reload the texture.
+        * \param data Pointer to the new texture data.
+        */
+        void reload(TextureLayout const& layout, GLvoid * data);
 
-    glDeleteTextures(1, &m_name);
+        TextureLayout getTextureLayout() const;
 
-    glGenTextures(1, &m_name);
+        unsigned int getWidth();
+        unsigned int getHeight();
+        unsigned int getDepth();
 
-    glBindTexture(GL_TEXTURE_3D, m_name);
+    private:
+        unsigned int m_width;
+        unsigned int m_height;
+        unsigned int m_depth;
+    };
 
-    for (auto& pname_pvalue : layout.int_parameters)
-        glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
-
-    for (auto& pname_pvalue : layout.float_parameters)
-        glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
-
-    glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
-
-    if (data != nullptr)
-        glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
-
-    glBindTexture(GL_TEXTURE_3D, 0);
-
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
+    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid * data)
+        : Texture(
+            id,
+            layout.internal_format,
+            layout.format,
+            layout.type,
+            layout.levels),
+        m_width(layout.width),
+        m_height(layout.height),
+        m_depth(layout.depth)
     {
-        // "Do something cop!"
-        std::cerr << "GL error during texture reloading: " << err << std::endl;
+        glGenTextures(1, &m_name);
+
+        glBindTexture(GL_TEXTURE_3D, m_name);
+
+        for (auto& pname_pvalue : layout.int_parameters) {
+            glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+        }
+
+        for (auto& pname_pvalue : layout.float_parameters) {
+            glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+        }
+
+        glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
+
+        if (data != nullptr) {
+            glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
+        }
+
+        glBindTexture(GL_TEXTURE_3D, 0);
+
+        m_texture_handle = glGetTextureHandleARB(m_name);
+
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            // "Do something cop!"
+            std::cerr << "GL error during 3D texture (id:" << id << ") creation: " << err << std::endl;
+        }
     }
-}
 
-inline TextureLayout Texture3D::getTextureLayout() const
-{
-    return TextureLayout(m_internal_format, m_width, m_height, m_depth, m_format, m_type, m_levels);
-}
+    inline void Texture3D::bindTexture() const
+    {
+        glBindTexture(GL_TEXTURE_3D, m_name);
+    }
 
-inline unsigned int Texture3D::getWidth()
-{
-    return m_width;
-}
+    inline void Texture3D::updateMipmaps()
+    {
+        glBindTexture(GL_TEXTURE_3D, m_name);
+        glGenerateMipmap(GL_TEXTURE_3D);
+        glBindTexture(GL_TEXTURE_3D, 0);
+    }
 
-inline unsigned int Texture3D::getHeight()
-{
-    return m_height;
-}
+    inline void Texture3D::reload(TextureLayout const& layout, GLvoid * data)
+    {
+        m_width = layout.width;
+        m_height = layout.height;
+        m_depth = layout.depth;
+        m_internal_format = layout.internal_format;
+        m_format = layout.format;
+        m_type = layout.type;
 
-inline unsigned int Texture3D::getDepth()
-{
-    return m_depth;
-}
+        glDeleteTextures(1, &m_name);
+
+        glGenTextures(1, &m_name);
+
+        glBindTexture(GL_TEXTURE_3D, m_name);
+
+        for (auto& pname_pvalue : layout.int_parameters)
+            glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+
+        for (auto& pname_pvalue : layout.float_parameters)
+            glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+
+        glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
+
+        if (data != nullptr)
+            glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
+
+        glBindTexture(GL_TEXTURE_3D, 0);
+
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            // "Do something cop!"
+            std::cerr << "GL error during texture reloading: " << err << std::endl;
+        }
+    }
+
+    inline TextureLayout Texture3D::getTextureLayout() const
+    {
+        return TextureLayout(m_internal_format, m_width, m_height, m_depth, m_format, m_type, m_levels);
+    }
+
+    inline unsigned int Texture3D::getWidth()
+    {
+        return m_width;
+    }
+
+    inline unsigned int Texture3D::getHeight()
+    {
+        return m_height;
+    }
+
+    inline unsigned int Texture3D::getDepth()
+    {
+        return m_depth;
+    }
 
 }
 
