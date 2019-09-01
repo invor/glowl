@@ -95,6 +95,8 @@ namespace glowl
         */
         bool createColorAttachment(GLenum internalFormat, GLenum format, GLenum type);
 
+        std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
+
         /**
         * \brief Bind this framebuffer object with all its color attachments
         */
@@ -241,6 +243,11 @@ namespace glowl
         m_drawBufs.push_back(GL_COLOR_ATTACHMENT0 + bufsSize);
 
         return true;
+    }
+
+    inline std::shared_ptr<Texture2D> FramebufferObject::getColorAttachment(unsigned int index) const
+    {
+        return index < m_colorbuffers.size() ? m_colorbuffers[index] : nullptr;
     }
 
     inline void FramebufferObject::bind()
