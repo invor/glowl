@@ -33,16 +33,25 @@ namespace glowl
     class GLSLProgram
     {
     public:
-        enum ShaderType { VertexShader, TessellationControl, TessellationEvaluation, GeometryShader, FragmentShader, ComputeShader };
+        enum ShaderType { 
+            VertexShader           = GL_VERTEX_SHADER, 
+            TessellationControl    = GL_TESS_CONTROL_SHADER,
+            TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
+            GeometryShader         = GL_GEOMETRY_SHADER, 
+            FragmentShader         = GL_FRAGMENT_SHADER, 
+            ComputeShader          = GL_COMPUTE_SHADER};
 
     private:
-        GLuint m_handle;
-        bool m_link_status;
-        bool m_compute_shader;
+        /** OpenGL program handle */
+        GLuint      m_handle;
+        /** Keeps track of link status */
+        bool        m_link_status;
+        /** Keeps track if a compute shader was attached to progam */
+        bool        m_compute_shader;
+        /** Log with all outputs from program and shader generation */
         std::string m_shaderlog;
-
-        // TODO: this is simply a hotfix solution
-        std::string m_id;
+        /** An optional label string that is used as glObjectLabel in debug */
+        std::string m_debug_label;
 
         GLuint getUniformLocation(const char *name);
     public:
@@ -57,22 +66,59 @@ namespace glowl
 
         /* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
         GLSLProgram(const GLSLProgram& cpy) = delete;
-
         GLSLProgram(GLSLProgram&& other) = delete;
-
         GLSLProgram& operator=(const GLSLProgram& rhs) = delete;
         GLSLProgram& operator=(GLSLProgram&& rhs) = delete;
 
-        void init();
-        bool compileShaderFromString(const std::string * const source, GLenum shaderType);
+        /**
+         * \brief Compiles and attaches a shader program
+         * \param source Shader source code
+         * \param shaderType Shader type (e.g. GLSLProgam::VertexShader)
+         * \return Returns true if shader was succefully compiled, false otherwise.
+         */
+        bool compileShaderFromString(const std::string * const source, ShaderType shaderType);
+
+        /**
+         * \brief Links program
+         * \return Returns true if shader was succefully linked, false otherwise.
+         */
         bool link();
+
+        /**
+         * \brief Calls glUseProgram
+         */
         bool use();
-        bool dispatchCompute(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
+
+        /**
+         * \brief Gives access to log file that contain details about program and shader creation
+         */
         const std::string& getLog();
+
+        /**
+         * \brief Returns the OpenGL handle of the program. Handle with care!
+         */
         GLuint getHandle();
+
+        /**
+         * \brief Returns true if program has been succesfully linked
+         */
         bool isLinked();
-        bool isComputeShader();
+
+        /**
+         * \brief Allows to check whether a compute shader is attached to program for sanity check before calling glDispatchCompute
+         */
+        bool hasComputeShader();
+
+        /**
+         * \brief Associate a vertex shader attribute variable with a specific vertex attribute index.
+         * Useful if mesh vertex attribute order is different from order given in vertex shader.
+         */
         void bindAttribLocation(GLuint location, const char *name);
+
+        /**
+         * \brief Associates a fragment shader output variable with a specific output index.
+         * Ignored if output locations statically defined in shader.
+         */
         void bindFragDataLocation(GLuint location, const char *name);
 
         void setUniform(const char *name, const glm::vec2 &v);
@@ -87,15 +133,31 @@ namespace glowl
         void setUniform(const char *name, unsigned int i);
         void setUniform(const char *name, float f);
         void setUniform(const char *name, bool b);
+
+        /**
+         * \brief Prints a list if active shader uniforms to std outstream.
+         */
         void printActiveUniforms();
+
+        /**
+         * \brief Prints a list if active shader attributes to std outstream.
+         */
         void printActiveAttributes();
 
-        void setId(const std::string& id);
-        std::string getId() const;
+        /**
+         * \brief Set a debug label to be used as glObjectLabel in debug
+         */
+        void setDebugLabel(const std::string& debug_label);
+
+        /**
+         * \brief Returns debug label string
+         */
+        std::string getDebugLabel() const;
     };
 
     inline GLSLProgram::GLSLProgram() : m_link_status(false), m_compute_shader(false)
     {
+        m_handle = glCreateProgram();
     }
 
     inline GLSLProgram::~GLSLProgram()
@@ -108,12 +170,7 @@ namespace glowl
         return glGetUniformLocation(m_handle, name);
     }
 
-    inline void GLSLProgram::init()
-    {
-        m_handle = glCreateProgram();
-    }
-
-    inline bool GLSLProgram::compileShaderFromString(const std::string * const source, GLenum shaderType)
+    inline bool GLSLProgram::compileShaderFromString(const std::string * const source, ShaderType shaderType)
     {
         /* Check if the source is empty */
         if (source->empty())
@@ -224,19 +281,6 @@ namespace glowl
         return true;
     }
 
-    inline bool GLSLProgram::dispatchCompute(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z)
-    {
-        GLuint current_prgm;
-        glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&current_prgm);
-
-        if ((current_prgm != m_handle) || !m_compute_shader)
-            return false;
-
-        glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
-
-        return true;
-    }
-
     inline const std::string& GLSLProgram::getLog()
     {
         return m_shaderlog;
@@ -250,6 +294,11 @@ namespace glowl
     inline bool GLSLProgram::isLinked()
     {
         return m_link_status;
+    }
+
+    inline bool GLSLProgram::hasComputeShader()
+    {
+        return m_compute_shader;
     }
 
     inline void GLSLProgram::bindAttribLocation(GLuint location, const char *name)
@@ -363,15 +412,19 @@ namespace glowl
         delete[] attributeName;
     }
 
-    inline void GLSLProgram::setId(const std::string& id)
+    inline void GLSLProgram::setDebugLabel(const std::string & debug_label)
     {
-        m_id = id;
+        m_debug_label = debug_label;
+#if _DEBUG
+        glObjectLabel(GL_PROGRAM, this->m_handle, static_cast<GLsizei>(m_debug_label.length()), m_debug_label.c_str());
+#endif
     }
 
-    inline std::string GLSLProgram::getId() const
+    inline std::string GLSLProgram::getDebugLabel() const
     {
-        return m_id;
+        return m_debug_label;
     }
+
 
 }
 
