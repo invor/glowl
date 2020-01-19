@@ -92,7 +92,7 @@ namespace glowl
         /**
          * \brief Gives access to log file that contain details about program and shader creation
          */
-        const std::string& getLog();
+        std::string const& getLog();
 
         /**
          * \brief Returns the OpenGL handle of the program. Handle with care!
@@ -147,7 +147,7 @@ namespace glowl
         /**
          * \brief Set a debug label to be used as glObjectLabel in debug
          */
-        void setDebugLabel(const std::string& debug_label);
+        void setDebugLabel(std::string const& debug_label);
 
         /**
          * \brief Returns debug label string
@@ -281,7 +281,7 @@ namespace glowl
         return true;
     }
 
-    inline const std::string& GLSLProgram::getLog()
+    inline std::string const& GLSLProgram::getLog()
     {
         return m_shaderlog;
     }

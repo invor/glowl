@@ -163,7 +163,7 @@ namespace glowl
         */
         int getHeight() const { return m_height; }
 
-        const std::string& getLog() const { return m_log; }
+        std::string const& getLog() const { return m_log; }
     };
 
     inline FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool has_stencil) : m_width(width), m_height(height)
