@@ -107,18 +107,31 @@ namespace glowl
          */
         void bindFragDataLocation(GLuint location, const char* name);
 
+        void setUniform(const char* name, float v0);
+        void setUniform(const char* name, float v0, float v1);
+        void setUniform(const char* name, float v0, float v1, float v2);
+        void setUniform(const char* name, float v0, float v1, float v2, float v3);
+        void setUniform(const char* name, int v0);
+        void setUniform(const char* name, int v0, int v1);
+        void setUniform(const char* name, int v0, int v1, int v2);
+        void setUniform(const char* name, int v0, int v1, int v2, int v3);
+        void setUniform(const char* name, unsigned int v0);
+        void setUniform(const char* name, unsigned int v0, unsigned int v1);
+        void setUniform(const char* name, unsigned int v0, unsigned int v1, unsigned int v2);
+        void setUniform(const char* name, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3);
+        void setUniform(const char* name, bool v0);
+        void setUniform(const char* name, bool v0, bool v1);
+        void setUniform(const char* name, bool v0, bool v1, bool v2);
+        void setUniform(const char* name, bool v0, bool v1, bool v2, bool v3);
         void setUniform(const char* name, const glm::vec2& v);
+        void setUniform(const char* name, const glm::vec3& v);
+        void setUniform(const char* name, const glm::vec4& v);
         void setUniform(const char* name, const glm::ivec2& v);
         void setUniform(const char* name, const glm::ivec3& v);
         void setUniform(const char* name, const glm::ivec4& v);
-        void setUniform(const char* name, const glm::vec3& v);
-        void setUniform(const char* name, const glm::vec4& v);
-        void setUniform(const char* name, const glm::mat4& m);
+        void setUniform(const char* name, const glm::mat2& m);
         void setUniform(const char* name, const glm::mat3& m);
-        void setUniform(const char* name, int i);
-        void setUniform(const char* name, unsigned int i);
-        void setUniform(const char* name, float f);
-        void setUniform(const char* name, bool b);
+        void setUniform(const char* name, const glm::mat4& m);
 
         /**
          * \brief Return the position of a uniform.
@@ -309,9 +322,99 @@ namespace glowl
         glBindFragDataLocation(m_handle, location, name);
     }
 
+    inline void GLSLProgram::setUniform(const char* name, float v0)
+    {
+        glUniform1f(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, float v0, float v1)
+    {
+        glUniform2f(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, float v0, float v1, float v2)
+    {
+        glUniform3f(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, float v0, float v1, float v2, float v3)
+    {
+        glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, int v0)
+    {
+        glUniform1i(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, int v0, int v1)
+    {
+        glUniform2i(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, int v0, int v1, int v2)
+    {
+        glUniform3i(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, int v0, int v1, int v2, int v3)
+    {
+        glUniform4i(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, unsigned int v0)
+    {
+        glUniform1ui(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, unsigned int v0, unsigned int v1)
+    {
+        glUniform2ui(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, unsigned int v0, unsigned int v1, unsigned int v2)
+    {
+        glUniform3ui(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3)
+    {
+        glUniform4ui(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, bool v0)
+    {
+        glUniform1i(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, bool v0, bool v1)
+    {
+        glUniform2i(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, bool v0, bool v1, bool v2)
+    {
+        glUniform3i(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, bool v0, bool v1, bool v2, bool v3)
+    {
+        glUniform4i(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
     inline void GLSLProgram::setUniform(const char* name, const glm::vec2& v)
     {
         glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(v));
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, const glm::vec3& v)
+    {
+        glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
+    }
+
+    inline void GLSLProgram::setUniform(const char* name, const glm::vec4& v)
+    {
+        glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
     inline void GLSLProgram::setUniform(const char* name, const glm::ivec2& v)
@@ -329,19 +432,9 @@ namespace glowl
         glUniform4iv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const char* name, const glm::vec3& v)
+    inline void GLSLProgram::setUniform(const char* name, const glm::mat2& m)
     {
-        glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
-    }
-
-    inline void GLSLProgram::setUniform(const char* name, const glm::vec4& v)
-    {
-        glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
-    }
-
-    inline void GLSLProgram::setUniform(const char* name, const glm::mat4& m)
-    {
-        glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
+        glUniformMatrix2fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
     inline void GLSLProgram::setUniform(const char* name, const glm::mat3& m)
@@ -349,24 +442,9 @@ namespace glowl
         glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    inline void GLSLProgram::setUniform(const char* name, int i)
+    inline void GLSLProgram::setUniform(const char* name, const glm::mat4& m)
     {
-        glUniform1i(getUniformLocation(name), i);
-    }
-
-    inline void GLSLProgram::setUniform(const char* name, unsigned int i)
-    {
-        glUniform1ui(getUniformLocation(name), i);
-    }
-
-    inline void GLSLProgram::setUniform(const char* name, float f)
-    {
-        glUniform1f(getUniformLocation(name), f);
-    }
-
-    inline void GLSLProgram::setUniform(const char* name, bool b)
-    {
-        glUniform1i(getUniformLocation(name), b);
+        glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
     inline GLuint GLSLProgram::getUniformLocation(const char* name)
