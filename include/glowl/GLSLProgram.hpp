@@ -76,7 +76,7 @@ namespace glowl
          * \param shaderType Shader type (e.g. GLSLProgam::VertexShader)
          * \return Returns true if shader was succefully compiled, false otherwise.
          */
-        bool compileShaderFromString(const std::string * const source, ShaderType shaderType);
+        bool compileShaderFromString(std::string const& source, ShaderType shaderType);
 
         /**
          * \brief Links program
@@ -170,17 +170,17 @@ namespace glowl
         return glGetUniformLocation(m_handle, name);
     }
 
-    inline bool GLSLProgram::compileShaderFromString(const std::string * const source, ShaderType shaderType)
+    inline bool GLSLProgram::compileShaderFromString(std::string const& source, ShaderType shaderType)
     {
         /* Check if the source is empty */
-        if (source->empty())
+        if (source.empty())
         {
             m_shaderlog = "No shader source.";
             return false;
         }
 
         /* Create shader object */
-        const GLchar* c_source = source->c_str();
+        const GLchar* c_source = source.c_str();
         GLuint shader = glCreateShader(shaderType);
         glShaderSource(shader, 1, &c_source, NULL);
 
