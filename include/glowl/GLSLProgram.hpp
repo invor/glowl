@@ -41,20 +41,6 @@ namespace glowl
             FragmentShader         = GL_FRAGMENT_SHADER, 
             ComputeShader          = GL_COMPUTE_SHADER};
 
-    private:
-        /** OpenGL program handle */
-        GLuint      m_handle;
-        /** Keeps track of link status */
-        bool        m_link_status;
-        /** Keeps track if a compute shader was attached to progam */
-        bool        m_compute_shader;
-        /** Log with all outputs from program and shader generation */
-        std::string m_shaderlog;
-        /** An optional label string that is used as glObjectLabel in debug */
-        std::string m_debug_label;
-
-        GLuint getUniformLocation(const char *name);
-    public:
         /**
         * \brief GLSLProgram constructor.
         *
@@ -135,6 +121,11 @@ namespace glowl
         void setUniform(const char* name, bool b);
 
         /**
+         * \brief Return the position of a uniform.
+         */
+        GLuint getUniformLocation(const char* name);
+
+        /**
          * \brief Prints a list if active shader uniforms to std outstream.
          */
         void printActiveUniforms();
@@ -153,6 +144,18 @@ namespace glowl
          * \brief Returns debug label string
          */
         std::string getDebugLabel() const;
+
+    private:
+        /** OpenGL program handle */
+        GLuint      m_handle;
+        /** Keeps track of link status */
+        bool        m_link_status;
+        /** Keeps track if a compute shader was attached to progam */
+        bool        m_compute_shader;
+        /** Log with all outputs from program and shader generation */
+        std::string m_shaderlog;
+        /** An optional label string that is used as glObjectLabel in debug */
+        std::string m_debug_label;
     };
 
     inline GLSLProgram::GLSLProgram() : m_link_status(false), m_compute_shader(false)
@@ -163,11 +166,6 @@ namespace glowl
     inline GLSLProgram::~GLSLProgram()
     {
         glDeleteProgram(m_handle);
-    }
-
-    inline GLuint GLSLProgram::getUniformLocation(const char* name)
-    {
-        return glGetUniformLocation(m_handle, name);
     }
 
     inline bool GLSLProgram::compileShaderFromString(std::string const& source, ShaderType shaderType)
@@ -371,6 +369,11 @@ namespace glowl
         glUniform1i(getUniformLocation(name), b);
     }
 
+    inline GLuint GLSLProgram::getUniformLocation(const char* name)
+    {
+        return glGetUniformLocation(m_handle, name);
+    }
+
     inline void GLSLProgram::printActiveUniforms()
     {
         GLint maxLength, nUniforms;
@@ -424,7 +427,6 @@ namespace glowl
     {
         return m_debug_label;
     }
-
 
 }
 
