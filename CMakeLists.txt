@@ -1,23 +1,36 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-project(glowl)
+project(glowl VERSION 0.4.0 LANGUAGES CXX)
 
-file(GLOB source_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/*.cpp")
-file(GLOB header_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "include/glowl/*.hpp")
+add_library(glowl INTERFACE)
+add_library(glowl::glowl ALIAS glowl)
 
-message(STATUS "SF: ${source_files}")
-message(STATUS "HF: ${header_files}")
+target_include_directories(glowl
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 
-add_library(${PROJECT_NAME} STATIC ${header_files} ${source_files})
+include(GNUInstallDirs)
 
-target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/glowl>)
-                                                
-install(FILES ${header_files} DESTINATION "include")
+install(DIRECTORY include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-if(WIN32)
-  install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "bin")
-  install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION "lib")
-else()
-  install(TARGETS ${PROJECT_NAME} DESTINATION "lib" EXPORT ${PROJECT_NAME}-target)
-endif()
+install(TARGETS glowl EXPORT glowlTargets)
+
+install(EXPORT glowlTargets
+  FILE glowlConfig.cmake
+  NAMESPACE glowl::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/glowl)
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/glowlConfigVersion.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY SameMinorVersion)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/glowlConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/glowl)
+
+export(TARGETS glowl NAMESPACE glowl:: FILE glowlConfig.cmake)
