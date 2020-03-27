@@ -172,15 +172,15 @@ namespace glowl
         m_ibo.bind();
 
         // TODO check if vertex buffer count matches attribute count, throw exception if not?
-        GLuint attrib_idx = 0;
-        for (auto& attribute : vertex_descriptor.attributes)
+        for (GLuint attrib_idx = 0; attrib_idx < static_cast<GLuint>(vertex_descriptor.attributes.size()); ++attrib_idx)
         {
+            auto const& attribute = vertex_descriptor.attributes[attrib_idx];
+            GLsizei attribute_stride = vertex_descriptor.strides.size() == 1 ? vertex_descriptor.strides.front() : vertex_descriptor.strides[attrib_idx];
+
             m_vbos[attrib_idx]->bind();
 
             glEnableVertexAttribArray(attrib_idx);
-            glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, vertex_descriptor.byte_size, reinterpret_cast<GLvoid*>(attribute.offset));
-
-            attrib_idx++;
+            glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, attribute_stride, reinterpret_cast<GLvoid*>(attribute.offset) );
         }
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -198,6 +198,11 @@ namespace glowl
             m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
             break;
         }
+
+        auto err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::cerr << "Error - Mesh - Construction: " << err << std::endl;
+        }
     }
 
     template<typename VertexContainer, typename IndexContainer>
@@ -212,6 +217,10 @@ namespace glowl
         m_vertex_descriptor(vertex_descriptor),
         m_va_handle(0), m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
     {
+        // Some sanity checks
+        // TODO check if vertex buffer count matches attribute count, throw exception if not?
+
+
         for (unsigned int i = 0; i < vertex_data.size(); ++i)
             m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
 
@@ -222,16 +231,15 @@ namespace glowl
 
         m_ibo.bind();
 
-        // TODO check if vertex buffer count matches attribute count, throw exception if not?
-        GLuint attrib_idx = 0;
-        for (auto& attribute : vertex_descriptor.attributes)
+        for(GLuint attrib_idx = 0; attrib_idx < static_cast<GLuint>(vertex_descriptor.attributes.size()); ++attrib_idx)
         {
+            auto const& attribute = vertex_descriptor.attributes[attrib_idx];
+            GLsizei attribute_stride = vertex_descriptor.strides.size() == 1 ? vertex_descriptor.strides.front() : vertex_descriptor.strides[attrib_idx];
+
             m_vbos[attrib_idx]->bind();
 
             glEnableVertexAttribArray(attrib_idx);
-            glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, vertex_descriptor.byte_size, (GLvoid*)attribute.offset);
-
-            attrib_idx++;
+            glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, attribute_stride, reinterpret_cast<GLvoid*>(attribute.offset) );
         }
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -249,6 +257,11 @@ namespace glowl
         case GL_UNSIGNED_BYTE:
             m_indices_cnt = static_cast<GLuint>(vi_size / 1);
             break;
+        }
+
+        auto err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::cerr << "Error - Mesh - Construction: " << err << std::endl;
         }
     }
 
