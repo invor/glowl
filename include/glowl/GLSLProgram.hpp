@@ -41,20 +41,6 @@ namespace glowl
             FragmentShader         = GL_FRAGMENT_SHADER, 
             ComputeShader          = GL_COMPUTE_SHADER};
 
-    private:
-        /** OpenGL program handle */
-        GLuint      m_handle;
-        /** Keeps track of link status */
-        bool        m_link_status;
-        /** Keeps track if a compute shader was attached to progam */
-        bool        m_compute_shader;
-        /** Log with all outputs from program and shader generation */
-        std::string m_shaderlog;
-        /** An optional label string that is used as glObjectLabel in debug */
-        std::string m_debug_label;
-
-        GLuint getUniformLocation(const char *name);
-    public:
         /**
         * \brief GLSLProgram constructor.
         *
@@ -113,26 +99,40 @@ namespace glowl
          * \brief Associate a vertex shader attribute variable with a specific vertex attribute index.
          * Useful if mesh vertex attribute order is different from order given in vertex shader.
          */
-        void bindAttribLocation(GLuint location, const char *name);
+        void bindAttribLocation(GLuint location, const GLchar* name);
 
         /**
          * \brief Associates a fragment shader output variable with a specific output index.
          * Ignored if output locations statically defined in shader.
          */
-        void bindFragDataLocation(GLuint location, const char *name);
+        void bindFragDataLocation(GLuint location, const char* name);
 
-        void setUniform(const char *name, const glm::vec2 &v);
-        void setUniform(const char *name, const glm::ivec2 &v);
-        void setUniform(const char *name, const glm::ivec3 &v);
-        void setUniform(const char *name, const glm::ivec4 &v);
-        void setUniform(const char *name, const glm::vec3 &v);
-        void setUniform(const char *name, const glm::vec4 &v);
-        void setUniform(const char *name, const glm::mat4 &m);
-        void setUniform(const char *name, const glm::mat3 &m);
-        void setUniform(const char *name, int i);
-        void setUniform(const char *name, unsigned int i);
-        void setUniform(const char *name, float f);
-        void setUniform(const char *name, bool b);
+        void setUniform(const GLchar* name, GLfloat v0);
+        void setUniform(const GLchar* name, GLfloat v0, GLfloat v1);
+        void setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2);
+        void setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+        void setUniform(const GLchar* name, GLint v0);
+        void setUniform(const GLchar* name, GLint v0, GLint v1);
+        void setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2);
+        void setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2, GLint v3);
+        void setUniform(const GLchar* name, GLuint v0);
+        void setUniform(const GLchar* name, GLuint v0, GLuint v1);
+        void setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2);
+        void setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
+        void setUniform(const GLchar* name, const glm::vec2& v);
+        void setUniform(const GLchar* name, const glm::vec3& v);
+        void setUniform(const GLchar* name, const glm::vec4& v);
+        void setUniform(const GLchar* name, const glm::ivec2& v);
+        void setUniform(const GLchar* name, const glm::ivec3& v);
+        void setUniform(const GLchar* name, const glm::ivec4& v);
+        void setUniform(const GLchar* name, const glm::mat2& m);
+        void setUniform(const GLchar* name, const glm::mat3& m);
+        void setUniform(const GLchar* name, const glm::mat4& m);
+
+        /**
+         * \brief Return the position of a uniform.
+         */
+        GLuint getUniformLocation(const GLchar* name);
 
         /**
          * \brief Prints a list if active shader uniforms to std outstream.
@@ -153,6 +153,18 @@ namespace glowl
          * \brief Returns debug label string
          */
         std::string getDebugLabel() const;
+
+    private:
+        /** OpenGL program handle */
+        GLuint      m_handle;
+        /** Keeps track of link status */
+        bool        m_link_status;
+        /** Keeps track if a compute shader was attached to progam */
+        bool        m_compute_shader;
+        /** Log with all outputs from program and shader generation */
+        std::string m_shaderlog;
+        /** An optional label string that is used as glObjectLabel in debug */
+        std::string m_debug_label;
     };
 
     inline GLSLProgram::GLSLProgram() : m_link_status(false), m_compute_shader(false)
@@ -163,11 +175,6 @@ namespace glowl
     inline GLSLProgram::~GLSLProgram()
     {
         glDeleteProgram(m_handle);
-    }
-
-    inline GLuint GLSLProgram::getUniformLocation(const char *name)
-    {
-        return glGetUniformLocation(m_handle, name);
     }
 
     inline bool GLSLProgram::compileShaderFromString(std::string const& source, ShaderType shaderType)
@@ -199,7 +206,7 @@ namespace glowl
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
             if (logLen > 0)
             {
-                char *log = new char[logLen];
+                char* log = new char[logLen];
                 GLsizei written;
                 glGetShaderInfoLog(shader, logLen, &written, log);
                 m_shaderlog = log;
@@ -215,7 +222,7 @@ namespace glowl
         //	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
         //	if(logLen > 0)
         //	{
-        //		char *log = new char[logLen];
+        //		char* log = new char[logLen];
         //		GLsizei written;
         //		glGetShaderInfoLog(shader, logLen, &written, log);
         //		m_shaderlog = log;
@@ -246,7 +253,7 @@ namespace glowl
             glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLen);
             if (logLen > 0)
             {
-                char *log = new char[logLen];
+                char* log = new char[logLen];
                 GLsizei written;
                 glGetProgramInfoLog(m_handle, logLen, &written, log);
                 m_shaderlog.append(log);
@@ -260,7 +267,7 @@ namespace glowl
         //	glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLen);
         //	if(logLen > 0)
         //	{
-        //		char *log = new char[logLen];
+        //		char* log = new char[logLen];
         //		GLsizei written;
         //		glGetProgramInfoLog(m_handle, logLen, &written, log);
         //		m_shaderlog = log;
@@ -301,74 +308,124 @@ namespace glowl
         return m_compute_shader;
     }
 
-    inline void GLSLProgram::bindAttribLocation(GLuint location, const char *name)
+    inline void GLSLProgram::bindAttribLocation(GLuint location, const GLchar* name)
     {
         glBindAttribLocation(m_handle, location, name);
     }
 
-    inline void GLSLProgram::bindFragDataLocation(GLuint location, const char *name)
+    inline void GLSLProgram::bindFragDataLocation(GLuint location, const char* name)
     {
         glBindFragDataLocation(m_handle, location, name);
     }
 
-    inline void GLSLProgram::setUniform(const char *name, const glm::vec2 &v)
+    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0)
+    {
+        glUniform1f(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0, GLfloat v1)
+    {
+        glUniform2f(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2)
+    {
+        glUniform3f(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+    {
+        glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0)
+    {
+        glUniform1i(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0, GLint v1)
+    {
+        glUniform2i(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2)
+    {
+        glUniform3i(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2, GLint v3)
+    {
+        glUniform4i(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0)
+    {
+        glUniform1ui(getUniformLocation(name), v0);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0, GLuint v1)
+    {
+        glUniform2ui(getUniformLocation(name), v0, v1);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2)
+    {
+        glUniform3ui(getUniformLocation(name), v0, v1, v2);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3)
+    {
+        glUniform4ui(getUniformLocation(name), v0, v1, v2, v3);
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::vec2& v)
     {
         glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const char *name, const glm::ivec2 &v)
-    {
-        glUniform2iv(getUniformLocation(name), 1, glm::value_ptr(v));
-    }
-
-    inline void GLSLProgram::setUniform(const char *name, const glm::ivec3 &v)
-    {
-        glUniform3iv(getUniformLocation(name), 1, glm::value_ptr(v));
-    }
-
-    inline void GLSLProgram::setUniform(const char *name, const glm::ivec4 &v)
-    {
-        glUniform4iv(getUniformLocation(name), 1, glm::value_ptr(v));
-    }
-
-    inline void GLSLProgram::setUniform(const char *name, const glm::vec3 &v)
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::vec3& v)
     {
         glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const char *name, const glm::vec4 &v)
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::vec4& v)
     {
         glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const char *name, const glm::mat4 &m)
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::ivec2& v)
     {
-        glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
+        glUniform2iv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const char *name, const glm::mat3 &m)
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::ivec3& v)
+    {
+        glUniform3iv(getUniformLocation(name), 1, glm::value_ptr(v));
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::ivec4& v)
+    {
+        glUniform4iv(getUniformLocation(name), 1, glm::value_ptr(v));
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::mat2& m)
+    {
+        glUniformMatrix2fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
+    }
+
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::mat3& m)
     {
         glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    inline void GLSLProgram::setUniform(const char *name, int i)
+    inline void GLSLProgram::setUniform(const GLchar* name, const glm::mat4& m)
     {
-        glUniform1i(getUniformLocation(name), i);
+        glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    inline void GLSLProgram::setUniform(const char *name, unsigned int i)
+    inline GLuint GLSLProgram::getUniformLocation(const GLchar* name)
     {
-        glUniform1ui(getUniformLocation(name), i);
-    }
-
-    inline void GLSLProgram::setUniform(const char *name, float f)
-    {
-        glUniform1f(getUniformLocation(name), f);
-    }
-
-    inline void GLSLProgram::setUniform(const char *name, bool b)
-    {
-        glUniform1i(getUniformLocation(name), b);
+        return glGetUniformLocation(m_handle, name);
     }
 
     inline void GLSLProgram::printActiveUniforms()
@@ -377,7 +434,7 @@ namespace glowl
         glGetProgramiv(m_handle, GL_ACTIVE_UNIFORMS, &nUniforms);
         glGetProgramiv(m_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength);
 
-        GLchar * attributeName = (GLchar *) new char[maxLength];
+        GLchar* attributeName = (GLchar*) new char[maxLength];
 
         GLint size, location;
         GLsizei written;
@@ -398,7 +455,7 @@ namespace glowl
         glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTES, &nAttributes);
         glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength);
 
-        GLchar * attributeName = (GLchar *) new char[maxLength];
+        GLchar* attributeName = (GLchar*) new char[maxLength];
 
         GLint written, size, location;
         GLenum type;
@@ -424,7 +481,6 @@ namespace glowl
     {
         return m_debug_label;
     }
-
 
 }
 
