@@ -219,11 +219,15 @@ namespace glowl
 
         // set attribute pointer and vao state
         glBindVertexArray(m_va_handle);
+
         m_ibo.bind();
-        m_vbos.back()->bind();
+
+        // TODO check if vertex buffer count matches attribute count, throw exception if not?
         GLuint attrib_idx = 0;
         for (auto& attribute : vertex_descriptor.attributes)
         {
+            m_vbos[attrib_idx]->bind();
+
             glEnableVertexAttribArray(attrib_idx);
             glVertexAttribPointer(attrib_idx, attribute.size, attribute.type, attribute.normalized, vertex_descriptor.byte_size, (GLvoid*)attribute.offset);
 
