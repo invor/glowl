@@ -19,7 +19,7 @@ namespace glowl
     struct TextureLayout
     {
         TextureLayout()
-            : width(0), internal_format(0), height(0), depth(0), format(0), type(0), levels(0) {}
+            : internal_format(0), width(0), height(0), depth(0), format(0), type(0), levels(0) {}
         /**
          * \param internal_format Specifies the (sized) internal format of a texture (e.g. GL_RGBA32F)
          * \param width Specifies the width of the texture in pixels.
