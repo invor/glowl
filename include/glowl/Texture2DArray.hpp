@@ -100,7 +100,9 @@ namespace glowl
             glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
         }
 
+#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         m_texture_handle = glGetTextureHandleARB(m_name);
+#endif
 
         glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
