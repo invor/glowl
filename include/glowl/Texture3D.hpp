@@ -96,7 +96,9 @@ namespace glowl
 
         glBindTexture(GL_TEXTURE_3D, 0);
 
+#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         m_texture_handle = glGetTextureHandleARB(m_name);
+#endif
 
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)

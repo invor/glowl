@@ -72,7 +72,9 @@ namespace glowl
         std::string m_id;               ///< Identifier set by application to help identifying textures
 
         GLuint      m_name;             ///< OpenGL texture name given by glGenTextures
+#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         GLuint64    m_texture_handle;   ///< Actual OpenGL texture handle (used for bindless)
+#endif
 
         GLenum      m_internal_format;
         GLenum      m_format;
@@ -101,8 +103,10 @@ namespace glowl
             glBindImageTexture(location, m_name, 0, GL_TRUE, 0, access, m_internal_format);
         }
 
+#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         void makeResident() { glMakeTextureHandleResidentARB(m_texture_handle); }
         void makeNonResident() { glMakeTextureHandleNonResidentARB(m_texture_handle); }
+#endif
 
         virtual void updateMipmaps() = 0;
 
@@ -111,10 +115,12 @@ namespace glowl
         std::string getId() const { return m_id; }
 
         GLuint getName() const { return m_name; }
+#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         GLuint64 getTextureHandle() const { return m_texture_handle; }
         GLuint64 getImageHandle(GLint level, GLboolean layered, GLint layer) const {
             return glGetImageHandleARB(m_name, level, layered, layer, m_internal_format);
         }
+#endif
 
         GLenum getInternalFormat() const { return m_internal_format; }
         GLenum getFormat() const { return m_format; }
