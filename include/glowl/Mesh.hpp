@@ -157,9 +157,9 @@ namespace glowl
         GLenum const                  indices_type,
         GLenum const                  usage,
         GLenum const                  primitive_type)
-        : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
+        : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage), m_va_handle(0),
         m_vertex_descriptor(vertex_descriptor),
-        m_va_handle(0), m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
+        m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
     {
         for (unsigned int i = 0; i < vertex_data.size(); ++i)
             m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
@@ -214,8 +214,9 @@ namespace glowl
         GLenum                              usage,
         GLenum                              primitive_type)
         : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, usage), //TODO ibo generation in constructor might fail? needs a bound vao?
+        m_va_handle(0),
         m_vertex_descriptor(vertex_descriptor),
-        m_va_handle(0), m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
+        m_indices_cnt(0), m_index_type(indices_type), m_usage(usage), m_primitive_type(primitive_type)
     {
         // Some sanity checks
         // TODO check if vertex buffer count matches attribute count, throw exception if not?
