@@ -327,8 +327,7 @@ namespace glowl
 
     inline bool FramebufferObject::checkStatus() const
     {
-        if (glCheckFramebufferStatus(m_handle) == GL_FRAMEBUFFER_COMPLETE) return true;
-        return false;
+        return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
     }
 
     inline void FramebufferObject::resize(int new_width, int new_height)
