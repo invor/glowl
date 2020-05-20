@@ -214,7 +214,7 @@ namespace glowl
             if (info_log_length > 0) {
                 std::vector<GLchar> info_log(info_log_length);
                 GLsizei chars_written;
-                glGetShaderInfo_log(shader, info_log_length, &chars_written, info_log.data());
+                glGetShaderInfoLog(shader, info_log_length, &chars_written, info_log.data());
                 std::string info_log_str(info_log.data());
                 m_shader_log.append(info_log_str);
             }
@@ -245,7 +245,7 @@ namespace glowl
             if (info_log_length > 0) {
                 std::vector<GLchar> info_log(info_log_length);
                 GLsizei chars_written;
-                glGetProgramInfo_log(m_handle, info_log_length, &chars_written, info_log.data());
+                glGetProgramInfoLog(m_handle, info_log_length, &chars_written, info_log.data());
                 std::string info_log_str(info_log.data());
                 m_shader_log.append(info_log_str);
             }
