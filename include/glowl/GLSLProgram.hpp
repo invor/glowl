@@ -156,19 +156,19 @@ namespace glowl
         /** Keeps track if a compute shader was attached to progam */
         bool        m_compute_shader;
         /** Log with all outputs from program and shader generation */
-        std::string m_shaderlog;
+        std::string m_shader_log;
         /** An optional label string that is used as glObjectLabel in debug */
         std::string m_debug_label;
     };
 
-    inline GLSLProgram::GLSLProgram(std::vector<std::pair<GLSLProgram::ShaderType, std::string>> const& shaders, bool verbose) : m_compute_shader(false), m_shaderlog("")
+    inline GLSLProgram::GLSLProgram(std::vector<std::pair<GLSLProgram::ShaderType, std::string>> const& shaders, bool verbose) : m_compute_shader(false), m_shader_log("")
     {
         m_handle = glCreateProgram();
 
         for (auto const& shader : shaders) {
             if (!compileShaderFromString(shader.second, shader.first)) {
                 if (verbose) {
-                    std::cerr << m_shaderlog << std::endl;
+                    std::cerr << m_shader_log << std::endl;
                 }
                 throw std::runtime_error("Error compiling shader!");
             }
@@ -176,7 +176,7 @@ namespace glowl
 
         if (!link()) {
             if (verbose) {
-                std::cerr << m_shaderlog << std::endl;
+                std::cerr << m_shader_log << std::endl;
             }
             throw std::runtime_error("Error linking shader program!");
         }
@@ -191,7 +191,7 @@ namespace glowl
     {
         /* Check if the source is empty */
         if (source.empty()) {
-            m_shaderlog = "No shader source.";
+            m_shader_log = "No shader source.";
             return false;
         }
 
@@ -206,17 +206,17 @@ namespace glowl
         glCompileShader(shader);
 
         /* Check for errors */
-        GLint compileStatus = GL_FALSE;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-        if (compileStatus == GL_FALSE) {
-            GLint infoLogLength = 0;
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-            if (infoLogLength > 0) {
-                std::vector<GLchar> infoLog(infoLogLength);
-                GLsizei charsWritten;
-                glGetShaderInfoLog(shader, infoLogLength, &charsWritten, infoLog.data());
-                std::string infoLogStr(infoLog.data());
-                m_shaderlog.append(infoLogStr);
+        GLint compile_status = GL_FALSE;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
+        if (compile_status == GL_FALSE) {
+            GLint info_log_length = 0;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
+            if (info_log_length > 0) {
+                std::vector<GLchar> info_log(info_log_length);
+                GLsizei chars_written;
+                glGetShaderInfo_log(shader, info_log_length, &chars_written, info_log.data());
+                std::string info_log_str(info_log.data());
+                m_shader_log.append(info_log_str);
             }
 
             glDeleteShader(shader);
@@ -237,17 +237,17 @@ namespace glowl
     {
         glLinkProgram(m_handle);
 
-        GLint linkStatus = GL_FALSE;
-        glGetProgramiv(m_handle, GL_LINK_STATUS, &linkStatus);
-        if (linkStatus == GL_FALSE) {
-            GLint infoLogLength = 0;
-            glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &infoLogLength);
-            if (infoLogLength > 0) {
-                std::vector<GLchar> infoLog(infoLogLength);
-                GLsizei charsWritten;
-                glGetProgramInfoLog(m_handle, infoLogLength, &charsWritten, infoLog.data());
-                std::string infoLogStr(infoLog.data());
-                m_shaderlog.append(infoLogStr);
+        GLint link_status = GL_FALSE;
+        glGetProgramiv(m_handle, GL_LINK_STATUS, &link_status);
+        if (link_status == GL_FALSE) {
+            GLint info_log_length = 0;
+            glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &info_log_length);
+            if (info_log_length > 0) {
+                std::vector<GLchar> info_log(info_log_length);
+                GLsizei chars_written;
+                glGetProgramInfo_log(m_handle, info_log_length, &chars_written, info_log.data());
+                std::string info_log_str(info_log.data());
+                m_shader_log.append(info_log_str);
             }
             return false;
         }
@@ -263,7 +263,7 @@ namespace glowl
 
     inline std::string const& GLSLProgram::getLog()
     {
-        return m_shaderlog;
+        return m_shader_log;
     }
 
     inline GLuint GLSLProgram::getHandle()
@@ -398,43 +398,43 @@ namespace glowl
 
     inline void GLSLProgram::printActiveUniforms()
     {
-        GLint maxLength, nUniforms;
-        glGetProgramiv(m_handle, GL_ACTIVE_UNIFORMS, &nUniforms);
-        glGetProgramiv(m_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength);
+        GLint max_length, uniform_cnt;
+        glGetProgramiv(m_handle, GL_ACTIVE_UNIFORMS, &uniform_cnt);
+        glGetProgramiv(m_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_length);
 
-        GLchar* attributeName = (GLchar*) new char[maxLength];
+        GLchar* attribute_name = (GLchar*) new char[max_length];
 
         GLint size, location;
         GLsizei written;
         GLenum type;
 
-        for (int i = 0; i < nUniforms; i++)
+        for (int i = 0; i < uniform_cnt; i++)
         {
-            glGetActiveUniform(m_handle, i, maxLength, &written, &size, &type, attributeName);
-            location = glGetUniformLocation(m_handle, attributeName);
-            std::cout << location << " - " << attributeName << "\n";
+            glGetActiveUniform(m_handle, i, max_length, &written, &size, &type, attribute_name);
+            location = glGetUniformLocation(m_handle, attribute_name);
+            std::cout << location << " - " << attribute_name << "\n";
         }
-        delete[] attributeName;
+        delete[] attribute_name;
     }
 
     inline void GLSLProgram::printActiveAttributes()
     {
-        GLint maxLength, nAttributes;
-        glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTES, &nAttributes);
-        glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength);
+        GLint max_length, attribute_cnt;
+        glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTES, &attribute_cnt);
+        glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_length);
 
-        GLchar* attributeName = (GLchar*) new char[maxLength];
+        GLchar* attribute_name = (GLchar*) new char[max_length];
 
         GLint written, size, location;
         GLenum type;
 
-        for (int i = 0; i < nAttributes; i++)
+        for (int i = 0; i < attribute_cnt; i++)
         {
-            glGetActiveAttrib(m_handle, i, maxLength, &written, &size, &type, attributeName);
-            location = glGetAttribLocation(m_handle, attributeName);
-            std::cout << location << " - " << attributeName << "\n";
+            glGetActiveAttrib(m_handle, i, max_length, &written, &size, &type, attribute_name);
+            location = glGetAttribLocation(m_handle, attribute_name);
+            std::cout << location << " - " << attribute_name << "\n";
         }
-        delete[] attributeName;
+        delete[] attribute_name;
     }
 
     inline void GLSLProgram::setDebugLabel(const std::string & debug_label)
