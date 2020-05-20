@@ -63,8 +63,6 @@ namespace glowl
         GLuint numlayers)
         :Texture(id, layout.internal_format, layout.format, layout.type, layout.levels)
     {
-        glGenTextures(1, &m_name);
-
         glBindTexture(GL_TEXTURE_3D, m_name);
 
         for (auto& pname_pvalue : layout.int_parameters) {

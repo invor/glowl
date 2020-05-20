@@ -76,8 +76,6 @@ namespace glowl
         m_height(layout.height),
         m_depth(layout.depth)
     {
-        glGenTextures(1, &m_name);
-
         glBindTexture(GL_TEXTURE_3D, m_name);
 
         for (auto& pname_pvalue : layout.int_parameters) {

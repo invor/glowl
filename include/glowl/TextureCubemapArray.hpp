@@ -86,9 +86,6 @@ namespace glowl
         bool generateMipmap)
         : Texture(id, internal_format, format, type, levels), m_width(width), m_height(height), m_layers(layers)
     {
-        glGenTextures(1, &m_name);
-        assert(m_name > 0);
-
         glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_name);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

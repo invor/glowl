@@ -74,8 +74,6 @@ namespace glowl
     inline Texture2D::Texture2D(std::string id, TextureLayout const& layout, GLvoid * data, bool generateMipmap)
         :Texture(id, layout.internal_format, layout.format, layout.type, layout.levels), m_width(layout.width), m_height(layout.height)
     {
-        glGenTextures(1, &m_name);
-
         glBindTexture(GL_TEXTURE_2D, m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)

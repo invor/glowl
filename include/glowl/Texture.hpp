@@ -93,7 +93,7 @@ namespace glowl
             m_internal_format(internal_format),
             m_format(format),
             m_type(type),
-            m_levels(levels) {}
+            m_levels(levels) { glGenTextures(1, &m_name); }
         virtual ~Texture() { glDeleteTextures(1, &m_name); }
         Texture(const Texture &) = delete;
 
