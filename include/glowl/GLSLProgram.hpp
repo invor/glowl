@@ -12,42 +12,45 @@
 #include <vector>
 
 #include <glad/glad.h>
- //	OpenGL Math Library
+//	OpenGL Math Library
 #include <glm/glm.hpp>
-#include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/vec3.hpp>
 
 #include <string>
-
 
 namespace glowl
 {
 
     /**
-    * \class GLSLProgram
-    *
-    * \brief Encapsulates shader program functionality. Possibly somewhat outdated.
-    *
-    * \author Michael Becher
-    */
+     * \class GLSLProgram
+     *
+     * \brief Encapsulates shader program functionality. Possibly somewhat outdated.
+     *
+     * \author Michael Becher
+     */
     class GLSLProgram
     {
     public:
-        enum ShaderType { 
-            VertexShader           = GL_VERTEX_SHADER, 
+        enum ShaderType
+        {
+            // clang-format off
+            VertexShader           = GL_VERTEX_SHADER,
             TessellationControl    = GL_TESS_CONTROL_SHADER,
             TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
-            GeometryShader         = GL_GEOMETRY_SHADER, 
-            FragmentShader         = GL_FRAGMENT_SHADER, 
-            ComputeShader          = GL_COMPUTE_SHADER};
+            GeometryShader         = GL_GEOMETRY_SHADER,
+            FragmentShader         = GL_FRAGMENT_SHADER,
+            ComputeShader          = GL_COMPUTE_SHADER
+            // clang-format on
+        };
 
         /**
-        * \brief GLSLProgram constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
+         * \brief GLSLProgram constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
         GLSLProgram(std::vector<std::pair<GLSLProgram::ShaderType, std::string>> const& shaders, bool verbose = false);
         ~GLSLProgram();
 
@@ -73,7 +76,8 @@ namespace glowl
         GLuint getHandle();
 
         /**
-         * \brief Allows to check whether a compute shader is attached to program for sanity check before calling glDispatchCompute
+         * \brief Allows to check whether a compute shader is attached to program for sanity check before calling
+         * glDispatchCompute
          */
         bool hasComputeShader();
 
@@ -152,30 +156,37 @@ namespace glowl
         bool link();
 
         /** OpenGL program handle */
-        GLuint      m_handle;
+        GLuint m_handle;
         /** Keeps track if a compute shader was attached to progam */
-        bool        m_compute_shader;
+        bool m_compute_shader;
         /** Log with all outputs from program and shader generation */
         std::string m_shader_log;
         /** An optional label string that is used as glObjectLabel in debug */
         std::string m_debug_label;
     };
 
-    inline GLSLProgram::GLSLProgram(std::vector<std::pair<GLSLProgram::ShaderType, std::string>> const& shaders, bool verbose) : m_compute_shader(false), m_shader_log("")
+    inline GLSLProgram::GLSLProgram(std::vector<std::pair<GLSLProgram::ShaderType, std::string>> const& shaders,
+                                    bool                                                                verbose)
+        : m_compute_shader(false), m_shader_log("")
     {
         m_handle = glCreateProgram();
 
-        for (auto const& shader : shaders) {
-            if (!compileShaderFromString(shader.second, shader.first)) {
-                if (verbose) {
+        for (auto const& shader : shaders)
+        {
+            if (!compileShaderFromString(shader.second, shader.first))
+            {
+                if (verbose)
+                {
                     std::cerr << m_shader_log << std::endl;
                 }
                 throw std::runtime_error("Error compiling shader!");
             }
         }
 
-        if (!link()) {
-            if (verbose) {
+        if (!link())
+        {
+            if (verbose)
+            {
                 std::cerr << m_shader_log << std::endl;
             }
             throw std::runtime_error("Error linking shader program!");
@@ -190,17 +201,19 @@ namespace glowl
     inline bool GLSLProgram::compileShaderFromString(std::string const& source, ShaderType shaderType)
     {
         /* Check if the source is empty */
-        if (source.empty()) {
+        if (source.empty())
+        {
             m_shader_log = "No shader source.";
             return false;
         }
 
         /* Create shader object */
         const GLchar* c_source = source.c_str();
-        GLuint shader = glCreateShader(shaderType);
+        GLuint        shader = glCreateShader(shaderType);
         glShaderSource(shader, 1, &c_source, NULL);
 
-        if (shaderType == GL_COMPUTE_SHADER) m_compute_shader = true;
+        if (shaderType == GL_COMPUTE_SHADER)
+            m_compute_shader = true;
 
         /* Compile shader */
         glCompileShader(shader);
@@ -208,12 +221,14 @@ namespace glowl
         /* Check for errors */
         GLint compile_status = GL_FALSE;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
-        if (compile_status == GL_FALSE) {
+        if (compile_status == GL_FALSE)
+        {
             GLint info_log_length = 0;
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
-            if (info_log_length > 0) {
+            if (info_log_length > 0)
+            {
                 std::vector<GLchar> info_log(info_log_length);
-                GLsizei chars_written;
+                GLsizei             chars_written;
                 glGetShaderInfoLog(shader, info_log_length, &chars_written, info_log.data());
                 std::string info_log_str(info_log.data());
                 m_shader_log.append(info_log_str);
@@ -239,12 +254,14 @@ namespace glowl
 
         GLint link_status = GL_FALSE;
         glGetProgramiv(m_handle, GL_LINK_STATUS, &link_status);
-        if (link_status == GL_FALSE) {
+        if (link_status == GL_FALSE)
+        {
             GLint info_log_length = 0;
             glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &info_log_length);
-            if (info_log_length > 0) {
+            if (info_log_length > 0)
+            {
                 std::vector<GLchar> info_log(info_log_length);
-                GLsizei chars_written;
+                GLsizei             chars_written;
                 glGetProgramInfoLog(m_handle, info_log_length, &chars_written, info_log.data());
                 std::string info_log_str(info_log.data());
                 m_shader_log.append(info_log_str);
@@ -404,9 +421,9 @@ namespace glowl
 
         GLchar* attribute_name = (GLchar*) new char[max_length];
 
-        GLint size, location;
+        GLint   size, location;
         GLsizei written;
-        GLenum type;
+        GLenum  type;
 
         for (int i = 0; i < uniform_cnt; i++)
         {
@@ -425,7 +442,7 @@ namespace glowl
 
         GLchar* attribute_name = (GLchar*) new char[max_length];
 
-        GLint written, size, location;
+        GLint  written, size, location;
         GLenum type;
 
         for (int i = 0; i < attribute_cnt; i++)
@@ -437,7 +454,7 @@ namespace glowl
         delete[] attribute_name;
     }
 
-    inline void GLSLProgram::setDebugLabel(const std::string & debug_label)
+    inline void GLSLProgram::setDebugLabel(const std::string& debug_label)
     {
         m_debug_label = debug_label;
 #if _DEBUG
@@ -450,6 +467,6 @@ namespace glowl
         return m_debug_label;
     }
 
-}
+} // namespace glowl
 
 #endif // !GLSLProgram_hpp

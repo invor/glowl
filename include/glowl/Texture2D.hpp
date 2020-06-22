@@ -9,8 +9,8 @@
 #define Texture2D_hpp
 
 #include <algorithm>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 #include "Texture.hpp"
 
@@ -18,47 +18,47 @@ namespace glowl
 {
 
     /**
-    * \class Texture2D
-    *
-    * \brief Encapsulates 2D texture functionality.
-    *
-    * \author Michael Becher
-    */
+     * \class Texture2D
+     *
+     * \brief Encapsulates 2D texture functionality.
+     *
+     * \author Michael Becher
+     */
     class Texture2D : public Texture
     {
     public:
         /**
-        * \brief Constructor that creates and loads a 2D texture.
-        *
-        * \param id A identifier given to the texture object
-        * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
-        * \param data Pointer to the actual texture data.
-        * \param generateMipmap Specifies whether a mipmap will be created for the texture
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
-        Texture2D(std::string id, TextureLayout const& layout, GLvoid * data, bool generateMipmap = false);
+         * \brief Constructor that creates and loads a 2D texture.
+         *
+         * \param id A identifier given to the texture object
+         * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
+         * \param data Pointer to the actual texture data.
+         * \param generateMipmap Specifies whether a mipmap will be created for the texture
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        Texture2D(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap = false);
         Texture2D(const Texture2D&) = delete;
         Texture2D(Texture2D&& other) = delete;
         Texture2D& operator=(const Texture2D& rhs) = delete;
         Texture2D& operator=(Texture2D&& rhs) = delete;
 
         /**
-        * \brief Bind the texture.
-        */
+         * \brief Bind the texture.
+         */
         void bindTexture() const;
 
         void updateMipmaps();
 
         /**
-        * \brief Reload the texture with any new format, type and size.
-        *
-        * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
-        * \param data Pointer to the actual texture data.
-        * \param generateMipmap Specifies whether a mipmap will be created for the texture
-        */
-        void reload(TextureLayout const& layout, GLvoid * data, bool generateMipmap = false);
+         * \brief Reload the texture with any new format, type and size.
+         *
+         * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
+         * \param data Pointer to the actual texture data.
+         * \param generateMipmap Specifies whether a mipmap will be created for the texture
+         */
+        void reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap = false);
 
         TextureLayout getTextureLayout() const;
 
@@ -71,30 +71,35 @@ namespace glowl
         unsigned int m_height;
     };
 
-    inline Texture2D::Texture2D(std::string id, TextureLayout const& layout, GLvoid * data, bool generateMipmap)
-        :Texture(id, layout.internal_format, layout.format, layout.type, layout.levels), m_width(layout.width), m_height(layout.height)
+    inline Texture2D::Texture2D(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap)
+        : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
+          m_width(layout.width),
+          m_height(layout.height)
     {
         glBindTexture(GL_TEXTURE_2D, m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)
             glTexParameteri(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
 
-        //for (auto& pname_pvalue : layout.float_parameters)
+        // for (auto& pname_pvalue : layout.float_parameters)
         //	glTexParameterf(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
 
         GLsizei levels = 1;
 
-        if (generateMipmap) {
+        if (generateMipmap)
+        {
             levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
         glTexStorage2D(GL_TEXTURE_2D, levels, m_internal_format, m_width, m_height);
 
-        if (data != nullptr) {
+        if (data != nullptr)
+        {
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, m_type, data);
         }
 
-        if (generateMipmap) {
+        if (generateMipmap)
+        {
             glGenerateMipmap(GL_TEXTURE_2D);
         }
 
@@ -124,7 +129,7 @@ namespace glowl
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    inline void Texture2D::reload(TextureLayout const& layout, GLvoid * data, bool generateMipmap)
+    inline void Texture2D::reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -146,17 +151,20 @@ namespace glowl
 
         GLsizei levels = 1;
 
-        if (generateMipmap) {
+        if (generateMipmap)
+        {
             levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
         glTexStorage2D(GL_TEXTURE_2D, levels, m_internal_format, m_width, m_height);
 
-        if (data != nullptr) {
+        if (data != nullptr)
+        {
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, m_type, data);
         }
 
-        if (generateMipmap) {
+        if (generateMipmap)
+        {
             glGenerateMipmap(GL_TEXTURE_2D);
         }
 
@@ -185,6 +193,6 @@ namespace glowl
         return m_height;
     }
 
-}
+} // namespace glowl
 
 #endif // !Texture2D_hpp

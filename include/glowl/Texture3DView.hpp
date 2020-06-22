@@ -15,28 +15,28 @@ namespace glowl
 {
 
     /**
-    * \class TextureCubemapArray
-    *
-    * \brief Encapsulates 3D texture view functionality.
-    *
-    * \author Michael Becher
-    */
+     * \class TextureCubemapArray
+     *
+     * \brief Encapsulates 3D texture view functionality.
+     *
+     * \author Michael Becher
+     */
     class Texture3DView : public Texture
     {
     public:
         /**
-        * \brief Texture3DView constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
-        Texture3DView(std::string id,
-            Texture3D const& source_texture,
-            TextureLayout const& layout,
-            GLuint minlevel,
-            GLuint numlevels,
-            GLuint minlayer,
-            GLuint numlayers);
+         * \brief Texture3DView constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        Texture3DView(std::string          id,
+                      Texture3D const&     source_texture,
+                      TextureLayout const& layout,
+                      GLuint               minlevel,
+                      GLuint               numlevels,
+                      GLuint               minlayer,
+                      GLuint               numlayers);
 
         void bindTexture() const;
 
@@ -54,26 +54,35 @@ namespace glowl
         unsigned int m_depth;
     };
 
-    inline Texture3DView::Texture3DView(std::string id,
-        Texture3D const& source_texture,
-        TextureLayout const& layout,
-        GLuint minlevel,
-        GLuint numlevels,
-        GLuint minlayer,
-        GLuint numlayers)
-        :Texture(id, layout.internal_format, layout.format, layout.type, layout.levels)
+    inline Texture3DView::Texture3DView(std::string          id,
+                                        Texture3D const&     source_texture,
+                                        TextureLayout const& layout,
+                                        GLuint               minlevel,
+                                        GLuint               numlevels,
+                                        GLuint               minlayer,
+                                        GLuint               numlayers)
+        : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels)
     {
         glBindTexture(GL_TEXTURE_3D, m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
         }
 
-        glTextureView(m_name, GL_TEXTURE_3D, source_texture.getName(), m_internal_format, minlevel, numlevels, minlayer, numlayers);
+        glTextureView(m_name,
+                      GL_TEXTURE_3D,
+                      source_texture.getName(),
+                      m_internal_format,
+                      minlevel,
+                      numlevels,
+                      minlayer,
+                      numlayers);
 
         glBindTexture(GL_TEXTURE_3D, 0);
 
@@ -115,6 +124,6 @@ namespace glowl
         return m_depth;
     }
 
-}
+} // namespace glowl
 
 #endif // !Texture3DView_hpp

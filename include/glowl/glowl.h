@@ -8,8 +8,8 @@
 #include "Texture.hpp"
 #include "Texture2D.hpp"
 #include "Texture2DArray.hpp"
-#include "TextureCubemapArray.hpp"
 #include "Texture3D.hpp"
+#include "TextureCubemapArray.hpp"
 #include "VertexLayout.hpp"
 
 #endif

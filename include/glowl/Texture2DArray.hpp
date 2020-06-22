@@ -9,8 +9,8 @@
 #define Texture2DArray_hpp
 
 #include <algorithm>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 #include "Texture.hpp"
 
@@ -18,26 +18,24 @@ namespace glowl
 {
 
     /**
-    * \class Texture2DArray
-    *
-    * \brief Encapsulates 2D texture array functionality.
-    *
-    * \author Michael Becher
-    */
+     * \class Texture2DArray
+     *
+     * \brief Encapsulates 2D texture array functionality.
+     *
+     * \author Michael Becher
+     */
     class Texture2DArray : public Texture
     {
     public:
         /**
-        * \brief Texture2DArray constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
-        Texture2DArray(std::string id,
-            TextureLayout const& layout,
-            GLvoid* data,
-            bool generateMipmap = false);
-        Texture2DArray(const Texture2DArray&) = delete; // TODO: think of meaningful copy operation...maybe copy texture content to new texture object?
+         * \brief Texture2DArray constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        Texture2DArray(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap = false);
+        Texture2DArray(const Texture2DArray&) =
+            delete; // TODO: think of meaningful copy operation...maybe copy texture content to new texture object?
         Texture2DArray(Texture2DArray&& other) = delete;
         Texture2DArray& operator=(const Texture2DArray& rhs) = delete;
         Texture2DArray& operator=(Texture2DArray&& rhs) = delete;
@@ -59,28 +57,24 @@ namespace glowl
         unsigned int m_layers;
     };
 
-
-    inline Texture2DArray::Texture2DArray(std::string id,
-        TextureLayout const& layout,
-        GLvoid* data,
-        bool generateMipmap)
-        : Texture(
-            id,
-            layout.internal_format,
-            layout.format,
-            layout.type,
-            layout.levels),
-        m_width(layout.width),
-        m_height(layout.height),
-        m_layers(layout.depth)
+    inline Texture2DArray::Texture2DArray(std::string          id,
+                                          TextureLayout const& layout,
+                                          GLvoid*              data,
+                                          bool                 generateMipmap)
+        : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
+          m_width(layout.width),
+          m_height(layout.height),
+          m_layers(layout.depth)
     {
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTexParameteri(GL_TEXTURE_2D_ARRAY, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTexParameterf(GL_TEXTURE_2D_ARRAY, pname_pvalue.first, pname_pvalue.second);
         }
 
@@ -90,11 +84,13 @@ namespace glowl
 
         glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, m_internal_format, m_width, m_height, m_layers);
 
-        if (data != nullptr) {
+        if (data != nullptr)
+        {
             glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
         }
 
-        if (generateMipmap) {
+        if (generateMipmap)
+        {
             glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
         }
 
@@ -144,6 +140,6 @@ namespace glowl
         return m_layers;
     }
 
-}
+} // namespace glowl
 
 #endif // !Texture2DArray_hpp
