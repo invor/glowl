@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef FramebufferObject_hpp
-#define FramebufferObject_hpp
+#ifndef GLOWL_FRAMEBUFFEROBJECT_HPP
+#define GLOWL_FRAMEBUFFEROBJECT_HPP
 
 /*	Include space-lion files */
 #include "Texture2D.hpp"
@@ -406,4 +406,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !FramebufferObject_hpp
+#endif // GLOWL_FRAMEBUFFEROBJECT_HPP

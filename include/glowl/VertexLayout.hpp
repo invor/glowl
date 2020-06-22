@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef VertexLayout_hpp
-#define VertexLayout_hpp
+#ifndef GLOWL_VERTEXLAYOUT_HPP
+#define GLOWL_VERTEXLAYOUT_HPP
 
 #include <glad/glad.h>
 
@@ -179,4 +179,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !VertexLayout_hpp
+#endif // GLOWL_VERTEXLAYOUT_HPP

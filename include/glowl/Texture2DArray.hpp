@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef Texture2DArray_hpp
-#define Texture2DArray_hpp
+#ifndef GLOWL_TEXTURE2DARRAY_HPP
+#define GLOWL_TEXTURE2DARRAY_HPP
 
 #include <algorithm>
 #include <cmath>
@@ -142,4 +142,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !Texture2DArray_hpp
+#endif // GLOWL_TEXTURE2DARRAY_HPP

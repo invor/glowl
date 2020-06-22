@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef Texture2D_hpp
-#define Texture2D_hpp
+#ifndef GLOWL_TEXTURE2D_HPP
+#define GLOWL_TEXTURE2D_HPP
 
 #include <algorithm>
 #include <cmath>
@@ -195,4 +195,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !Texture2D_hpp
+#endif // GLOWL_TEXTURE2D_HPP

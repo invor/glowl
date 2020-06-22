@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef GLSLProgram_h
-#define GLSLProgram_h
+#ifndef GLOWL_GLSLPROGRAM_HPP
+#define GLOWL_GLSLPROGRAM_HPP
 
 #include <iostream>
 #include <vector>
@@ -469,4 +469,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !GLSLProgram_hpp
+#endif // GLOWL_GLSLPROGRAM_HPP

@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef BufferObject_hpp
-#define BufferObject_hpp
+#ifndef GLOWL_BUFFEROBJECT_HPP
+#define GLOWL_BUFFEROBJECT_HPP
 
 #include <glad/glad.h>
 
@@ -260,4 +260,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !BufferObject_hpp
+#endif // GLOWL_BUFFEROBJECT_HPP

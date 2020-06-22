@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef Mesh_hpp
-#define Mesh_hpp
+#ifndef GLOWL_MESH_HPP
+#define GLOWL_MESH_HPP
 
 // Include glad for OpenGL types and functions
 #include <glad/glad.h>
@@ -340,4 +340,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !Mesh_hpp
+#endif // GLOWL_MESH_HPP

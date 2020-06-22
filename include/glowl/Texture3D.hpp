@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef Texture3D_hpp
-#define Texture3D_hpp
+#ifndef GLOWL_TEXTURE3D_HPP
+#define GLOWL_TEXTURE3D_HPP
 
 #include <iostream>
 
@@ -174,4 +174,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !Texture3D_hpp
+#endif // GLOWL_TEXTURE3D_HPP

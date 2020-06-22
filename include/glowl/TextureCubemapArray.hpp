@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef TextureCubemapArray_hpp
-#define TextureCubemapArray_hpp
+#ifndef GLOWL_TEXTURECUBEMAPARRAY_HPP
+#define GLOWL_TEXTURECUBEMAPARRAY_HPP
 
 #include <cassert>
 
@@ -205,4 +205,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif // !TextureCubemapArray_hpp
+#endif // GLOWL_TEXTURECUBEMAPARRAY_HPP

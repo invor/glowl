@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef Texture_hpp
-#define Texture_hpp
+#ifndef GLOWL_TEXTURE_HPP
+#define GLOWL_TEXTURE_HPP
 
 #include <glad/glad.h>
 
@@ -205,4 +205,4 @@ namespace glowl
 
 } // namespace glowl
 
-#endif
+#endif // GLOWL_TEXTURE_HPP
