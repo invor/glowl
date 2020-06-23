@@ -5,18 +5,18 @@
  * Copyright (c) 2020 Michael Becher, Moritz Heinemann
  */
 
-#ifndef GLOWL_EXCEPTIONS_GLSLPROGRAMEXCEPTION_HPP
-#define GLOWL_EXCEPTIONS_GLSLPROGRAMEXCEPTION_HPP
+#ifndef GLOWL_GLSLPROGRAMEXCEPTION_HPP
+#define GLOWL_GLSLPROGRAMEXCEPTION_HPP
 
-#include "GlowlException.hpp"
+#include "BaseException.hpp"
 
 namespace glowl
 {
-    class GLSLProgramException : public GlowlException
+    class GLSLProgramException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 } // namespace glowl
 
-#endif // GLOWL_EXCEPTIONS_GLSLPROGRAMEXCEPTION_HPP
+#endif // GLOWL_GLSLPROGRAMEXCEPTION_HPP
