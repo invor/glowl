@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef VertexLayout_hpp
-#define VertexLayout_hpp
+#ifndef GLOWL_VERTEXLAYOUT_HPP
+#define GLOWL_VERTEXLAYOUT_HPP
 
 #include <glad/glad.h>
 
@@ -14,70 +14,82 @@ namespace glowl
 {
 
     /**
-    * \struct VertexLayout
-    *
-    * \brief Container for vertex layout descritions. Used by Mesh class.
-    *
-    * \author Michael Becher
-    */
+     * \struct VertexLayout
+     *
+     * \brief Container for vertex layout descritions. Used by Mesh class.
+     *
+     * \author Michael Becher
+     */
     struct VertexLayout
     {
         struct Attribute
         {
             Attribute(GLint size, GLenum type, GLboolean normalized, GLsizei offset)
-                : size(size), type(type), normalized(normalized), offset(offset) {}
+                : size(size), type(type), normalized(normalized), offset(offset)
+            {
+            }
 
-            GLint size;
-            GLenum type;
+            GLint     size;
+            GLenum    type;
             GLboolean normalized;
-            GLsizei offset;
+            GLsizei   offset;
         };
 
-        VertexLayout() : strides(), attributes() {}
+        VertexLayout() : strides(), attributes()
+        {
+        }
         /**
          * Construct VertexLayout from set of strides and attributes
-         * 
-         * \param strides Stride values in byte per vertex attribute. It is possible to use only a single stride value for all attributes (see VertexLayout member documentation).
+         *
+         * \param strides Stride values in byte per vertex attribute. It is possible to use only a single stride value
+         * for all attributes (see VertexLayout member documentation).
          *
          */
         VertexLayout(std::vector<GLsizei> const& strides, std::vector<Attribute> const& attributes)
-            : strides(strides), attributes(attributes) {}
+            : strides(strides), attributes(attributes)
+        {
+        }
         /**
          * Construct VertexLayout from set of strides and attributes
          *
-         * \param strides Stride values in byte per vertex attribute. It is possible to use only a single stride value for all attributes (see VertexLayout member documentation).
+         * \param strides Stride values in byte per vertex attribute. It is possible to use only a single stride value
+         * for all attributes (see VertexLayout member documentation).
          *
          */
         VertexLayout(std::vector<GLsizei>&& strides, std::vector<Attribute>&& attributes)
-            : strides(strides), attributes(attributes) {}
+            : strides(strides), attributes(attributes)
+        {
+        }
 
         /**
          * \brief Stride values in byte per vertex attributes.
-         * 
+         *
          * Usage hints (in combination with Mesh class):
          *
-         * Non-interleaved, tightly packed vertex data, i.e. multiple attributes, each with its own separate vertex buffer with tightly packed memory:
-         * Either a stride of 0 per attribute, e.g. {0,0,..}, or a single stride value of 0 that is used for all attributes, e.g. {0}
+         * Non-interleaved, tightly packed vertex data, i.e. multiple attributes, each with its own separate vertex
+         * buffer with tightly packed memory: Either a stride of 0 per attribute, e.g. {0,0,..}, or a single stride
+         * value of 0 that is used for all attributes, e.g. {0}
          *
-         * Partly interleaved or NON-tightly packed vertex data, i.e. multiple attributes, split across multiple vertex buffer with indivdual strides or potentially with padded memory:
-         * Give a correct stride value for each! attribute, e.g. {12,20,20} for three attribs in two buffers {vec3,vec3,...} and {{vec3,vec2},{vec3,vec2},...}
+         * Partly interleaved or NON-tightly packed vertex data, i.e. multiple attributes, split across multiple vertex
+         * buffer with indivdual strides or potentially with padded memory: Give a correct stride value for each!
+         * attribute, e.g. {12,20,20} for three attribs in two buffers {vec3,vec3,...} and {{vec3,vec2},{vec3,vec2},...}
          *
          * Fully interleaved vertex data, i.e. multiple attributes within a single vertex buffer:
-         * Either a stride of sizeof(Vertex) per attribute, e.g. {32,32,32} for {{vec3,vec3,vec2},{vec3,vec3,vec2},...}, or a single stride value of sizeof(Vertex) that is used for all attributes, e.g. {32}
+         * Either a stride of sizeof(Vertex) per attribute, e.g. {32,32,32} for {{vec3,vec3,vec2},{vec3,vec3,vec2},...},
+         * or a single stride value of sizeof(Vertex) that is used for all attributes, e.g. {32}
          *
          */
         std::vector<GLsizei>   strides;
         std::vector<Attribute> attributes;
     };
 
-    inline
-        bool operator==(VertexLayout::Attribute const& lhs, VertexLayout::Attribute const& rhs)
+    inline bool operator==(VertexLayout::Attribute const& lhs, VertexLayout::Attribute const& rhs)
     {
-        return lhs.normalized == rhs.normalized && lhs.offset == rhs.offset && lhs.size == rhs.size && lhs.type == rhs.type;
+        return lhs.normalized == rhs.normalized && lhs.offset == rhs.offset && lhs.size == rhs.size &&
+               lhs.type == rhs.type;
     }
 
-    inline
-        bool operator==(VertexLayout const& lhs, VertexLayout const& rhs)
+    inline bool operator==(VertexLayout const& lhs, VertexLayout const& rhs)
     {
         bool rtn = false;
 
@@ -107,7 +119,6 @@ namespace glowl
 
         return rtn;
     }
-
 
     static constexpr size_t computeByteSize(GLenum value_type)
     {
@@ -166,6 +177,6 @@ namespace glowl
         return computeByteSize(attrib_desc.type) * attrib_desc.size;
     }
 
-}
+} // namespace glowl
 
-#endif // !VertexLayout_hpp
+#endif // GLOWL_VERTEXLAYOUT_HPP

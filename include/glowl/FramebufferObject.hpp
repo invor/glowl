@@ -5,31 +5,31 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef FramebufferObject_hpp
-#define FramebufferObject_hpp
+#ifndef GLOWL_FRAMEBUFFEROBJECT_HPP
+#define GLOWL_FRAMEBUFFEROBJECT_HPP
 
- /*	Include space-lion files */
+/*	Include space-lion files */
 #include "Texture2D.hpp"
 
 /*	Include system libraries */
 #include <vector>
 //#include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 namespace glowl
 {
 
     /**
-    * \class FramebufferObject
-    *
-    * \brief Encapsulates basic framebuffer object functionality.
-    *
-    * This class encapsulates basic framebuffer object functionality including creation of an FBO,
-    * creation and adding of several color attachments and use it for rendering.
-    *
-    * \author Michael Becher
-    */
+     * \class FramebufferObject
+     *
+     * \brief Encapsulates basic framebuffer object functionality.
+     *
+     * This class encapsulates basic framebuffer object functionality including creation of an FBO,
+     * creation and adding of several color attachments and use it for rendering.
+     *
+     * \author Michael Becher
+     */
     class FramebufferObject
     {
     private:
@@ -57,20 +57,24 @@ namespace glowl
 
     public:
         /**
-        * \brief FramebufferObject constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
+         * \brief FramebufferObject constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
         FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
 
         /**
-        * \brief FramebufferObject constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
-        FramebufferObject(std::string const& debug_label, int width, int height, bool has_depth = false, bool has_stencil = false);
+         * \brief FramebufferObject constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        FramebufferObject(std::string const& debug_label,
+                          int                width,
+                          int                height,
+                          bool               has_depth = false,
+                          bool               has_stencil = false);
 
         ~FramebufferObject();
 
@@ -98,13 +102,13 @@ namespace glowl
         std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
 
         /**
-        * \brief Bind this framebuffer object with all its color attachments
-        */
+         * \brief Bind this framebuffer object with all its color attachments
+         */
         void bind();
 
         /**
-        * \brief Bind this framebuffer object with a given set of draw buffers
-        */
+         * \brief Bind this framebuffer object with a given set of draw buffers
+         */
         void bind(const std::vector<GLenum>& draw_buffers);
         void bind(std::vector<GLenum>&& draw_buffers);
 
@@ -120,53 +124,63 @@ namespace glowl
         void bindToDraw();
 
         /**
-        * \brief Bind a color attachment as GL_TEXTURE_2D.
-        * \param index Specifies which color is bound. If index > #attachments, the method simply won't bind a texture.
-        */
+         * \brief Bind a color attachment as GL_TEXTURE_2D.
+         * \param index Specifies which color is bound. If index > #attachments, the method simply won't bind a texture.
+         */
         void bindColorbuffer(unsigned int index);
 
         /**
-        * \brief Bind the depth buffer as GL_TEXTURE_2D.
-        * \note Work in progress. Use of this method is discouraged.
-        */
+         * \brief Bind the depth buffer as GL_TEXTURE_2D.
+         * \note Work in progress. Use of this method is discouraged.
+         */
         void bindDepthbuffer();
 
         /**
-        * \brief Bind the stencil buffer as GL_TEXTURE_2D.
-        * \note Work in progress. Use of this method is higly discouraged.
-        */
+         * \brief Bind the stencil buffer as GL_TEXTURE_2D.
+         * \note Work in progress. Use of this method is higly discouraged.
+         */
         void bindStencilbuffer();
 
         /**
-        * \brief Check the framebuffer object for completeness.
-        * \return Returns true if the framebuffer object is complete, false otherwise.
-        */
+         * \brief Check the framebuffer object for completeness.
+         * \return Returns true if the framebuffer object is complete, false otherwise.
+         */
         bool checkStatus() const;
 
         /**
-        * \brief Resize the framebuffer object, i.e. it's color attachments.
-        * \note Might be a bit costly to use often.
-        * \param new_width Specifies the new framebuffer width.
-        * \param new_width Specifies the new framebuffer height.
-        */
+         * \brief Resize the framebuffer object, i.e. it's color attachments.
+         * \note Might be a bit costly to use often.
+         * \param new_width Specifies the new framebuffer width.
+         * \param new_width Specifies the new framebuffer height.
+         */
         void resize(int new_width, int new_height);
 
         /**
-        * \brief Get the width of the framebuffer object's color attachments
-        * \return Returns widths.
-        */
-        int getWidth() const { return m_width; }
+         * \brief Get the width of the framebuffer object's color attachments
+         * \return Returns widths.
+         */
+        int getWidth() const
+        {
+            return m_width;
+        }
 
         /**
-        * \brief Get the height of the framebuffer object's color attachments
-        * \return Returns height.
-        */
-        int getHeight() const { return m_height; }
+         * \brief Get the height of the framebuffer object's color attachments
+         * \return Returns height.
+         */
+        int getHeight() const
+        {
+            return m_height;
+        }
 
-        std::string const& getLog() const { return m_log; }
+        std::string const& getLog() const
+        {
+            return m_log;
+        }
     };
 
-    inline FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool has_stencil) : m_width(width), m_height(height)
+    inline FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool has_stencil)
+        : m_width(width), m_height(height)
     {
         glGenFramebuffers(1, &m_handle);
         glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
@@ -195,19 +209,25 @@ namespace glowl
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    inline FramebufferObject::FramebufferObject(std::string const & debug_label, int width, int height, bool has_depth, bool has_stencil)
+    inline FramebufferObject::FramebufferObject(std::string const& debug_label,
+                                                int                width,
+                                                int                height,
+                                                bool               has_depth,
+                                                bool               has_stencil)
         : FramebufferObject(width, height, has_depth, has_stencil)
     {
         m_debug_label = debug_label;
 #if _DEBUG
-        glObjectLabel(GL_FRAMEBUFFER, this->m_handle, static_cast<GLsizei>(m_debug_label.length()), m_debug_label.c_str());
+        glObjectLabel(
+            GL_FRAMEBUFFER, this->m_handle, static_cast<GLsizei>(m_debug_label.length()), m_debug_label.c_str());
 #endif
     }
 
     inline FramebufferObject::~FramebufferObject()
     {
         /*	Delete framebuffer resources. Texture delete themselves when the vector is destroyed. */
-        if (m_depthbuffer != 0) glDeleteRenderbuffers(1, &m_depthbuffer);
+        if (m_depthbuffer != 0)
+            glDeleteRenderbuffers(1, &m_depthbuffer);
 
         /*	Delete framebuffer object */
         glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
@@ -219,7 +239,7 @@ namespace glowl
         GLint maxAttachments;
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxAttachments);
 
-        if (m_colorbuffers.size() == (GLuint)maxAttachments)
+        if (m_colorbuffers.size() == (GLuint) maxAttachments)
         {
             m_log.append("Maximum amount of color attachments reached.\n");
             return false;
@@ -227,17 +247,27 @@ namespace glowl
 
         unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
 
-        TextureLayout color_attach_layout(internalFormat, m_width, m_height, 1, format, type, 1,
-            { { GL_TEXTURE_MIN_FILTER ,GL_NEAREST },
-                { GL_TEXTURE_MAG_FILTER ,GL_NEAREST },
-                { GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE },
-                { GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE } },
-            { {} });
-        std::shared_ptr<Texture2D> new_color_attachment(new Texture2D("fbo_" + std::to_string(m_handle) + "_color_attachment_" + std::to_string(bufsSize), color_attach_layout, nullptr));
+        TextureLayout              color_attach_layout(internalFormat,
+                                          m_width,
+                                          m_height,
+                                          1,
+                                          format,
+                                          type,
+                                          1,
+                                          {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
+                                           {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
+                                           {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
+                                           {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
+                                          {{}});
+        std::shared_ptr<Texture2D> new_color_attachment(
+            new Texture2D("fbo_" + std::to_string(m_handle) + "_color_attachment_" + std::to_string(bufsSize),
+                          color_attach_layout,
+                          nullptr));
         m_colorbuffers.push_back(new_color_attachment);
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + bufsSize, GL_TEXTURE_2D, m_colorbuffers.back()->getName(), 0);
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + bufsSize, GL_TEXTURE_2D, m_colorbuffers.back()->getName(), 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         m_drawBufs.push_back(GL_COLOR_ATTACHMENT0 + bufsSize);
@@ -302,7 +332,7 @@ namespace glowl
     {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_handle);
         unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
-        GLenum* drawBufs = new GLenum[bufsSize];
+        GLenum*      drawBufs = new GLenum[bufsSize];
         for (GLuint i = 0; i < bufsSize; i++)
         {
             drawBufs[i] = (GL_COLOR_ATTACHMENT0 + i);
@@ -312,7 +342,8 @@ namespace glowl
 
     inline void FramebufferObject::bindColorbuffer(unsigned int index)
     {
-        if (index < m_colorbuffers.size()) m_colorbuffers[index]->bindTexture();
+        if (index < m_colorbuffers.size())
+            m_colorbuffers[index]->bindTexture();
     }
 
     inline void FramebufferObject::bindDepthbuffer()
@@ -343,13 +374,19 @@ namespace glowl
 
         for (auto& colorbuffer : m_colorbuffers)
         {
-            //TODO add more convienient method
-            TextureLayout color_attach_layout(colorbuffer->getInternalFormat(), m_width, m_height, 1, colorbuffer->getFormat(), colorbuffer->getType(), 1,
-                { { GL_TEXTURE_MIN_FILTER ,GL_NEAREST },
-                    { GL_TEXTURE_MAG_FILTER ,GL_NEAREST },
-                    { GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE },
-                    { GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE } },
-                {});
+            // TODO add more convienient method
+            TextureLayout color_attach_layout(colorbuffer->getInternalFormat(),
+                                              m_width,
+                                              m_height,
+                                              1,
+                                              colorbuffer->getFormat(),
+                                              colorbuffer->getType(),
+                                              1,
+                                              {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
+                                               {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
+                                               {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
+                                               {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
+                                              {});
 
             colorbuffer->reload(color_attach_layout, nullptr);
 
@@ -358,7 +395,7 @@ namespace glowl
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        //resize depth buffer
+        // resize depth buffer
         if (m_depthbuffer != 0)
         {
             glBindRenderbuffer(GL_RENDERBUFFER, m_depthbuffer);
@@ -367,6 +404,6 @@ namespace glowl
         }
     }
 
-}
+} // namespace glowl
 
-#endif // !FramebufferObject_hpp
+#endif // GLOWL_FRAMEBUFFEROBJECT_HPP

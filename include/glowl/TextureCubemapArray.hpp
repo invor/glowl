@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef TextureCubemapArray_hpp
-#define TextureCubemapArray_hpp
+#ifndef GLOWL_TEXTURECUBEMAPARRAY_HPP
+#define GLOWL_TEXTURECUBEMAPARRAY_HPP
 
 #include <cassert>
 
@@ -16,45 +16,50 @@ namespace glowl
 {
 
     /**
-    * \class TextureCubemapArray
-    *
-    * \brief Encapsulates cubemap texture array functionality.
-    *
-    * \author Michael Becher
-    */
+     * \class TextureCubemapArray
+     *
+     * \brief Encapsulates cubemap texture array functionality.
+     *
+     * \author Michael Becher
+     */
     class TextureCubemapArray : public Texture
     {
     public:
         /**
-        * \brief TextureCubemapArray constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
-        TextureCubemapArray(std::string id,
-            GLint internal_format,
-            unsigned int width,
-            unsigned int height,
-            unsigned int layers,
-            GLenum format,
-            GLenum type,
-            GLsizei levels,
-            GLvoid* data,
-            bool generateMipmap = false);
-        TextureCubemapArray(const TextureCubemapArray&) = delete; // TODO: think of meaningful copy operation...maybe copy texture context to new texture object?
+         * \brief TextureCubemapArray constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        TextureCubemapArray(std::string  id,
+                            GLint        internal_format,
+                            unsigned int width,
+                            unsigned int height,
+                            unsigned int layers,
+                            GLenum       format,
+                            GLenum       type,
+                            GLsizei      levels,
+                            GLvoid*      data,
+                            bool         generateMipmap = false);
+        TextureCubemapArray(const TextureCubemapArray&) =
+            delete; // TODO: think of meaningful copy operation...maybe copy texture context to new texture object?
         TextureCubemapArray(TextureCubemapArray&& other) = delete;
         TextureCubemapArray& operator=(const TextureCubemapArray& rhs) = delete;
         TextureCubemapArray& operator=(TextureCubemapArray&& rhs) = delete;
 
         /**
-        * \brief Reload the texture with a new size but unchanged format and type.
-        * \param width Specifies the new width of the texture in pixels.
-        * \param height Specifies the new height of the texture in pixels.
-        * \param layers Specifies the new number of layers in the texture array.
-        * \param data Pointer to the new texture data.
-        * \return Returns true if the texture was succesfully created, false otherwise
-        */
-        bool reload(unsigned int width, unsigned int height, unsigned int layers, GLvoid * data, bool generateMipmap = false);
+         * \brief Reload the texture with a new size but unchanged format and type.
+         * \param width Specifies the new width of the texture in pixels.
+         * \param height Specifies the new height of the texture in pixels.
+         * \param layers Specifies the new number of layers in the texture array.
+         * \param data Pointer to the new texture data.
+         * \return Returns true if the texture was succesfully created, false otherwise
+         */
+        bool reload(unsigned int width,
+                    unsigned int height,
+                    unsigned int layers,
+                    GLvoid*      data,
+                    bool         generateMipmap = false);
 
         void bindTexture() const;
 
@@ -74,16 +79,16 @@ namespace glowl
         unsigned int m_layers;
     };
 
-    inline TextureCubemapArray::TextureCubemapArray(std::string id,
-        GLint internal_format,
-        unsigned int width,
-        unsigned int height,
-        unsigned int layers,
-        GLenum format,
-        GLenum type,
-        GLsizei levels,
-        GLvoid* data,
-        bool generateMipmap)
+    inline TextureCubemapArray::TextureCubemapArray(std::string  id,
+                                                    GLint        internal_format,
+                                                    unsigned int width,
+                                                    unsigned int height,
+                                                    unsigned int layers,
+                                                    GLenum       format,
+                                                    GLenum       type,
+                                                    GLsizei      levels,
+                                                    GLvoid*      data,
+                                                    bool         generateMipmap)
         : Texture(id, internal_format, format, type, levels), m_width(width), m_height(height), m_layers(layers)
     {
         glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_name);
@@ -113,7 +118,11 @@ namespace glowl
         }
     }
 
-    inline bool TextureCubemapArray::reload(unsigned int width, unsigned int height, unsigned int layers, GLvoid * data, bool generateMipmap)
+    inline bool TextureCubemapArray::reload(unsigned int width,
+                                            unsigned int height,
+                                            unsigned int layers,
+                                            GLvoid*      data,
+                                            bool         generateMipmap)
     {
         m_width = width;
         m_height = height;
@@ -194,6 +203,6 @@ namespace glowl
         return m_layers;
     }
 
-}
+} // namespace glowl
 
-#endif // !TextureCubemapArray_hpp
+#endif // GLOWL_TEXTURECUBEMAPARRAY_HPP

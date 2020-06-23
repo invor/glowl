@@ -5,8 +5,8 @@
  * Copyright (c) 2019 Michael Becher
  */
 
-#ifndef Texture3D_hpp
-#define Texture3D_hpp
+#ifndef GLOWL_TEXTURE3D_HPP
+#define GLOWL_TEXTURE3D_HPP
 
 #include <iostream>
 
@@ -16,42 +16,42 @@ namespace glowl
 {
 
     /**
-    * \class Texture3D
-    *
-    * \brief Encapsulates basic 3D texure functionality.
-    *
-    * This class encapsulates basic 3D functionality including creation of a 3D texture,
-    * texture updates and texture binding.
-    *
-    * \author Michael Becher
-    */
+     * \class Texture3D
+     *
+     * \brief Encapsulates basic 3D texure functionality.
+     *
+     * This class encapsulates basic 3D functionality including creation of a 3D texture,
+     * texture updates and texture binding.
+     *
+     * \author Michael Becher
+     */
     class Texture3D : public Texture
     {
     public:
         /**
-        * \brief Texture3D constructor.
-        *
-        * Note: Active OpenGL context required for construction.
-        * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
-        */
-        Texture3D(std::string id, TextureLayout const& layout, GLvoid * data);
+         * \brief Texture3D constructor.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        Texture3D(std::string id, TextureLayout const& layout, GLvoid* data);
         Texture3D(const Texture3D&) = delete;
         Texture3D(Texture3D&& other) = delete;
         Texture3D& operator=(const Texture3D& rhs) = delete;
         Texture3D& operator=(Texture3D&& rhs) = delete;
 
         /**
-        * \brief Bind the texture.
-        */
+         * \brief Bind the texture.
+         */
         void bindTexture() const;
 
         void updateMipmaps();
 
         /**
-        * \brief Reload the texture.
-        * \param data Pointer to the new texture data.
-        */
-        void reload(TextureLayout const& layout, GLvoid * data);
+         * \brief Reload the texture.
+         * \param data Pointer to the new texture data.
+         */
+        void reload(TextureLayout const& layout, GLvoid* data);
 
         TextureLayout getTextureLayout() const;
 
@@ -65,30 +65,28 @@ namespace glowl
         unsigned int m_depth;
     };
 
-    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid * data)
-        : Texture(
-            id,
-            layout.internal_format,
-            layout.format,
-            layout.type,
-            layout.levels),
-        m_width(layout.width),
-        m_height(layout.height),
-        m_depth(layout.depth)
+    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid* data)
+        : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
+          m_width(layout.width),
+          m_height(layout.height),
+          m_depth(layout.depth)
     {
         glBindTexture(GL_TEXTURE_3D, m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
         }
 
         glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
 
-        if (data != nullptr) {
+        if (data != nullptr)
+        {
             glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
         }
 
@@ -118,7 +116,7 @@ namespace glowl
         glBindTexture(GL_TEXTURE_3D, 0);
     }
 
-    inline void Texture3D::reload(TextureLayout const& layout, GLvoid * data)
+    inline void Texture3D::reload(TextureLayout const& layout, GLvoid* data)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -174,6 +172,6 @@ namespace glowl
         return m_depth;
     }
 
-}
+} // namespace glowl
 
-#endif // !Texture3D_hpp
+#endif // GLOWL_TEXTURE3D_HPP
