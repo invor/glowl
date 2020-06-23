@@ -82,7 +82,7 @@ namespace glowl
             glTexParameteri(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
 
         // for (auto& pname_pvalue : layout.float_parameters)
-        //	glTexParameterf(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
+        // glTexParameterf(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
 
         GLsizei levels = 1;
 

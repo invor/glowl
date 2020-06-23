@@ -8,10 +8,10 @@
 #ifndef GLOWL_FRAMEBUFFEROBJECT_HPP
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
-/*	Include space-lion files */
+/* Include space-lion files */
 #include "Texture2D.hpp"
 
-/*	Include system libraries */
+/* Include system libraries */
 #include <vector>
 //#include <iostream>
 #include <memory>
@@ -78,7 +78,7 @@ namespace glowl
 
         ~FramebufferObject();
 
-        /*	Deleted copy constructor (C++11). Don't wanna go around copying objects with OpenGL handles. */
+        /* Deleted copy constructor (C++11). Don't wanna go around copying objects with OpenGL handles. */
         FramebufferObject(const FramebufferObject& cpy) = delete;
 
         FramebufferObject(FramebufferObject&& other) = delete;
@@ -199,8 +199,8 @@ namespace glowl
         }
 
         /*
-        /	TODO: stencilbuffer
-        */
+         * TODO: stencilbuffer
+         */
         if (0 && has_stencil)
         {
             has_stencil = !has_stencil;
@@ -225,11 +225,11 @@ namespace glowl
 
     inline FramebufferObject::~FramebufferObject()
     {
-        /*	Delete framebuffer resources. Texture delete themselves when the vector is destroyed. */
+        /* Delete framebuffer resources. Texture delete themselves when the vector is destroyed. */
         if (m_depthbuffer != 0)
             glDeleteRenderbuffers(1, &m_depthbuffer);
 
-        /*	Delete framebuffer object */
+        /* Delete framebuffer object */
         glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
         glDeleteFramebuffers(1, &m_handle);
     }
@@ -283,23 +283,23 @@ namespace glowl
     inline void FramebufferObject::bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-        //	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        //	{
-        //		m_log.append("Tried to use incomplete FBO. Fallback to default FBO.\n");
-        //		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        //	}
-        //	else
-        //{
-        //	unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
-        //	GLenum* drawBufs = new GLenum[bufsSize];
-        //	for(GLuint i=0; i < bufsSize; i++)
-        //	{
-        //		drawBufs[i] = (GL_COLOR_ATTACHMENT0+i);
-        //	}
-        //	glDrawBuffers(bufsSize, drawBufs);
+        // if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        // {
+        //     m_log.append("Tried to use incomplete FBO. Fallback to default FBO.\n");
+        //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // }
+        // else
+        // {
+        //     unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
+        //     GLenum* drawBufs = new GLenum[bufsSize];
+        //     for(GLuint i=0; i < bufsSize; i++)
+        //     {
+        //         drawBufs[i] = (GL_COLOR_ATTACHMENT0+i);
+        //     }
+        //     glDrawBuffers(bufsSize, drawBufs);
         //
-        //	delete drawBufs;
-        //}
+        //     delete drawBufs;
+        // }
 
         glDrawBuffers(static_cast<unsigned int>(m_drawBufs.size()), m_drawBufs.data());
     }
