@@ -35,9 +35,7 @@ namespace glowl
             GLsizei   offset;
         };
 
-        VertexLayout() : strides(), attributes()
-        {
-        }
+        VertexLayout() : strides(), attributes() {}
         /**
          * Construct VertexLayout from set of strides and attributes
          *

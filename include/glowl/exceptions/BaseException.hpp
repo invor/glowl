@@ -23,9 +23,7 @@ namespace glowl
         std::string m_message;
     };
 
-    inline BaseException::BaseException(std::string const& message) : m_message(message)
-    {
-    }
+    inline BaseException::BaseException(std::string const& message) : m_message(message) {}
 
     inline const char* BaseException::what() const noexcept
     {
