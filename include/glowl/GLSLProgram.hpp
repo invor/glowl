@@ -20,15 +20,14 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
 
-#include "exceptions/GLSLProgramException.hpp"
+#include "Exceptions.hpp"
 
 namespace glowl
 {
-
     /**
      * \class GLSLProgram
      *
-     * \brief Encapsulates shader program functionality. Possibly somewhat outdated.
+     * \brief Encapsulates shader program functionality.
      *
      * \author Michael Becher
      */
@@ -58,10 +57,10 @@ namespace glowl
         GLSLProgram(ShaderSourceList const& shaderList);
         ~GLSLProgram();
 
-        /* Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles! */
-        GLSLProgram(const GLSLProgram& cpy) = delete;
+        // Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles!
+        GLSLProgram(GLSLProgram const& cpy) = delete;
         GLSLProgram(GLSLProgram&& other) = delete;
-        GLSLProgram& operator=(const GLSLProgram& rhs) = delete;
+        GLSLProgram& operator=(GLSLProgram const& rhs) = delete;
         GLSLProgram& operator=(GLSLProgram&& rhs) = delete;
 
         /**
@@ -78,50 +77,50 @@ namespace glowl
          * \brief Associate a vertex shader attribute variable with a specific vertex attribute index.
          * Useful if mesh vertex attribute order is different from order given in vertex shader.
          */
-        void bindAttribLocation(GLuint location, const GLchar* name);
+        void bindAttribLocation(GLuint location, GLchar const* name);
 
         /**
          * \brief Associates a fragment shader output variable with a specific output index.
          * Ignored if output locations statically defined in shader.
          */
-        void bindFragDataLocation(GLuint location, const char* name);
+        void bindFragDataLocation(GLuint location, char const* name);
 
-        void setUniform(const GLchar* name, GLfloat v0);
-        void setUniform(const GLchar* name, GLfloat v0, GLfloat v1);
-        void setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2);
-        void setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-        void setUniform(const GLchar* name, GLint v0);
-        void setUniform(const GLchar* name, GLint v0, GLint v1);
-        void setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2);
-        void setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2, GLint v3);
-        void setUniform(const GLchar* name, GLuint v0);
-        void setUniform(const GLchar* name, GLuint v0, GLuint v1);
-        void setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2);
-        void setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
-        void setUniform(const GLchar* name, const glm::vec2& v);
-        void setUniform(const GLchar* name, const glm::vec3& v);
-        void setUniform(const GLchar* name, const glm::vec4& v);
-        void setUniform(const GLchar* name, const glm::ivec2& v);
-        void setUniform(const GLchar* name, const glm::ivec3& v);
-        void setUniform(const GLchar* name, const glm::ivec4& v);
-        void setUniform(const GLchar* name, const glm::mat2& m);
-        void setUniform(const GLchar* name, const glm::mat3& m);
-        void setUniform(const GLchar* name, const glm::mat4& m);
+        void setUniform(GLchar const* name, GLfloat v0);
+        void setUniform(GLchar const* name, GLfloat v0, GLfloat v1);
+        void setUniform(GLchar const* name, GLfloat v0, GLfloat v1, GLfloat v2);
+        void setUniform(GLchar const* name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+        void setUniform(GLchar const* name, GLint v0);
+        void setUniform(GLchar const* name, GLint v0, GLint v1);
+        void setUniform(GLchar const* name, GLint v0, GLint v1, GLint v2);
+        void setUniform(GLchar const* name, GLint v0, GLint v1, GLint v2, GLint v3);
+        void setUniform(GLchar const* name, GLuint v0);
+        void setUniform(GLchar const* name, GLuint v0, GLuint v1);
+        void setUniform(GLchar const* name, GLuint v0, GLuint v1, GLuint v2);
+        void setUniform(GLchar const* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
+        void setUniform(GLchar const* name, glm::vec2 const& v);
+        void setUniform(GLchar const* name, glm::vec3 const& v);
+        void setUniform(GLchar const* name, glm::vec4 const& v);
+        void setUniform(GLchar const* name, glm::ivec2 const& v);
+        void setUniform(GLchar const* name, glm::ivec3 const& v);
+        void setUniform(GLchar const* name, glm::ivec4 const& v);
+        void setUniform(GLchar const* name, glm::mat2 const& m);
+        void setUniform(GLchar const* name, glm::mat3 const& m);
+        void setUniform(GLchar const* name, glm::mat4 const& m);
 
         /**
          * \brief Return the position of a uniform.
          */
-        GLuint getUniformLocation(const GLchar* name);
+        GLuint getUniformLocation(GLchar const* name);
 
         /**
          * \brief Prints a list if active shader uniforms to std outstream.
          */
-        void printActiveUniforms();
+        std::string getActiveUniforms();
 
         /**
          * \brief Prints a list if active shader attributes to std outstream.
          */
-        void printActiveAttributes();
+        std::string getActiveAttributes();
 
         /**
          * \brief Set a debug label to be used as glObjectLabel in debug
@@ -176,21 +175,21 @@ namespace glowl
 
     inline void GLSLProgram::compileShaderFromString(ShaderType shaderType, std::string const& source)
     {
-        /* Check if the source is empty */
+        // Check if the source is empty.
         if (source.empty())
         {
             throw GLSLProgramException("No shader source.");
         }
 
-        /* Create shader object */
-        const GLchar* c_source = source.c_str();
+        // Create shader object.
+        GLchar const* c_source = source.c_str();
         GLuint        shader = glCreateShader(shaderType);
         glShaderSource(shader, 1, &c_source, NULL);
 
-        /* Compile shader */
+        // Compile shader.
         glCompileShader(shader);
 
-        /* Check for errors */
+        // Check for errors.
         GLint compile_status = GL_FALSE;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
         if (compile_status == GL_FALSE)
@@ -211,12 +210,10 @@ namespace glowl
             throw GLSLProgramException(info_log_str);
         }
 
-        /* Attach shader to program */
+        // Attach shader to program.
         glAttachShader(m_handle, shader);
 
-        /* Flag shader program for deletion.
-         * It will only be actually deleted after the program is deleted. (See destructor for program deletion.
-         */
+        // Flag shader program for deletion. It will only be actually deleted after the program is deleted.
         glDeleteShader(shader);
     }
 
@@ -253,127 +250,127 @@ namespace glowl
         return m_handle;
     }
 
-    inline void GLSLProgram::bindAttribLocation(GLuint location, const GLchar* name)
+    inline void GLSLProgram::bindAttribLocation(GLuint location, GLchar const* name)
     {
         glBindAttribLocation(m_handle, location, name);
     }
 
-    inline void GLSLProgram::bindFragDataLocation(GLuint location, const char* name)
+    inline void GLSLProgram::bindFragDataLocation(GLuint location, char const* name)
     {
         glBindFragDataLocation(m_handle, location, name);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLfloat v0)
     {
         glUniform1f(getUniformLocation(name), v0);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0, GLfloat v1)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLfloat v0, GLfloat v1)
     {
         glUniform2f(getUniformLocation(name), v0, v1);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLfloat v0, GLfloat v1, GLfloat v2)
     {
         glUniform3f(getUniformLocation(name), v0, v1, v2);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
     {
         glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLint v0)
     {
         glUniform1i(getUniformLocation(name), v0);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0, GLint v1)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLint v0, GLint v1)
     {
         glUniform2i(getUniformLocation(name), v0, v1);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLint v0, GLint v1, GLint v2)
     {
         glUniform3i(getUniformLocation(name), v0, v1, v2);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLint v0, GLint v1, GLint v2, GLint v3)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLint v0, GLint v1, GLint v2, GLint v3)
     {
         glUniform4i(getUniformLocation(name), v0, v1, v2, v3);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLuint v0)
     {
         glUniform1ui(getUniformLocation(name), v0);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0, GLuint v1)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLuint v0, GLuint v1)
     {
         glUniform2ui(getUniformLocation(name), v0, v1);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLuint v0, GLuint v1, GLuint v2)
     {
         glUniform3ui(getUniformLocation(name), v0, v1, v2);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3)
+    inline void GLSLProgram::setUniform(GLchar const* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3)
     {
         glUniform4ui(getUniformLocation(name), v0, v1, v2, v3);
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::vec2& v)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::vec2 const& v)
     {
         glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::vec3& v)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::vec3 const& v)
     {
         glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::vec4& v)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::vec4 const& v)
     {
         glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::ivec2& v)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::ivec2 const& v)
     {
         glUniform2iv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::ivec3& v)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::ivec3 const& v)
     {
         glUniform3iv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::ivec4& v)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::ivec4 const& v)
     {
         glUniform4iv(getUniformLocation(name), 1, glm::value_ptr(v));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::mat2& m)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::mat2 const& m)
     {
         glUniformMatrix2fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::mat3& m)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::mat3 const& m)
     {
         glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    inline void GLSLProgram::setUniform(const GLchar* name, const glm::mat4& m)
+    inline void GLSLProgram::setUniform(GLchar const* name, glm::mat4 const& m)
     {
         glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    inline GLuint GLSLProgram::getUniformLocation(const GLchar* name)
+    inline GLuint GLSLProgram::getUniformLocation(GLchar const* name)
     {
         return glGetUniformLocation(m_handle, name);
     }
 
-    inline void GLSLProgram::printActiveUniforms()
+    inline std::string GLSLProgram::getActiveUniforms()
     {
         GLint max_length, uniform_cnt;
         glGetProgramiv(m_handle, GL_ACTIVE_UNIFORMS, &uniform_cnt);
@@ -393,11 +390,10 @@ namespace glowl
             location = glGetUniformLocation(m_handle, attribute_name.data());
             result << location << " - " << attribute_name.data() << std::endl;
         }
-        // TODO return string instead?
-        std::cout << result.str() << std::endl;
+        return result.str();
     }
 
-    inline void GLSLProgram::printActiveAttributes()
+    inline std::string GLSLProgram::getActiveAttributes()
     {
         GLint max_length, attribute_cnt;
         glGetProgramiv(m_handle, GL_ACTIVE_ATTRIBUTES, &attribute_cnt);
@@ -416,11 +412,10 @@ namespace glowl
             location = glGetAttribLocation(m_handle, attribute_name.data());
             result << location << " - " << attribute_name.data() << std::endl;
         }
-        // TODO return string instead?
-        std::cout << result.str() << std::endl;
+        return result.str();
     }
 
-    inline void GLSLProgram::setDebugLabel(const std::string& debug_label)
+    inline void GLSLProgram::setDebugLabel(std::string const& debug_label)
     {
         m_debug_label = debug_label;
 #if _DEBUG
