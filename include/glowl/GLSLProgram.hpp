@@ -34,7 +34,7 @@ namespace glowl
     class GLSLProgram
     {
     public:
-        enum ShaderType
+        enum class ShaderType
         {
             // clang-format off
             Vertex         = GL_VERTEX_SHADER,
@@ -183,7 +183,7 @@ namespace glowl
 
         // Create shader object.
         GLchar const* c_source = source.c_str();
-        GLuint        shader = glCreateShader(shaderType);
+        GLuint        shader = glCreateShader(static_cast<GLuint>(shaderType));
         glShaderSource(shader, 1, &c_source, NULL);
 
         // Compile shader.
