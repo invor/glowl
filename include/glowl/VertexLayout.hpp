@@ -89,7 +89,7 @@ namespace glowl
 
     inline bool operator==(VertexLayout const& lhs, VertexLayout const& rhs)
     {
-        bool rtn = false;
+        bool rtn = true;
 
         if (lhs.strides.size() == rhs.strides.size())
         {
