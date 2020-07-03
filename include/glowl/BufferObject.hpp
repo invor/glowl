@@ -91,10 +91,8 @@ namespace glowl
           m_byte_size(static_cast<GLsizeiptr>(datastorage.size() * sizeof(typename Container::value_type))),
           m_usage(usage)
     {
-        glGenBuffers(1, &m_handle);
-        glBindBuffer(m_target, m_handle);
-        glBufferData(m_target, m_byte_size, datastorage.data(), m_usage);
-        glBindBuffer(m_target, 0);
+        glCreateBuffers(1, &m_handle);
+        glNamedBufferData(m_handle, m_byte_size, datastorage.data(), m_usage);
 
         auto err = glGetError();
         if (err != GL_NO_ERROR)
@@ -106,10 +104,8 @@ namespace glowl
     inline BufferObject::BufferObject(GLenum target, GLvoid const* data, GLsizeiptr byte_size, GLenum usage)
         : m_target(target), m_handle(0), m_byte_size(byte_size), m_usage(usage)
     {
-        glGenBuffers(1, &m_handle);
-        glBindBuffer(m_target, m_handle);
-        glBufferData(m_target, m_byte_size, data, m_usage);
-        glBindBuffer(m_target, 0);
+        glCreateBuffers(1, &m_handle);
+        glNamedBufferData(m_handle, m_byte_size, data, m_usage);
 
         auto err = glGetError();
         if (err != GL_NO_ERROR)
@@ -135,10 +131,8 @@ namespace glowl
             return;
         }
 
-        glBindBuffer(m_target, m_handle);
-        glBufferSubData(
-            m_target, byte_offset, datastorage.size() * sizeof(typename Container::value_type), datastorage.data());
-        glBindBuffer(m_target, 0);
+        glNamedBufferSubData(
+            m_handle, byte_offset, datastorage.size() * sizeof(typename Container::value_type), datastorage.data());
     }
 
     inline void BufferObject::bufferSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset) const
@@ -151,18 +145,14 @@ namespace glowl
             return;
         }
 
-        glBindBuffer(m_target, m_handle);
-        glBufferSubData(m_target, byte_offset, byte_size, data);
-        glBindBuffer(m_target, 0);
+        glNamedBufferSubData(m_handle, byte_offset, byte_size, data);
     }
 
     template<typename Container>
     inline void BufferObject::rebuffer(Container const& datastorage)
     {
         m_byte_size = static_cast<GLsizeiptr>(datastorage.size() * sizeof(typename Container::value_type));
-        glBindBuffer(m_target, m_handle);
-        glBufferData(m_target, m_byte_size, datastorage.data(), m_usage);
-        glBindBuffer(m_target, 0);
+        glNamedBufferData(m_handle, m_byte_size, datastorage.data(), m_usage);
 
         auto err = glGetError();
         if (err != GL_NO_ERROR)
@@ -174,9 +164,7 @@ namespace glowl
     inline void BufferObject::rebuffer(GLvoid const* data, GLsizeiptr byte_size)
     {
         m_byte_size = byte_size;
-        glBindBuffer(m_target, m_handle);
-        glBufferData(m_target, m_byte_size, data, m_usage);
-        glBindBuffer(m_target, 0);
+        glNamedBufferData(m_handle, m_byte_size, data, m_usage);
 
         auto err = glGetError();
         if (err != GL_NO_ERROR)
@@ -213,13 +201,7 @@ namespace glowl
             return;
         }
 
-        glBindBuffer(GL_COPY_READ_BUFFER, src->m_handle);
-        glBindBuffer(GL_COPY_WRITE_BUFFER, tgt->m_handle);
-
-        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, src->m_byte_size);
-
-        glBindBuffer(GL_COPY_READ_BUFFER, 0);
-        glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+        glCopyNamedBufferSubData(src->m_handle, tgt->m_handle, 0, 0, src->m_byte_size);
     }
 
     inline void BufferObject::copy(BufferObject* src,
@@ -239,13 +221,7 @@ namespace glowl
             return;
         }
 
-        glBindBuffer(GL_COPY_READ_BUFFER, src->m_handle);
-        glBindBuffer(GL_COPY_WRITE_BUFFER, tgt->m_handle);
-
-        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, readOffset, writeOffset, size);
-
-        glBindBuffer(GL_COPY_READ_BUFFER, 0);
-        glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+        glCopyNamedBufferSubData(src->m_handle, tgt->m_handle, readOffset, writeOffset, size);
     }
 
     inline GLenum BufferObject::getTarget() const
