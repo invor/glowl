@@ -37,10 +37,11 @@ namespace glowl
         GLuint m_handle;
         /** Colorbuffers attached to the FBO */
         std::vector<std::shared_ptr<Texture2D>> m_colorbuffers;
-        /** Handle of the depthbuffer */
-        GLuint m_depthbuffer;
-        /** Handle of the stencilbuffer */
-        GLuint m_stencilbuffer;
+
+        /** Optional depth (and stencil) buffer texture */
+        std::shared_ptr<Texture2D> m_depth_stencil;
+
+        //TODO additional Texture2DView for read access of stencil buffer
 
         /** Width of the framebuffer i.e. it's color attachments */
         int m_width;
@@ -56,13 +57,23 @@ namespace glowl
         std::string m_log;
 
     public:
+
+        enum DepthStencilType {
+            NONE,
+            DEPTH16,
+            DEPTH24,
+            DEPTH32F,
+            DEPTH24_STENCIL8,
+            DEPTH32F_STENCIL8
+        };
+
         /**
          * \brief FramebufferObject constructor.
          *
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        FramebufferObject(int width, int height, bool has_depth = false, bool has_stencil = false);
+        FramebufferObject(int width, int height, DepthStencilType depth_stencil_type = DEPTH24);
 
         /**
          * \brief FramebufferObject constructor.
@@ -73,8 +84,7 @@ namespace glowl
         FramebufferObject(std::string const& debug_label,
                           int                width,
                           int                height,
-                          bool               has_depth = false,
-                          bool               has_stencil = false);
+                          DepthStencilType   depth_stencil_type = DEPTH24);
 
         ~FramebufferObject();
 
@@ -145,7 +155,7 @@ namespace glowl
          * \brief Check the framebuffer object for completeness.
          * \return Returns true if the framebuffer object is complete, false otherwise.
          */
-        bool checkStatus() const;
+        GLenum FramebufferObject::checkStatus(GLenum target) const;
 
         /**
          * \brief Resize the framebuffer object, i.e. it's color attachments.
@@ -179,42 +189,77 @@ namespace glowl
         }
     };
 
-    inline FramebufferObject::FramebufferObject(int width, int height, bool has_depth, bool has_stencil)
+    inline FramebufferObject::FramebufferObject(int width, int height, DepthStencilType depth_stencil_type)
         : m_width(width), m_height(height)
     {
-        glGenFramebuffers(1, &m_handle);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
+        glCreateFramebuffers(1, &m_handle);
 
-        if (has_depth)
-        {
-            glGenRenderbuffers(1, &m_depthbuffer);
-            glBindRenderbuffer(GL_RENDERBUFFER, m_depthbuffer);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthbuffer);
-            glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        }
-        else
-        {
-            m_depthbuffer = 0;
-        }
+        if (depth_stencil_type != FramebufferObject::DepthStencilType::NONE) {
+            GLint  internal_format;
+            GLenum format = GL_DEPTH_COMPONENT;
+            GLenum type;
 
-        /*
-         * TODO: stencilbuffer
-         */
-        if (0 && has_stencil)
-        {
-            has_stencil = !has_stencil;
-        }
+            switch (depth_stencil_type)
+            {
+            case glowl::FramebufferObject::DEPTH16:
+                internal_format = GL_DEPTH_COMPONENT16;
+                type = GL_FLOAT;
+                break;
+            case glowl::FramebufferObject::DEPTH24:
+                internal_format = GL_DEPTH_COMPONENT24;
+                type = GL_FLOAT;
+                break;
+            case glowl::FramebufferObject::DEPTH32F:
+                internal_format = GL_DEPTH_COMPONENT32F;
+                type = GL_FLOAT;
+                break;
+            case glowl::FramebufferObject::DEPTH24_STENCIL8:
+                internal_format = GL_DEPTH24_STENCIL8;
+                type = GL_UNSIGNED_INT_24_8;
+                break;
+            case glowl::FramebufferObject::DEPTH32F_STENCIL8:
+                internal_format = GL_DEPTH32F_STENCIL8;
+                type = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+                break;
+            default:
+                break;
+            }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            TextureLayout depth_stencil_layout(internal_format,
+                                               m_width,
+                                               m_height,
+                                               1,
+                                               format,
+                                               type,
+                                               1,
+                                               {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
+                                                {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
+                                                {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
+                                                {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
+                                               {{}});
+
+            m_depth_stencil = std::make_shared<Texture2D>("",depth_stencil_layout,nullptr);
+
+            //TODO attach to framebuffer
+            if (depth_stencil_type == FramebufferObject::DepthStencilType::DEPTH24_STENCIL8 ||
+                depth_stencil_type == FramebufferObject::DepthStencilType::DEPTH32F_STENCIL8)
+            {
+                glNamedFramebufferTexture(m_handle, GL_DEPTH_STENCIL_ATTACHMENT, m_depth_stencil->getName(), 0);
+            }
+            else
+            {
+                glNamedFramebufferTexture(m_handle, GL_DEPTH_ATTACHMENT, m_depth_stencil->getName(), 0);
+            }
+
+        }
+        
     }
 
     inline FramebufferObject::FramebufferObject(std::string const& debug_label,
                                                 int                width,
                                                 int                height,
-                                                bool               has_depth,
-                                                bool               has_stencil)
-        : FramebufferObject(width, height, has_depth, has_stencil)
+                                                DepthStencilType   depth_stencil_type)
+        : FramebufferObject(width, height, depth_stencil_type)
     {
         m_debug_label = debug_label;
 #if _DEBUG
@@ -225,12 +270,7 @@ namespace glowl
 
     inline FramebufferObject::~FramebufferObject()
     {
-        /* Delete framebuffer resources. Texture delete themselves when the vector is destroyed. */
-        if (m_depthbuffer != 0)
-            glDeleteRenderbuffers(1, &m_depthbuffer);
-
         /* Delete framebuffer object */
-        glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
         glDeleteFramebuffers(1, &m_handle);
     }
 
@@ -247,28 +287,27 @@ namespace glowl
 
         unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
 
-        TextureLayout              color_attach_layout(internalFormat,
-                                          m_width,
-                                          m_height,
-                                          1,
-                                          format,
-                                          type,
-                                          1,
-                                          {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
-                                           {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
-                                           {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
-                                           {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
-                                          {{}});
-        std::shared_ptr<Texture2D> new_color_attachment(
-            new Texture2D("fbo_" + std::to_string(m_handle) + "_color_attachment_" + std::to_string(bufsSize),
-                          color_attach_layout,
-                          nullptr));
-        m_colorbuffers.push_back(new_color_attachment);
+        TextureLayout color_attach_layout(internalFormat,
+                             m_width,
+                             m_height,
+                             1,
+                             format,
+                             type,
+                             1,
+                             {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
+                              {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
+                              {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
+                              {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
+                             {{}});
+        m_colorbuffers.push_back(
+            std::make_shared<Texture2D>(
+                "fbo_" + std::to_string(m_handle) + "_color_attachment_" +
+                std::to_string(bufsSize),
+                color_attach_layout,
+                nullptr)
+        );
 
-        glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-        glFramebufferTexture2D(
-            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + bufsSize, GL_TEXTURE_2D, m_colorbuffers.back()->getName(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glNamedFramebufferTexture(m_handle, GL_COLOR_ATTACHMENT0 + bufsSize, m_colorbuffers.back()->getName(), 0);
 
         m_drawBufs.push_back(GL_COLOR_ATTACHMENT0 + bufsSize);
 
@@ -283,23 +322,6 @@ namespace glowl
     inline void FramebufferObject::bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-        // if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        // {
-        //     m_log.append("Tried to use incomplete FBO. Fallback to default FBO.\n");
-        //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // }
-        // else
-        // {
-        //     unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
-        //     GLenum* drawBufs = new GLenum[bufsSize];
-        //     for(GLuint i=0; i < bufsSize; i++)
-        //     {
-        //         drawBufs[i] = (GL_COLOR_ATTACHMENT0+i);
-        //     }
-        //     glDrawBuffers(bufsSize, drawBufs);
-        //
-        //     delete drawBufs;
-        // }
 
         glDrawBuffers(static_cast<unsigned int>(m_drawBufs.size()), m_drawBufs.data());
     }
@@ -348,20 +370,12 @@ namespace glowl
 
     inline void FramebufferObject::bindDepthbuffer()
     {
-        glBindTexture(GL_TEXTURE_2D, m_depthbuffer);
+        m_depth_stencil->bindTexture();
     }
 
-    inline void FramebufferObject::bindStencilbuffer()
+    inline GLenum FramebufferObject::checkStatus(GLenum target) const
     {
-        glBindTexture(GL_TEXTURE_2D, m_stencilbuffer);
-    }
-
-    inline bool FramebufferObject::checkStatus() const
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-        bool status = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        return status;
+        return glCheckNamedFramebufferStatus(m_handle,GL_FRAMEBUFFER);
     }
 
     inline void FramebufferObject::resize(int new_width, int new_height)
@@ -396,11 +410,22 @@ namespace glowl
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // resize depth buffer
-        if (m_depthbuffer != 0)
+        if (m_depth_stencil != nullptr)
         {
-            glBindRenderbuffer(GL_RENDERBUFFER, m_depthbuffer);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, new_width, new_height);
-            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            TextureLayout stencil_depth_layout(m_depth_stencil->getInternalFormat(),
+                                               m_width,
+                                               m_height,
+                                               1,
+                                               m_depth_stencil->getFormat(),
+                                               m_depth_stencil->getType(),
+                                               1,
+                                               {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
+                                                {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
+                                                {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
+                                                {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
+                                               {});
+
+            m_depth_stencil->reload(stencil_depth_layout, nullptr);
         }
     }
 
