@@ -155,7 +155,7 @@ namespace glowl
          * \brief Check the framebuffer object for completeness.
          * \return Returns true if the framebuffer object is complete, false otherwise.
          */
-        GLenum FramebufferObject::checkStatus(GLenum target) const;
+        GLenum checkStatus(GLenum target) const;
 
         /**
          * \brief Resize the framebuffer object, i.e. it's color attachments.
