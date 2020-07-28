@@ -240,7 +240,6 @@ namespace glowl
 
             m_depth_stencil = std::make_shared<Texture2D>("",depth_stencil_layout,nullptr);
 
-            //TODO attach to framebuffer
             if (depth_stencil_type == FramebufferObject::DepthStencilType::DEPTH24_STENCIL8 ||
                 depth_stencil_type == FramebufferObject::DepthStencilType::DEPTH32F_STENCIL8)
             {
@@ -426,6 +425,16 @@ namespace glowl
                                                {});
 
             m_depth_stencil->reload(stencil_depth_layout, nullptr);
+
+            if (m_depth_stencil->getInternalFormat() == GL_DEPTH24_STENCIL8 ||
+                m_depth_stencil->getInternalFormat() == GL_DEPTH32F_STENCIL8)
+            {
+                glNamedFramebufferTexture(m_handle, GL_DEPTH_STENCIL_ATTACHMENT, m_depth_stencil->getName(), 0);
+            }
+            else
+            {
+                glNamedFramebufferTexture(m_handle, GL_DEPTH_ATTACHMENT, m_depth_stencil->getName(), 0);
+            }
         }
     }
 
