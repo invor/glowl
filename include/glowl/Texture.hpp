@@ -121,7 +121,7 @@ namespace glowl
     protected:
         std::string m_id; ///< Identifier set by application to help identifying textures
 
-        GLuint m_name; ///< OpenGL texture name given by glGenTextures
+        GLuint m_name; ///< OpenGL texture name given by glCreateTexture
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         GLuint64 m_texture_handle; ///< Actual OpenGL texture handle (used for bindless)
 #endif
@@ -135,14 +135,8 @@ namespace glowl
         // TODO: Store texture parameters as well ?
     public:
         Texture(std::string id, GLint internal_format, GLenum format, GLenum type, GLsizei levels)
-            : m_id(id), m_internal_format(internal_format), m_format(format), m_type(type), m_levels(levels)
-        {
-            glGenTextures(1, &m_name);
-        }
-        virtual ~Texture()
-        {
-            glDeleteTextures(1, &m_name);
-        }
+            : m_id(id), m_internal_format(internal_format), m_format(format), m_type(type), m_levels(levels) {}
+        virtual ~Texture() {}
         Texture(const Texture&) = delete;
 
         virtual void bindTexture() const = 0;

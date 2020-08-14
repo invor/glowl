@@ -43,6 +43,7 @@ namespace glowl
         Texture2D(Texture2D&& other) = delete;
         Texture2D& operator=(const Texture2D& rhs) = delete;
         Texture2D& operator=(Texture2D&& rhs) = delete;
+        ~Texture2D();
 
         /**
          * \brief Bind the texture.
@@ -76,13 +77,13 @@ namespace glowl
           m_width(layout.width),
           m_height(layout.height)
     {
-        glBindTexture(GL_TEXTURE_2D, m_name);
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)
-            glTexParameteri(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
 
-        // for (auto& pname_pvalue : layout.float_parameters)
-        // glTexParameterf(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
+        for (auto& pname_pvalue : layout.float_parameters)
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
 
         GLsizei levels = 1;
 
@@ -91,19 +92,17 @@ namespace glowl
             levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
-        glTexStorage2D(GL_TEXTURE_2D, levels, m_internal_format, m_width, m_height);
+        glTextureStorage2D(m_name, levels, m_internal_format, m_width, m_height);
 
         if (data != nullptr)
         {
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, m_type, data);
+            glTextureSubImage2D(m_name, 0, 0, 0, m_width, m_height, m_format, m_type, data);
         }
 
         if (generateMipmap)
         {
-            glGenerateMipmap(GL_TEXTURE_2D);
+            glGenerateTextureMipmap(m_name);
         }
-
-        glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         m_texture_handle = glGetTextureHandleARB(m_name);
@@ -117,6 +116,11 @@ namespace glowl
         }
     }
 
+    inline Texture2D::~Texture2D()
+    {
+        glDeleteTextures(1,&m_name);
+    }
+
     inline void Texture2D::bindTexture() const
     {
         glBindTexture(GL_TEXTURE_2D, m_name);
@@ -124,9 +128,7 @@ namespace glowl
 
     inline void Texture2D::updateMipmaps()
     {
-        glBindTexture(GL_TEXTURE_2D, m_name);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glGenerateTextureMipmap(m_name);
     }
 
     inline void Texture2D::reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap)
@@ -139,15 +141,13 @@ namespace glowl
 
         glDeleteTextures(1, &m_name);
 
-        glGenTextures(1, &m_name);
-
-        glBindTexture(GL_TEXTURE_2D, m_name);
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)
-            glTexParameteri(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
 
         for (auto& pname_pvalue : layout.float_parameters)
-            glTexParameterf(GL_TEXTURE_2D, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
 
         GLsizei levels = 1;
 
@@ -156,19 +156,17 @@ namespace glowl
             levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
-        glTexStorage2D(GL_TEXTURE_2D, levels, m_internal_format, m_width, m_height);
+        glTextureStorage2D(m_name, levels, m_internal_format, m_width, m_height);
 
         if (data != nullptr)
         {
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, m_type, data);
+            glTextureSubImage2D(m_name, 0, 0, 0, m_width, m_height, m_format, m_type, data);
         }
 
         if (generateMipmap)
         {
-            glGenerateMipmap(GL_TEXTURE_2D);
+            glGenerateTextureMipmap(m_name);
         }
-
-        glBindTexture(GL_TEXTURE_2D, 0);
 
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
