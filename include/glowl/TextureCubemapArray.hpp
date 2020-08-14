@@ -46,6 +46,7 @@ namespace glowl
         TextureCubemapArray(TextureCubemapArray&& other) = delete;
         TextureCubemapArray& operator=(const TextureCubemapArray& rhs) = delete;
         TextureCubemapArray& operator=(TextureCubemapArray&& rhs) = delete;
+        ~TextureCubemapArray();
 
         /**
          * \brief Reload the texture with a new size but unchanged format and type.
@@ -91,31 +92,35 @@ namespace glowl
                                                     bool         generateMipmap)
         : Texture(id, internal_format, format, type, levels), m_width(width), m_height(height), m_layers(layers)
     {
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_name);
+        glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_name);
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_name, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTextureParameteri(m_name, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_name, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_name, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 1, m_internal_format, m_width, m_height, m_layers);
+        glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_layers);
 
-        if (data != nullptr)
-            glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
+        if (data != nullptr) {
+            glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
+        }
 
         if (generateMipmap)
         {
-            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glGenerateMipmap(GL_TEXTURE_CUBE_MAP_ARRAY);
+            glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glGenerateTextureMipmap(m_name);
         }
-
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
 
         if (glGetError() == GL_NO_ERROR)
         {
             // "Do something cop!"
         }
+    }
+
+    inline TextureCubemapArray::~TextureCubemapArray()
+    {
+        glDeleteTextures(1, &m_name);
     }
 
     inline bool TextureCubemapArray::reload(unsigned int width,
@@ -130,28 +135,25 @@ namespace glowl
 
         glDeleteTextures(1, &m_name);
 
-        glGenTextures(1, &m_name);
+        glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_name);
         assert(m_name > 0);
 
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_name);
+        glTextureParameteri(m_name, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(m_name, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(m_name, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_layers);
 
-        glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 1, m_internal_format, m_width, m_height, m_layers);
-
-        if (data != nullptr)
-            glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
+        if (data != nullptr) {
+            glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
+        }
 
         if (generateMipmap)
         {
-            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glGenerateMipmap(GL_TEXTURE_CUBE_MAP_ARRAY);
+            glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glGenerateTextureMipmap(m_name);
         }
-
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
 
         if (glGetError() == GL_NO_ERROR)
         {
@@ -171,16 +173,12 @@ namespace glowl
 
     inline void TextureCubemapArray::updateMipmaps()
     {
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_name);
-        glGenerateMipmap(GL_TEXTURE_CUBE_MAP_ARRAY);
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
+        glGenerateTextureMipmap(m_name);
     }
 
     inline void TextureCubemapArray::texParameteri(GLenum pname, GLenum param)
     {
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_name);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, pname, param);
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
+        glTextureParameteri(m_name, pname, param);
     }
 
     inline TextureLayout TextureCubemapArray::getTextureLayout() const
