@@ -39,7 +39,7 @@ namespace glowl
         Texture2DArray(Texture2DArray&& other) = delete;
         Texture2DArray& operator=(const Texture2DArray& rhs) = delete;
         Texture2DArray& operator=(Texture2DArray&& rhs) = delete;
-        //~Texture2DArray();
+        ~Texture2DArray();
 
         void bindTexture() const;
 
@@ -66,39 +66,40 @@ namespace glowl
           m_height(layout.height),
           m_layers(layout.depth)
     {
-        glBindTexture(GL_TEXTURE_2D_ARRAY, m_name);
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)
         {
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
         for (auto& pname_pvalue : layout.float_parameters)
         {
-            glTexParameterf(GL_TEXTURE_2D_ARRAY, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
         GLsizei levels = 1;
 
-        levels = std::min(layout.levels, 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height)))));
+        if (generateMipmap)
+        {
+            levels = std::min(layout.levels, 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height)))));
+        }
 
-        glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, m_internal_format, m_width, m_height, m_layers);
+        glTextureStorage3D(m_name, levels, m_internal_format, m_width, m_height, m_layers);
 
         if (data != nullptr)
         {
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
+            glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
         }
 
         if (generateMipmap)
         {
-            glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+            glGenerateTextureMipmap(m_name);
         }
 
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         m_texture_handle = glGetTextureHandleARB(m_name);
 #endif
-
-        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
@@ -108,6 +109,10 @@ namespace glowl
         }
     }
 
+    inline Texture2DArray::~Texture2DArray() {
+        glDeleteTextures(1, &m_name);
+    }
+
     inline void Texture2DArray::bindTexture() const
     {
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_name);
@@ -115,9 +120,7 @@ namespace glowl
 
     inline void Texture2DArray::updateMipmaps()
     {
-        glBindTexture(GL_TEXTURE_2D_ARRAY, m_name);
-        glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        glGenerateTextureMipmap(m_name);
     }
 
     inline TextureLayout Texture2DArray::getTextureLayout() const
