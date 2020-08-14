@@ -34,11 +34,12 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        Texture3D(std::string id, TextureLayout const& layout, GLvoid* data);
+        Texture3D(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap = false);
         Texture3D(const Texture3D&) = delete;
         Texture3D(Texture3D&& other) = delete;
         Texture3D& operator=(const Texture3D& rhs) = delete;
         Texture3D& operator=(Texture3D&& rhs) = delete;
+        ~Texture3D();
 
         /**
          * \brief Bind the texture.
@@ -51,7 +52,7 @@ namespace glowl
          * \brief Reload the texture.
          * \param data Pointer to the new texture data.
          */
-        void reload(TextureLayout const& layout, GLvoid* data);
+        void reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap);
 
         TextureLayout getTextureLayout() const;
 
@@ -65,32 +66,42 @@ namespace glowl
         unsigned int m_depth;
     };
 
-    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid* data)
+    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
           m_width(layout.width),
           m_height(layout.height),
           m_depth(layout.depth)
     {
-        glBindTexture(GL_TEXTURE_3D, m_name);
+        glCreateTextures(GL_TEXTURE_3D, 1, &m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)
         {
-            glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
         for (auto& pname_pvalue : layout.float_parameters)
         {
-            glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
+        GLsizei levels = 1;
+
+        if (generateMipmap)
+        {
+            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_depth,std::max(m_width, m_height)))));
+        }
+
+        glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_depth);
 
         if (data != nullptr)
         {
-            glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
+            glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
         }
 
-        glBindTexture(GL_TEXTURE_3D, 0);
+        if (generateMipmap)
+        {
+            glGenerateTextureMipmap(m_name);
+        }
 
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         m_texture_handle = glGetTextureHandleARB(m_name);
@@ -104,6 +115,11 @@ namespace glowl
         }
     }
 
+    inline Texture3D::~Texture3D()
+    {
+        glDeleteTextures(1, &m_name);
+    }
+
     inline void Texture3D::bindTexture() const
     {
         glBindTexture(GL_TEXTURE_3D, m_name);
@@ -111,12 +127,10 @@ namespace glowl
 
     inline void Texture3D::updateMipmaps()
     {
-        glBindTexture(GL_TEXTURE_3D, m_name);
-        glGenerateMipmap(GL_TEXTURE_3D);
-        glBindTexture(GL_TEXTURE_3D, 0);
+        glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture3D::reload(TextureLayout const& layout, GLvoid* data)
+    inline void Texture3D::reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -127,22 +141,36 @@ namespace glowl
 
         glDeleteTextures(1, &m_name);
 
-        glGenTextures(1, &m_name);
-
-        glBindTexture(GL_TEXTURE_3D, m_name);
+        glCreateTextures(GL_TEXTURE_3D, 1, &m_name);
 
         for (auto& pname_pvalue : layout.int_parameters)
-            glTexParameteri(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+        {
+            glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
+        }
 
         for (auto& pname_pvalue : layout.float_parameters)
-            glTexParameterf(GL_TEXTURE_3D, pname_pvalue.first, pname_pvalue.second);
+        {
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
+        }
 
-        glTexStorage3D(GL_TEXTURE_3D, 1, m_internal_format, m_width, m_height, m_depth);
+        GLsizei levels = 1;
+
+        if (generateMipmap)
+        {
+            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_depth, std::max(m_width, m_height)))));
+        }
+
+        glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_depth);
 
         if (data != nullptr)
-            glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
+        {
+            glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_depth, m_format, m_type, data);
+        }
 
-        glBindTexture(GL_TEXTURE_3D, 0);
+        if (generateMipmap)
+        {
+            glGenerateTextureMipmap(m_name);
+        }
 
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
