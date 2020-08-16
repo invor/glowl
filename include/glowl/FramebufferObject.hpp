@@ -236,7 +236,7 @@ namespace glowl
                                                 {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
                                                 {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
                                                 {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
-                                               {{}});
+                                               {});
 
             m_depth_stencil = std::make_shared<Texture2D>("",depth_stencil_layout,nullptr);
 
@@ -297,7 +297,7 @@ namespace glowl
                               {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
                               {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
                               {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
-                             {{}});
+                             {});
         m_colorbuffers.push_back(
             std::make_shared<Texture2D>(
                 "fbo_" + std::to_string(m_handle) + "_color_attachment_" +
