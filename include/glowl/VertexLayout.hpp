@@ -18,6 +18,21 @@ namespace glowl
      *
      * \brief Container for vertex layout descritions. Used by Mesh class.
      *
+     * Usage hints (in combination with Mesh class):
+     * Each VertexLayout instance is associated with exaclty one vertex buffer and describes the attributes
+     * in that buffer. Thus, multiple vertex buffers require a matching number of layouts.
+     * Give a correct stride value for the attributes (don't use 0 for tightly packed vertex data, DSA requires the
+     * actual stride in bytes), e.g.:
+     *
+     * Non-interleaved, tightly packed vertex data,
+     * e.g. two attribs in two buffers {vec3,vec3,...} and {vec2,vec2,...} have strides 12 and 8 in two diffrent vertex layouts
+     * 
+     * Partly interleaved (or non-tightly packed) vertex data,
+     * e.g. three attribs in two buffers {vec3,vec3,...} and {{vec3,vec2},{vec3,vec2},...} have strides 12 and 20 in two different vertex layouts
+     *
+     * Fully interleaved vertex data, 
+     * e.g. three attribs in one buffer {{vec3,vec3,vec2},{vec3,vec3,vec2},...} have stride 32 in a single vertex layout
+     *
      * \author Michael Becher
      */
     struct VertexLayout
@@ -35,7 +50,7 @@ namespace glowl
             GLsizei   offset;
         };
 
-        VertexLayout() : strides(), attributes() {}
+        VertexLayout() : attributes() {}
         /**
          * Construct VertexLayout from set of strides and attributes
          *
@@ -43,8 +58,8 @@ namespace glowl
          * for all attributes (see VertexLayout member documentation).
          *
          */
-        VertexLayout(std::vector<GLsizei> const& strides, std::vector<Attribute> const& attributes)
-            : strides(strides), attributes(attributes)
+        VertexLayout(GLsizei stride, std::vector<Attribute> const& attributes)
+            : stride(stride), attributes(attributes)
         {
         }
         /**
@@ -54,30 +69,12 @@ namespace glowl
          * for all attributes (see VertexLayout member documentation).
          *
          */
-        VertexLayout(std::vector<GLsizei>&& strides, std::vector<Attribute>&& attributes)
-            : strides(strides), attributes(attributes)
+        VertexLayout(GLsizei stride, std::vector<Attribute>&& attributes)
+            : stride(stride), attributes(attributes)
         {
         }
 
-        /**
-         * \brief Stride values in byte per vertex attributes.
-         *
-         * Usage hints (in combination with Mesh class):
-         *
-         * Non-interleaved, tightly packed vertex data, i.e. multiple attributes, each with its own separate vertex
-         * buffer with tightly packed memory: Either a stride of 0 per attribute, e.g. {0,0,..}, or a single stride
-         * value of 0 that is used for all attributes, e.g. {0}
-         *
-         * Partly interleaved or NON-tightly packed vertex data, i.e. multiple attributes, split across multiple vertex
-         * buffer with indivdual strides or potentially with padded memory: Give a correct stride value for each!
-         * attribute, e.g. {12,20,20} for three attribs in two buffers {vec3,vec3,...} and {{vec3,vec2},{vec3,vec2},...}
-         *
-         * Fully interleaved vertex data, i.e. multiple attributes within a single vertex buffer:
-         * Either a stride of sizeof(Vertex) per attribute, e.g. {32,32,32} for {{vec3,vec3,vec2},{vec3,vec3,vec2},...},
-         * or a single stride value of sizeof(Vertex) that is used for all attributes, e.g. {32}
-         *
-         */
-        std::vector<GLsizei>   strides;
+        GLsizei                stride;
         std::vector<Attribute> attributes;
     };
 
@@ -91,17 +88,7 @@ namespace glowl
     {
         bool rtn = true;
 
-        if (lhs.strides.size() == rhs.strides.size())
-        {
-            for (size_t i = 0; i < lhs.strides.size(); ++i)
-            {
-                rtn &= (lhs.strides[i] == rhs.strides[i]);
-            }
-        }
-        else
-        {
-            rtn = false;
-        }
+        rtn &= lhs.stride == rhs.stride;
 
         if (lhs.attributes.size() == rhs.attributes.size())
         {

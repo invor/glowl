@@ -56,14 +56,14 @@ namespace glowl
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
         template<typename VertexPtr, typename IndexPtr>
-        Mesh(std::vector<VertexPtr> const& vertex_data,
-             std::vector<size_t> const&    vertex_data_byte_sizes,
-             IndexPtr const                index_data,
-             GLsizeiptr const              index_data_byte_size,
-             VertexLayout const&           vertex_descriptor,
-             GLenum const                  index_type = GL_UNSIGNED_INT,
-             GLenum const                  usage = GL_STATIC_DRAW,
-             GLenum const                  primitive_type = GL_TRIANGLES);
+        Mesh(std::vector<VertexPtr> const&    vertex_data,
+             std::vector<size_t> const&       vertex_data_byte_sizes,
+             IndexPtr const                   index_data,
+             GLsizeiptr const                 index_data_byte_size,
+             std::vector<VertexLayout> const& vertex_descriptor,
+             GLenum const                     index_type = GL_UNSIGNED_INT,
+             GLenum const                     usage = GL_STATIC_DRAW,
+             GLenum const                     primitive_type = GL_TRIANGLES);
 
         /**
          * \brief Mesh constructor that requires std containers as input.
@@ -74,7 +74,7 @@ namespace glowl
         template<typename VertexContainer, typename IndexContainer>
         Mesh(std::vector<VertexContainer> const& vertex_data,
              IndexContainer const&               index_data,
-             VertexLayout const&                 vertex_descriptor,
+             std::vector<VertexLayout> const&    vertex_descriptor,
              GLenum const                        index_type = GL_UNSIGNED_INT,
              GLenum const                        usage = GL_STATIC_DRAW,
              GLenum const                        primitive_type = GL_TRIANGLES);
@@ -116,7 +116,7 @@ namespace glowl
             glBindVertexArray(0);
         }
 
-        VertexLayout getVertexLayout() const
+        std::vector<VertexLayout> getVertexLayouts() const
         {
             return m_vertex_descriptor;
         }
@@ -163,23 +163,25 @@ namespace glowl
         BufferObject                 m_ibo;
         GLuint                       m_va_handle;
 
-        VertexLayout m_vertex_descriptor;
+        std::vector<VertexLayout> m_vertex_descriptor;
 
         GLuint m_indices_cnt;
         GLenum m_index_type;
         GLenum m_usage;
         GLenum m_primitive_type;
+
+        void createVertexArray();
     };
 
     template<typename VertexPtr, typename IndexPtr>
-    inline Mesh::Mesh(std::vector<VertexPtr> const& vertex_data,
-                      std::vector<size_t> const&    vertex_data_byte_sizes,
-                      IndexPtr const                index_data,
-                      GLsizeiptr const              index_data_byte_size,
-                      VertexLayout const&           vertex_descriptor,
-                      GLenum const                  indices_type,
-                      GLenum const                  usage,
-                      GLenum const                  primitive_type)
+    inline Mesh::Mesh(std::vector<VertexPtr> const&    vertex_data,
+                      std::vector<size_t> const&       vertex_data_byte_sizes,
+                      IndexPtr const                   index_data,
+                      GLsizeiptr const                 index_data_byte_size,
+                      std::vector<VertexLayout> const& vertex_descriptor,
+                      GLenum const                     indices_type,
+                      GLenum const                     usage,
+                      GLenum const                     primitive_type)
         : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
           m_va_handle(0),
           m_vertex_descriptor(vertex_descriptor),
@@ -188,37 +190,12 @@ namespace glowl
           m_usage(usage),
           m_primitive_type(primitive_type)
     {
-        for (unsigned int i = 0; i < vertex_data.size(); ++i)
+        for (unsigned int i = 0; i < vertex_data.size(); ++i) {
             m_vbos.emplace_back(
                 std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
-
-        glGenVertexArrays(1, &m_va_handle);
-
-        // set attribute pointer and vao state
-        glBindVertexArray(m_va_handle);
-
-        m_ibo.bind();
-
-        // TODO check if vertex buffer count matches attribute count, throw exception if not?
-        for (GLuint attrib_idx = 0; attrib_idx < static_cast<GLuint>(vertex_descriptor.attributes.size()); ++attrib_idx)
-        {
-            auto const& attribute = vertex_descriptor.attributes[attrib_idx];
-            GLsizei     attribute_stride = vertex_descriptor.strides.size() == 1 ? vertex_descriptor.strides.front()
-                                                                             : vertex_descriptor.strides[attrib_idx];
-
-            m_vbos[attrib_idx]->bind();
-
-            glEnableVertexAttribArray(attrib_idx);
-            glVertexAttribPointer(attrib_idx,
-                                  attribute.size,
-                                  attribute.type,
-                                  attribute.normalized,
-                                  attribute_stride,
-                                  reinterpret_cast<GLvoid*>(attribute.offset));
         }
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        createVertexArray();
 
         switch (m_index_type)
         {
@@ -243,7 +220,7 @@ namespace glowl
     template<typename VertexContainer, typename IndexContainer>
     inline Mesh::Mesh(std::vector<VertexContainer> const& vertex_data,
                       IndexContainer const&               index_data,
-                      VertexLayout const&                 vertex_descriptor,
+                      std::vector<VertexLayout> const&    vertex_descriptor,
                       GLenum                              indices_type,
                       GLenum                              usage,
                       GLenum                              primitive_type)
@@ -263,31 +240,7 @@ namespace glowl
         for (unsigned int i = 0; i < vertex_data.size(); ++i)
             m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
 
-        glGenVertexArrays(1, &m_va_handle);
-
-        // set attribute pointer and vao state
-        glBindVertexArray(m_va_handle);
-
-        m_ibo.bind();
-
-        for (GLuint attrib_idx = 0; attrib_idx < static_cast<GLuint>(vertex_descriptor.attributes.size()); ++attrib_idx)
-        {
-            auto const& attribute = vertex_descriptor.attributes[attrib_idx];
-            GLsizei     attribute_stride = vertex_descriptor.strides.size() == 1 ? vertex_descriptor.strides.front()
-                                                                             : vertex_descriptor.strides[attrib_idx];
-
-            m_vbos[attrib_idx]->bind();
-
-            glEnableVertexAttribArray(attrib_idx);
-            glVertexAttribPointer(attrib_idx,
-                                  attribute.size,
-                                  attribute.type,
-                                  attribute.normalized,
-                                  attribute_stride,
-                                  reinterpret_cast<GLvoid*>(attribute.offset));
-        }
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        createVertexArray();
 
         GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(typename IndexContainer::value_type));
 
@@ -336,6 +289,38 @@ namespace glowl
     inline void Mesh::bufferIndexSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
     {
         m_ibo.bufferSubData(data, byte_size, byte_offset);
+    }
+
+    inline void Mesh::createVertexArray()
+    {
+        glCreateVertexArrays(1, &m_va_handle);
+
+        GLuint attrib_idx = 0;
+
+        for (size_t vertex_layout_idx = 0; vertex_layout_idx < m_vertex_descriptor.size(); ++vertex_layout_idx)
+        {
+            glVertexArrayVertexBuffer(m_va_handle,
+                                      vertex_layout_idx,
+                                      m_vbos[vertex_layout_idx]->getName(),
+                                      0, // offset not really needed since we just created a new vbo
+                                      m_vertex_descriptor[vertex_layout_idx].stride);
+
+            for (size_t local_attrib_idx = 0;
+                 local_attrib_idx < m_vertex_descriptor[vertex_layout_idx].attributes.size();
+                 ++local_attrib_idx)
+            {
+                auto const& attribute = m_vertex_descriptor[vertex_layout_idx].attributes[local_attrib_idx];
+
+                glEnableVertexArrayAttrib(m_va_handle, attrib_idx);
+                glVertexArrayAttribFormat(
+                    m_va_handle, attrib_idx, attribute.size, attribute.type, attribute.normalized, attribute.offset);
+                glVertexArrayAttribBinding(m_va_handle, attrib_idx, vertex_layout_idx);
+
+                ++attrib_idx;
+            }
+        }
+
+        glVertexArrayElementBuffer(m_va_handle, m_ibo.getName());
     }
 
 } // namespace glowl
