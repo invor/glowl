@@ -382,7 +382,6 @@ namespace glowl
         m_width = new_width;
         m_height = new_height;
 
-        glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
         GLenum attachment_point = GL_COLOR_ATTACHMENT0;
 
         for (auto& colorbuffer : m_colorbuffers)
@@ -403,10 +402,8 @@ namespace glowl
 
             colorbuffer->reload(color_attach_layout, nullptr);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point++, GL_TEXTURE_2D, colorbuffer->getName(), 0);
+            glNamedFramebufferTexture(m_handle, attachment_point++, colorbuffer->getName(), 0);
         }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // resize depth buffer
         if (m_depth_stencil != nullptr)
