@@ -8,9 +8,6 @@
 #ifndef GLOWL_MESH_HPP
 #define GLOWL_MESH_HPP
 
-// Include glad for OpenGL types and functions
-#include <glad/glad.h>
-
 // Include std libs
 #include <string>
 #include <vector>

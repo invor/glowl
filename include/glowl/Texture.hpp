@@ -8,8 +8,6 @@
 #ifndef GLOWL_TEXTURE_HPP
 #define GLOWL_TEXTURE_HPP
 
-#include <glad/glad.h>
-
 #include <string>
 #include <vector>
 

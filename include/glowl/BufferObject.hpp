@@ -8,8 +8,6 @@
 #ifndef GLOWL_BUFFEROBJECT_HPP
 #define GLOWL_BUFFEROBJECT_HPP
 
-#include <glad/glad.h>
-
 #include <iostream>
 
 namespace glowl

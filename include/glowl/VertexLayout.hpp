@@ -8,8 +8,6 @@
 #ifndef GLOWL_VERTEXLAYOUT_HPP
 #define GLOWL_VERTEXLAYOUT_HPP
 
-#include <glad/glad.h>
-
 namespace glowl
 {
 
