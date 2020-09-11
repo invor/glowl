@@ -14,11 +14,13 @@
 #include <utility>
 #include <vector>
 
-#include <glad/glad.h>
+#if __has_include(<glm/glm.hpp>)
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/vec3.hpp>
+#define GLOWL_USE_GLM 1
+#else
+#define GLOWL_USE_GLM 0
+#endif
 
 #include "Exceptions.hpp"
 
@@ -97,6 +99,7 @@ namespace glowl
         void setUniform(GLchar const* name, GLuint v0, GLuint v1);
         void setUniform(GLchar const* name, GLuint v0, GLuint v1, GLuint v2);
         void setUniform(GLchar const* name, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
+#if GLOWL_USE_GLM
         void setUniform(GLchar const* name, glm::vec2 const& v);
         void setUniform(GLchar const* name, glm::vec3 const& v);
         void setUniform(GLchar const* name, glm::vec4 const& v);
@@ -106,6 +109,7 @@ namespace glowl
         void setUniform(GLchar const* name, glm::mat2 const& m);
         void setUniform(GLchar const* name, glm::mat3 const& m);
         void setUniform(GLchar const* name, glm::mat4 const& m);
+#endif
 
         /**
          * \brief Return the position of a uniform.
@@ -320,6 +324,7 @@ namespace glowl
         glUniform4ui(getUniformLocation(name), v0, v1, v2, v3);
     }
 
+#if GLOWL_USE_GLM
     inline void GLSLProgram::setUniform(GLchar const* name, glm::vec2 const& v)
     {
         glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(v));
@@ -364,6 +369,7 @@ namespace glowl
     {
         glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
     }
+#endif
 
     inline GLuint GLSLProgram::getUniformLocation(GLchar const* name)
     {
