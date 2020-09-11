@@ -10,7 +10,7 @@
 
 #include <glad/glad.h>
 
-#include <iostream>
+#include "Exceptions.hpp"
 
 namespace glowl
 {
@@ -99,7 +99,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            std::cerr << "Error - BufferObject - Construction: " << err << std::endl;
+            throw BufferObjectException("BufferObject::BufferObject - OpenGL error " + err);
         }
     }
 
@@ -112,7 +112,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            std::cerr << "Error - BufferObject - Construction: " << err << std::endl;
+            throw BufferObjectException("BufferObject::BufferObject - OpenGL error " + err);
         }
     }
 
@@ -129,8 +129,7 @@ namespace glowl
             m_byte_size)
         {
             // error message
-            std::cerr << "Error - BufferObject - bufferSubData: given data too large for buffer." << std::endl;
-            return;
+            throw BufferObjectException("BufferObject::bufferSubData - given data too large for buffer");
         }
 
         glNamedBufferSubData(
@@ -143,8 +142,7 @@ namespace glowl
         if ((byte_offset + byte_size) > m_byte_size)
         {
             // error message
-            std::cerr << "Error - BufferObject - bufferSubData: given data too large for buffer." << std::endl;
-            return;
+            throw BufferObjectException("BufferObject::bufferSubData - given data too large for buffer");
         }
 
         glNamedBufferSubData(m_name, byte_offset, byte_size, data);
@@ -159,7 +157,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            std::cerr << "Error - BufferObject - rebuffer: " << err << std::endl;
+            throw BufferObjectException("BufferObject::rebuffer - OpenGL error " + err);
         }
     }
 
@@ -171,7 +169,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            std::cerr << "Error - BufferObject - rebuffer: " << err << std::endl;
+            throw BufferObjectException("BufferObject::rebuffer - OpenGL error " + err);
         }
     }
 
@@ -191,7 +189,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            std::cerr << "Error - BufferObject - rebindAs: " << err << std::endl;
+            throw BufferObjectException("BufferObject::bindAs - OpenGL error " + err);
         }
     }
 
@@ -199,8 +197,7 @@ namespace glowl
     {
         if (src->m_byte_size > tgt->m_byte_size)
         {
-            std::cerr << "Error: ShaderStorageBufferObject::copy - target buffer smaller than source." << std::endl;
-            return;
+            throw BufferObjectException("BufferObject::copy - target buffer smaller than source");
         }
 
         glCopyNamedBufferSubData(src->m_name, tgt->m_name, 0, 0, src->m_byte_size);
@@ -214,13 +211,11 @@ namespace glowl
     {
         if ((readOffset + size) > src->m_byte_size)
         {
-            // std::cerr << "Error: ShaderStorageBufferObject::copy - target buffer smaller than source." <<
-            // std::endl;
-            return;
+            throw BufferObjectException("BufferObject::copy - source buffer out of bounds");
         }
         else if ((writeOffset + size) > tgt->m_byte_size)
         {
-            return;
+            throw BufferObjectException("BufferObject::copy - target buffer out of bounds");
         }
 
         glCopyNamedBufferSubData(src->m_name, tgt->m_name, readOffset, writeOffset, size);

@@ -10,8 +10,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
+#include "Exceptions.hpp"
 #include "Texture.hpp"
 
 namespace glowl
@@ -108,11 +108,10 @@ namespace glowl
         m_texture_handle = glGetTextureHandleARB(m_name);
 #endif
 
-        GLenum err = glGetError();
+        auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            std::cerr << "GL error during texture (id: " << id << ") creation: " << err << std::endl;
+            throw TextureException("Texture2D::Texture2D - texture id: " + m_id + " - OpenGL error " + std::to_string(err));
         }
     }
 
@@ -171,8 +170,8 @@ namespace glowl
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            std::cerr << "GL error during  (id: " << m_id << ") reload: " << err << std::endl;
+            throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 

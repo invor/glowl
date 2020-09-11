@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 #include "Texture.hpp"
 
@@ -104,8 +103,8 @@ namespace glowl
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            std::cerr << "GL error during array texture (id: " << id << ") creation: " << err << std::endl;
+            throw TextureException("Texture2DArray::Texture2DArray - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 

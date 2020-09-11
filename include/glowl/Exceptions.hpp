@@ -26,7 +26,31 @@ namespace glowl
         std::string m_message;
     };
 
+    class BufferObjectException : public BaseException
+    {
+    public:
+        using BaseException::BaseException;
+    };
+
+    class FramebufferObjectException : public BaseException
+    {
+    public:
+        using BaseException::BaseException;
+    };
+
     class GLSLProgramException : public BaseException
+    {
+    public:
+        using BaseException::BaseException;
+    };
+
+    class MeshException : public BaseException
+    {
+    public:
+        using BaseException::BaseException;
+    };
+
+    class TextureException : public BaseException
     {
     public:
         using BaseException::BaseException;

@@ -8,8 +8,7 @@
 #ifndef GLOWL_TEXTURE3D_HPP
 #define GLOWL_TEXTURE3D_HPP
 
-#include <iostream>
-
+#include "Exceptions.hpp"
 #include "Texture.hpp"
 
 namespace glowl
@@ -110,8 +109,8 @@ namespace glowl
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            std::cerr << "GL error during 3D texture (id:" << id << ") creation: " << err << std::endl;
+            throw TextureException("Texture3D::Texture3D - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 
@@ -175,8 +174,8 @@ namespace glowl
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            std::cerr << "GL error during texture reloading: " << err << std::endl;
+            throw TextureException("Texture3D::reload - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 

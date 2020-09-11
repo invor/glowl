@@ -10,6 +10,7 @@
 
 #include <cassert>
 
+#include "Exceptions.hpp"
 #include "Texture.hpp"
 
 namespace glowl
@@ -54,9 +55,8 @@ namespace glowl
          * \param height Specifies the new height of the texture in pixels.
          * \param layers Specifies the new number of layers in the texture array.
          * \param data Pointer to the new texture data.
-         * \return Returns true if the texture was succesfully created, false otherwise
          */
-        bool reload(unsigned int width,
+        void reload(unsigned int width,
                     unsigned int height,
                     unsigned int layers,
                     GLvoid*      data,
@@ -112,9 +112,11 @@ namespace glowl
             glGenerateTextureMipmap(m_name);
         }
 
-        if (glGetError() == GL_NO_ERROR)
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
+            throw TextureException("TextureCubemapArray::TextureCubemapArray - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 
@@ -123,7 +125,7 @@ namespace glowl
         glDeleteTextures(1, &m_name);
     }
 
-    inline bool TextureCubemapArray::reload(unsigned int width,
+    inline void TextureCubemapArray::reload(unsigned int width,
                                             unsigned int height,
                                             unsigned int layers,
                                             GLvoid*      data,
@@ -155,14 +157,11 @@ namespace glowl
             glGenerateTextureMipmap(m_name);
         }
 
-        if (glGetError() == GL_NO_ERROR)
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            return true;
-        }
-        else
-        {
-            return false;
+            throw TextureException("TextureCubemapArray::TextureCubemapArray - texture id: " + m_id +
+                                   " - OpenGL error " + std::to_string(err));
         }
     }
 

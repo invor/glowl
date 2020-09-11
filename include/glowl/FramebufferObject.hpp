@@ -8,14 +8,14 @@
 #ifndef GLOWL_FRAMEBUFFEROBJECT_HPP
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
-/* Include space-lion files */
-#include "Texture2D.hpp"
-
 /* Include system libraries */
 #include <vector>
-//#include <iostream>
 #include <memory>
 #include <string>
+
+/* Include glowl files */
+#include "Exceptions.hpp"
+#include "Texture2D.hpp"
 
 namespace glowl
 {
@@ -107,7 +107,7 @@ namespace glowl
         * \param type Specifies datatype (e.g. GL_FLOAT)
         * \return Returns true if a color attachment was added, false otherwise
         */
-        bool createColorAttachment(GLenum internalFormat, GLenum format, GLenum type);
+        void createColorAttachment(GLenum internalFormat, GLenum format, GLenum type);
 
         std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
 
@@ -273,7 +273,7 @@ namespace glowl
         glDeleteFramebuffers(1, &m_handle);
     }
 
-    inline bool FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum format, GLenum type)
+    inline void FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum format, GLenum type)
     {
         GLint maxAttachments;
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxAttachments);
@@ -281,7 +281,8 @@ namespace glowl
         if (m_colorbuffers.size() == (GLuint) maxAttachments)
         {
             m_log.append("Maximum amount of color attachments reached.\n");
-            return false;
+
+            throw FramebufferObjectException("FramebufferObject::createColorAttachment - log:\n" + m_log);
         }
 
         unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
@@ -309,8 +310,6 @@ namespace glowl
         glNamedFramebufferTexture(m_handle, GL_COLOR_ATTACHMENT0 + bufsSize, m_colorbuffers.back()->getName(), 0);
 
         m_drawBufs.push_back(GL_COLOR_ATTACHMENT0 + bufsSize);
-
-        return true;
     }
 
     inline std::shared_ptr<Texture2D> FramebufferObject::getColorAttachment(unsigned int index) const

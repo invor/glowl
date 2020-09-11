@@ -8,6 +8,7 @@
 #ifndef GLOWL_TEXTURE3DVIEW_HPP
 #define GLOWL_TEXTURE3DVIEW_HPP
 
+#include "Exceptions.hpp"
 #include "Texture.hpp"
 #include "Texture3D.hpp"
 
@@ -86,8 +87,8 @@ namespace glowl
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            // "Do something cop!"
-            std::cerr << "GL error during 3D texture view creation: " << err << std::endl;
+            throw TextureException("Texture3DView::Texture3DView - texture id: " + m_id + " - OpenGL error " +
+                                     std::to_string(err));
         }
     }
 
