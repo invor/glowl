@@ -9,6 +9,7 @@
 #define GLOWL_MESH_HPP
 
 // Include std libs
+#include <memory>
 #include <string>
 #include <vector>
 
