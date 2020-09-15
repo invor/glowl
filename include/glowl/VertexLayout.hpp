@@ -8,6 +8,8 @@
 #ifndef GLOWL_VERTEXLAYOUT_HPP
 #define GLOWL_VERTEXLAYOUT_HPP
 
+#include "glinclude.h"
+
 namespace glowl
 {
 

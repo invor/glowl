@@ -9,13 +9,14 @@
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
 /* Include system libraries */
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
 /* Include glowl files */
 #include "Exceptions.hpp"
 #include "Texture2D.hpp"
+#include "glinclude.h"
 
 namespace glowl
 {

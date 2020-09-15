@@ -2,14 +2,24 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 project(glowl VERSION 0.4.0 LANGUAGES CXX)
 
+# Build options
+set(GLOWL_OPENGL_INCLUDE "NONE" CACHE STRING "Choose OpenGL include.")
+set_property(CACHE GLOWL_OPENGL_INCLUDE PROPERTY STRINGS "NONE" "GLAD" "GLAD2" "GL3W" "GLEW")
+
+# The library
 add_library(glowl INTERFACE)
 add_library(glowl::glowl ALIAS glowl)
 
-target_include_directories(glowl
-  INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+target_include_directories(glowl INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
+if (NOT GLOWL_OPENGL_INCLUDE STREQUAL "NONE")
+  target_compile_definitions(glowl INTERFACE
+    "GLOWL_OPENGL_INCLUDE_${GLOWL_OPENGL_INCLUDE}")
+endif ()
+
+# Install
 include(GNUInstallDirs)
 
 install(DIRECTORY include/

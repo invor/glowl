@@ -15,6 +15,7 @@
 // Include glowl files
 #include "BufferObject.hpp"
 #include "VertexLayout.hpp"
+#include "glinclude.h"
 
 namespace glowl
 {
