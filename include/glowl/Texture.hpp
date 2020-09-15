@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "glinclude.h"
+
 namespace glowl
 {
 
