@@ -39,8 +39,12 @@ namespace glowl
     {
         struct Attribute
         {
-            Attribute(GLint size, GLenum type, GLboolean normalized, GLsizei offset)
-                : size(size), type(type), normalized(normalized), offset(offset)
+            Attribute(GLint     size,
+                      GLenum    type,
+                      GLboolean normalized,
+                      GLsizei   offset,
+                      GLenum    shader_input_type = GL_FLOAT)
+                : size(size), type(type), normalized(normalized), offset(offset), shader_input_type(shader_input_type)
             {
             }
 
@@ -48,6 +52,7 @@ namespace glowl
             GLenum    type;
             GLboolean normalized;
             GLsizei   offset;
+            GLenum    shader_input_type; ///< type used by vertex shader input: float, double or integer
         };
 
         VertexLayout() : attributes() {}
@@ -81,7 +86,7 @@ namespace glowl
     inline bool operator==(VertexLayout::Attribute const& lhs, VertexLayout::Attribute const& rhs)
     {
         return lhs.normalized == rhs.normalized && lhs.offset == rhs.offset && lhs.size == rhs.size &&
-               lhs.type == rhs.type;
+               lhs.type == rhs.type && lhs.shader_input_type == rhs.shader_input_type;
     }
 
     inline bool operator==(VertexLayout const& lhs, VertexLayout const& rhs)

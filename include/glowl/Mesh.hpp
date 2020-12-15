@@ -196,14 +196,13 @@ namespace glowl
                 m_vbos.emplace_back(
                     std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
             }
+
+            createVertexArray();
         }
         catch (...)
         {
             throw;
         }
-        
-
-        createVertexArray();
 
         switch (m_index_type)
         {
@@ -371,8 +370,34 @@ namespace glowl
                 auto const& attribute = m_vertex_descriptor[vertex_layout_idx].attributes[local_attrib_idx];
 
                 glEnableVertexArrayAttrib(m_va_handle, attrib_idx);
-                glVertexArrayAttribFormat(
-                    m_va_handle, attrib_idx, attribute.size, attribute.type, attribute.normalized, attribute.offset);
+                switch (attribute.shader_input_type)
+                {
+                case GL_FLOAT:
+                    glVertexArrayAttribFormat(m_va_handle,
+                                              attrib_idx,
+                                              attribute.size,
+                                              attribute.type,
+                                              attribute.normalized,
+                                              attribute.offset);
+                    break;
+                case GL_INT:
+                    glVertexArrayAttribIFormat(m_va_handle,
+                                              attrib_idx,
+                                              attribute.size,
+                                              attribute.type,
+                                              attribute.offset);
+                    break;
+                case GL_DOUBLE:
+                    glVertexArrayAttribLFormat(m_va_handle,
+                                              attrib_idx,
+                                              attribute.size,
+                                              attribute.type,
+                                              attribute.offset);
+                    break;
+                default:
+                    throw MeshException("Mesh::createVertexArray - invalid vertex shader input type given (use float, double or int)");
+                    break;
+                }
                 glVertexArrayAttribBinding(m_va_handle, attrib_idx, vertex_layout_idx);
 
                 ++attrib_idx;
