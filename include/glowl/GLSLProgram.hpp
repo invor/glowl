@@ -87,7 +87,7 @@ namespace glowl
          * Useful if mesh vertex attribute order is different from order given in vertex shader.
          * \param location_name_pairs A vector of pairs of location (i.e. vertex attribute index) and vertex shader attribute variable name
          */
-        void bindAttribLocations(std::vector<std::pair<GLuint, std::string>> location_name_pairs);
+        void bindAttribLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs);
 
         /**
          * \brief Associates a fragment shader output variable with a specific output index.
@@ -100,7 +100,7 @@ namespace glowl
          * Ignored if output locations statically defined in shader.
          * \param location_name_pairs A vector of pairs of location (i.e. output index) and fragment shader output variable name
          */
-        void bindFragDataLocations(std::vector<std::pair<GLuint, std::string>> location_name_pairs);
+        void bindFragDataLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs);
 
         void setUniform(GLchar const* name, GLfloat v0);
         void setUniform(GLchar const* name, GLfloat v0, GLfloat v1);
@@ -275,7 +275,7 @@ namespace glowl
         link(); // relink program to apply attrib location binding 
     }
 
-    inline void GLSLProgram::bindAttribLocations(std::vector<std::pair<GLuint, std::string>> location_name_pairs)
+    inline void GLSLProgram::bindAttribLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs)
     {
         for (auto& location_name : location_name_pairs) {
             glBindAttribLocation(m_handle, location_name.first, location_name.second.c_str());
@@ -289,7 +289,7 @@ namespace glowl
         link(); // relink program to apply frag data location binding 
     }
 
-    inline void GLSLProgram::bindFragDataLocations(std::vector<std::pair<GLuint, std::string>> location_name_pairs)
+    inline void GLSLProgram::bindFragDataLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs)
     {
         for (auto& location_name : location_name_pairs)
         {
