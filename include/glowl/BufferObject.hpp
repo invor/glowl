@@ -98,7 +98,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw BufferObjectException("BufferObject::BufferObject - OpenGL error " + err);
+            throw BufferObjectException("BufferObject::BufferObject - OpenGL error " + std::to_string(err));
         }
     }
 
@@ -111,7 +111,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw BufferObjectException("BufferObject::BufferObject - OpenGL error " + err);
+            throw BufferObjectException("BufferObject::BufferObject - OpenGL error " + std::to_string(err));
         }
     }
 
@@ -156,7 +156,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw BufferObjectException("BufferObject::rebuffer - OpenGL error " + err);
+            throw BufferObjectException("BufferObject::rebuffer - OpenGL error " + std::to_string(err));
         }
     }
 
@@ -168,7 +168,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw BufferObjectException("BufferObject::rebuffer - OpenGL error " + err);
+            throw BufferObjectException("BufferObject::rebuffer - OpenGL error " + std::to_string(err));
         }
     }
 
@@ -188,7 +188,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw BufferObjectException("BufferObject::bindAs - OpenGL error " + err);
+            throw BufferObjectException("BufferObject::bindAs - OpenGL error " + std::to_string(err));
         }
     }
 
