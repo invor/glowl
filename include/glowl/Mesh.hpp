@@ -181,7 +181,7 @@ namespace glowl
                       GLenum const                     indices_type,
                       GLenum const                     usage,
                       GLenum const                     primitive_type)
-    try : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
+        : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
           m_va_handle(0),
           m_vertex_descriptor(vertex_descriptor),
           m_indices_cnt(0),
@@ -189,20 +189,13 @@ namespace glowl
           m_usage(usage),
           m_primitive_type(primitive_type)
     {
-        try
+        for (unsigned int i = 0; i < vertex_data.size(); ++i)
         {
-            for (unsigned int i = 0; i < vertex_data.size(); ++i)
-            {
-                m_vbos.emplace_back(
-                    std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
-            }
+            m_vbos.emplace_back(
+                std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
+        }
 
-            createVertexArray();
-        }
-        catch (...)
-        {
-            throw;
-        }
+        createVertexArray();
 
         switch (m_index_type)
         {
@@ -223,10 +216,6 @@ namespace glowl
             throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
         }
     }
-    catch (...)
-    {
-        throw;
-    }
 
     template<typename VertexContainer, typename IndexContainer>
     inline Mesh::Mesh(std::vector<VertexContainer> const& vertex_data,
@@ -235,7 +224,7 @@ namespace glowl
                       GLenum                              indices_type,
                       GLenum                              usage,
                       GLenum                              primitive_type)
-    try : m_ibo(GL_ELEMENT_ARRAY_BUFFER,
+        : m_ibo(GL_ELEMENT_ARRAY_BUFFER,
                 index_data,
                 usage), // TODO ibo generation in constructor might fail? needs a bound vao?
           m_va_handle(0),
@@ -247,14 +236,9 @@ namespace glowl
     {
         // Some sanity checks
         // TODO check if vertex buffer count matches attribute count, throw exception if not?
-        try
+        for (unsigned int i = 0; i < vertex_data.size(); ++i)
         {
-            for (unsigned int i = 0; i < vertex_data.size(); ++i)
-                m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
-        }
-        catch (...)
-        {
-            throw;
+            m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
         }
 
         createVertexArray();
@@ -280,73 +264,38 @@ namespace glowl
             throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
         }
     }
-    catch (...)
-    {
-        throw;
-    }
 
     template<typename VertexContainer>
     inline void Mesh::bufferVertexSubData(size_t vbo_idx, VertexContainer const& vertices, GLsizeiptr byte_offset)
     {
-        if (vbo_idx < m_vbos.size())
-        {
-            try
-            {
-                m_vbos[vbo_idx]->bufferSubData<VertexContainer>(vertices, byte_offset);
-            }
-            catch (...)
-            {
-                throw;
-            }
-        }
-        else
+        if (vbo_idx >= m_vbos.size())
         {
             throw MeshException("Mesh::bufferVertexSubData - vertex buffer index out of range");
         }
+        m_vbos[vbo_idx]->bufferSubData<VertexContainer>(vertices, byte_offset);
     }
 
-    inline void Mesh::bufferVertexSubData(size_t vbo_idx, GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
+    inline void Mesh::bufferVertexSubData(size_t        vbo_idx,
+                                          GLvoid const* data,
+                                          GLsizeiptr    byte_size,
+                                          GLsizeiptr    byte_offset)
     {
-        if (vbo_idx < m_vbos.size())
-        {
-            try
-            {
-                m_vbos[vbo_idx]->bufferSubData(data, byte_size, byte_offset);
-            }
-            catch (...)
-            {
-                throw;
-            }
-        }
-        else
+        if (vbo_idx >= m_vbos.size())
         {
             throw MeshException("Mesh::bufferVertexSubData - vertex buffer index out of range");
         }
+        m_vbos[vbo_idx]->bufferSubData(data, byte_size, byte_offset);
     }
 
     template<typename IndexContainer>
     inline void Mesh::bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset)
     {
-        try
-        {
-            m_ibo.bufferSubData<IndexContainer>(indices, byte_offset);
-        }
-        catch (...)
-        {
-            throw;
-        }
+        m_ibo.bufferSubData<IndexContainer>(indices, byte_offset);
     }
 
     inline void Mesh::bufferIndexSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
     {
-        try
-        {
-            m_ibo.bufferSubData(data, byte_size, byte_offset);
-        }
-        catch (...)
-        {
-            throw;
-        }
+        m_ibo.bufferSubData(data, byte_size, byte_offset);
     }
 
     inline void Mesh::createVertexArray()
@@ -382,20 +331,21 @@ namespace glowl
                     break;
                 case GL_INT:
                     glVertexArrayAttribIFormat(m_va_handle,
-                                              attrib_idx,
-                                              attribute.size,
-                                              attribute.type,
-                                              attribute.offset);
+                                               attrib_idx,
+                                               attribute.size,
+                                               attribute.type,
+                                               attribute.offset);
                     break;
                 case GL_DOUBLE:
                     glVertexArrayAttribLFormat(m_va_handle,
-                                              attrib_idx,
-                                              attribute.size,
-                                              attribute.type,
-                                              attribute.offset);
+                                               attrib_idx,
+                                               attribute.size,
+                                               attribute.type,
+                                               attribute.offset);
                     break;
                 default:
-                    throw MeshException("Mesh::createVertexArray - invalid vertex shader input type given (use float, double or int)");
+                    throw MeshException(
+                        "Mesh::createVertexArray - invalid vertex shader input type given (use float, double or int)");
                     break;
                 }
                 glVertexArrayAttribBinding(m_va_handle, attrib_idx, vertex_layout_idx);
