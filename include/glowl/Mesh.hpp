@@ -48,6 +48,12 @@ namespace glowl
     public:
         typedef std::unique_ptr<BufferObject> BufferObjectPtr;
 
+        template<typename T>
+        using VertexInfo = std::pair<std::vector<T>, glowl::VertexLayout>;
+
+        template<typename T>
+        using VertexInfoList = std::vector<VertexInfo<T>>;
+
         /**
          * \brief Mesh constructor that requires data pointers and byte sizes as input.
          *
@@ -77,6 +83,13 @@ namespace glowl
              GLenum const                        index_type = GL_UNSIGNED_INT,
              GLenum const                        usage = GL_STATIC_DRAW,
              GLenum const                        primitive_type = GL_TRIANGLES);
+
+        template<typename VertexContainer, typename IndexContainer>
+        Mesh(std::vector<std::pair<VertexContainer, VertexLayout>> const& vertex_info,
+             IndexContainer const&                                        index_data,
+             GLenum const                                                 index_type = GL_UNSIGNED_INT,
+             GLenum const                                                 usage = GL_STATIC_DRAW,
+             GLenum const                                                 primitive_type = GL_TRIANGLES);
 
         ~Mesh()
         {
@@ -239,6 +252,49 @@ namespace glowl
         for (unsigned int i = 0; i < vertex_data.size(); ++i)
         {
             m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
+        }
+
+        createVertexArray();
+
+        GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(typename IndexContainer::value_type));
+
+        switch (m_index_type)
+        {
+        case GL_UNSIGNED_INT:
+            m_indices_cnt = static_cast<GLuint>(vi_size / 4);
+            break;
+        case GL_UNSIGNED_SHORT:
+            m_indices_cnt = static_cast<GLuint>(vi_size / 2);
+            break;
+        case GL_UNSIGNED_BYTE:
+            m_indices_cnt = static_cast<GLuint>(vi_size / 1);
+            break;
+        }
+
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
+        }
+    }
+
+    template<typename VertexContainer, typename IndexContainer>
+    inline Mesh::Mesh(std::vector<std::pair<VertexContainer, VertexLayout>> const& vertex_info_list,
+                      const IndexContainer&                                        index_data,
+                      const GLenum                                                 index_type,
+                      const GLenum                                                 usage,
+                      const GLenum                                                 primitive_type)
+        : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, usage),
+          m_va_handle(0),
+          m_indices_cnt(0),
+          m_index_type(index_type),
+          m_usage(usage),
+          m_primitive_type(primitive_type)
+    {
+        for (auto const& vertex_info : vertex_info_list)
+        {
+            m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_info.first, m_usage));
+            m_vertex_descriptor.push_back(vertex_info.second);
         }
 
         createVertexArray();
