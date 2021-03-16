@@ -220,7 +220,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw MeshException("Mesh::Mesh - OpenGL error " + err);
+            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
         }
     }
     catch (...)
@@ -277,7 +277,7 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw MeshException("Mesh::Mesh - OpenGL error " + err);
+            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
         }
     }
     catch (...)
