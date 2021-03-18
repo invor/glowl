@@ -58,6 +58,12 @@ namespace glowl
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
         GLSLProgram(ShaderSourceList const& shaderList);
+        /**
+         * \brief GLSLProgram constructor.
+         *
+         * Wraps (and takes ownership of) an existing shader program.
+         */
+        GLSLProgram(GLuint handle);
         ~GLSLProgram();
 
         // Deleted copy constructor (C++11). No going around deleting copies of OpenGL Object with identical handles!
@@ -186,6 +192,8 @@ namespace glowl
             throw;
         }
     }
+
+    inline GLSLProgram::GLSLProgram(GLuint handle) : m_handle(handle) {}
 
     inline GLSLProgram::~GLSLProgram()
     {
