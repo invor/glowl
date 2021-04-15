@@ -209,6 +209,8 @@ namespace glowl
         GLenum m_primitive_type;
 
         void createVertexArray();
+        void setIndicesCount(GLuint index_data_byte_size);
+        void checkError();
     };
 
     template<typename VertexPtr, typename IndexPtr>
@@ -235,25 +237,9 @@ namespace glowl
         }
 
         createVertexArray();
+        setIndicesCount(index_data_byte_size);
 
-        switch (m_index_type)
-        {
-        case GL_UNSIGNED_INT:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
-            break;
-        case GL_UNSIGNED_SHORT:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 2);
-            break;
-        case GL_UNSIGNED_BYTE:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
-            break;
-        }
-
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
-        }
+        checkError();
     }
 
     template<typename VertexPtr, typename IndexPtr>
@@ -281,25 +267,9 @@ namespace glowl
         }
 
         createVertexArray();
+        setIndicesCount(index_data_byte_size);
 
-        switch (m_index_type)
-        {
-        case GL_UNSIGNED_INT:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
-            break;
-        case GL_UNSIGNED_SHORT:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 2);
-            break;
-        case GL_UNSIGNED_BYTE:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
-            break;
-        }
-
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
-        }
+        checkError();
     }
 
     template<typename VertexContainer, typename IndexContainer>
@@ -329,25 +299,9 @@ namespace glowl
         createVertexArray();
 
         GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(typename IndexContainer::value_type));
+        setIndicesCount(vi_size);
 
-        switch (m_index_type)
-        {
-        case GL_UNSIGNED_INT:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 4);
-            break;
-        case GL_UNSIGNED_SHORT:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 2);
-            break;
-        case GL_UNSIGNED_BYTE:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 1);
-            break;
-        }
-
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
-        }
+        checkError();
     }
 
     template<typename VertexContainer, typename IndexContainer>
@@ -372,25 +326,9 @@ namespace glowl
         createVertexArray();
 
         GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(typename IndexContainer::value_type));
+        setIndicesCount(vi_size);
 
-        switch (m_index_type)
-        {
-        case GL_UNSIGNED_INT:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 4);
-            break;
-        case GL_UNSIGNED_SHORT:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 2);
-            break;
-        case GL_UNSIGNED_BYTE:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 1);
-            break;
-        }
-
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
-        }
+        checkError();
     }
 
     template<typename VertexContainer>
@@ -483,6 +421,31 @@ namespace glowl
         }
 
         glVertexArrayElementBuffer(m_va_handle, m_ibo.getName());
+    }
+
+    inline void Mesh::setIndicesCount(int index_data_byte_size)
+    {
+        switch (m_index_type)
+        {
+        case GL_UNSIGNED_INT:
+            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
+            break;
+        case GL_UNSIGNED_SHORT:
+            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 2);
+            break;
+        case GL_UNSIGNED_BYTE:
+            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
+            break;
+        }
+    }
+
+    inline void Mesh::checkError()
+    {
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
+        }
     }
 
 } // namespace glowl
