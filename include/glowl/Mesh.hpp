@@ -101,6 +101,15 @@ namespace glowl
              GLenum const                        usage = GL_STATIC_DRAW,
              GLenum const                        primitive_type = GL_TRIANGLES);
 
+        /**
+         * \brief Mesh constructor that requires std containers as input.
+         *
+         * \param vertex_info A vector where each entry contains (in a pair) the vertex data in a std container and the
+         * corresponding VertexLayout.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
         template<typename VertexContainer, typename IndexContainer>
         Mesh(std::vector<std::pair<VertexContainer, VertexLayout>> const& vertex_info,
              IndexContainer const&                                        index_data,
