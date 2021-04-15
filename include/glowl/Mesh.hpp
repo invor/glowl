@@ -187,7 +187,7 @@ namespace glowl
             return m_ibo.getByteSize();
         }
 
-        std::vector<BufferObjectPtr> const& getVbo() const
+        std::vector<BufferObjectPtr> const& getVbos() const
         {
             return m_vbos;
         }
