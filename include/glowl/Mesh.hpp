@@ -423,7 +423,7 @@ namespace glowl
         glVertexArrayElementBuffer(m_va_handle, m_ibo.getName());
     }
 
-    inline void Mesh::setIndicesCount(int index_data_byte_size)
+    inline void Mesh::setIndicesCount(GLuint index_data_byte_size)
     {
         switch (m_index_type)
         {
