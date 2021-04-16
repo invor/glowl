@@ -32,7 +32,7 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        Texture2DArray(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap = false);
+        Texture2DArray(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false);
         Texture2DArray(const Texture2DArray&) =
             delete; // TODO: think of meaningful copy operation...maybe copy texture content to new texture object?
         Texture2DArray(Texture2DArray&& other) = delete;
@@ -58,7 +58,7 @@ namespace glowl
 
     inline Texture2DArray::Texture2DArray(std::string          id,
                                           TextureLayout const& layout,
-                                          GLvoid*              data,
+                                          GLvoid const*              data,
                                           bool                 generateMipmap)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
           m_width(layout.width),

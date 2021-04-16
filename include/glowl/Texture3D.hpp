@@ -33,7 +33,7 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        Texture3D(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap = false);
+        Texture3D(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false);
         Texture3D(const Texture3D&) = delete;
         Texture3D(Texture3D&& other) = delete;
         Texture3D& operator=(const Texture3D& rhs) = delete;
@@ -51,7 +51,7 @@ namespace glowl
          * \brief Reload the texture.
          * \param data Pointer to the new texture data.
          */
-        void reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap);
+        void reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap);
 
         TextureLayout getTextureLayout() const;
 
@@ -65,7 +65,7 @@ namespace glowl
         unsigned int m_depth;
     };
 
-    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid* data, bool generateMipmap)
+    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
           m_width(layout.width),
           m_height(layout.height),
@@ -129,7 +129,7 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture3D::reload(TextureLayout const& layout, GLvoid* data, bool generateMipmap)
+    inline void Texture3D::reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
     {
         m_width = layout.width;
         m_height = layout.height;

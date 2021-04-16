@@ -32,16 +32,16 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        TextureCubemapArray(std::string  id,
-                            GLint        internal_format,
-                            unsigned int width,
-                            unsigned int height,
-                            unsigned int layers,
-                            GLenum       format,
-                            GLenum       type,
-                            GLsizei      levels,
-                            GLvoid*      data,
-                            bool         generateMipmap = false);
+        TextureCubemapArray(std::string   id,
+                            GLint         internal_format,
+                            unsigned int  width,
+                            unsigned int  height,
+                            unsigned int  layers,
+                            GLenum        format,
+                            GLenum        type,
+                            GLsizei       levels,
+                            GLvoid const* data,
+                            bool          generateMipmap = false);
         TextureCubemapArray(const TextureCubemapArray&) =
             delete; // TODO: think of meaningful copy operation...maybe copy texture context to new texture object?
         TextureCubemapArray(TextureCubemapArray&& other) = delete;
@@ -56,11 +56,11 @@ namespace glowl
          * \param layers Specifies the new number of layers in the texture array.
          * \param data Pointer to the new texture data.
          */
-        void reload(unsigned int width,
-                    unsigned int height,
-                    unsigned int layers,
-                    GLvoid*      data,
-                    bool         generateMipmap = false);
+        void reload(unsigned int  width,
+                    unsigned int  height,
+                    unsigned int  layers,
+                    GLvoid const* data,
+                    bool          generateMipmap = false);
 
         void bindTexture() const;
 
@@ -80,16 +80,16 @@ namespace glowl
         unsigned int m_layers;
     };
 
-    inline TextureCubemapArray::TextureCubemapArray(std::string  id,
-                                                    GLint        internal_format,
-                                                    unsigned int width,
-                                                    unsigned int height,
-                                                    unsigned int layers,
-                                                    GLenum       format,
-                                                    GLenum       type,
-                                                    GLsizei      levels,
-                                                    GLvoid*      data,
-                                                    bool         generateMipmap)
+    inline TextureCubemapArray::TextureCubemapArray(std::string   id,
+                                                    GLint         internal_format,
+                                                    unsigned int  width,
+                                                    unsigned int  height,
+                                                    unsigned int  layers,
+                                                    GLenum        format,
+                                                    GLenum        type,
+                                                    GLsizei       levels,
+                                                    GLvoid const* data,
+                                                    bool          generateMipmap)
         : Texture(id, internal_format, format, type, levels), m_width(width), m_height(height), m_layers(layers)
     {
         glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_name);
@@ -125,11 +125,11 @@ namespace glowl
         glDeleteTextures(1, &m_name);
     }
 
-    inline void TextureCubemapArray::reload(unsigned int width,
-                                            unsigned int height,
-                                            unsigned int layers,
-                                            GLvoid*      data,
-                                            bool         generateMipmap)
+    inline void TextureCubemapArray::reload(unsigned int  width,
+                                            unsigned int  height,
+                                            unsigned int  layers,
+                                            GLvoid const* data,
+                                            bool          generateMipmap)
     {
         m_width = width;
         m_height = height;
