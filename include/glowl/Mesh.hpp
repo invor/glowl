@@ -322,7 +322,7 @@ namespace glowl
 
     template<typename VertexDataT, typename IndexDataT>
     inline Mesh::Mesh(VertexInfoList<VertexDataT> const& vertex_info_list,
-                      IndexDataT const&                  index_data,
+                      std::vector<IndexDataT> const&     index_data,
                       GLenum const                       index_type,
                       GLenum const                       primitive_type,
                       GLenum const                       usage)
