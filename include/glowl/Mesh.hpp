@@ -70,7 +70,7 @@ namespace glowl
         Mesh(std::vector<VertexDataT*> const& vertex_data,
              std::vector<std::size_t> const&  vertex_data_byte_sizes,
              std::vector<VertexLayout> const& vertex_descriptor,
-             IndexDataT* const                index_data,
+             IndexDataT const*                index_data,
              std::size_t const                index_data_byte_size,
              GLenum const                     index_type = GL_UNSIGNED_INT,
              GLenum const                     primitive_type = GL_TRIANGLES,
@@ -87,7 +87,7 @@ namespace glowl
          */
         template<typename VertexDataT, typename IndexDataT>
         Mesh(VertexPtrInfoList<VertexDataT> const& vertex_info,
-             IndexDataT* const                     index_data,
+             IndexDataT const*                     index_data,
              std::size_t const                     index_data_byte_size,
              GLenum const                          index_type = GL_UNSIGNED_INT,
              GLenum const                          primitive_type = GL_TRIANGLES,
@@ -225,7 +225,7 @@ namespace glowl
     inline Mesh::Mesh(std::vector<VertexDataT*> const& vertex_data,
                       std::vector<std::size_t> const&  vertex_data_byte_sizes,
                       std::vector<VertexLayout> const& vertex_descriptor,
-                      IndexDataT* const                index_data,
+                      IndexDataT const*                index_data,
                       std::size_t const                index_data_byte_size,
                       GLenum const                     index_type,
                       GLenum const                     primitive_type,
@@ -257,7 +257,7 @@ namespace glowl
 
     template<typename VertexDataT, typename IndexDataT>
     inline Mesh::Mesh(VertexPtrInfoList<VertexDataT> const& vertex_info,
-                      IndexDataT* const                     index_data,
+                      IndexDataT const*                     index_data,
                       std::size_t const                     index_data_byte_size,
                       GLenum const                          index_type,
                       GLenum const                          primitive_type,
