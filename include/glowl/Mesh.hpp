@@ -48,17 +48,15 @@ namespace glowl
     public:
         typedef std::unique_ptr<BufferObject> BufferObjectPtr;
 
-        template<typename VertexDataType>
-        using VertexData = std::pair<std::vector<VertexDataType>, glowl::VertexLayout>;
+        using VertexPtrData = std::tuple<void const*, std::size_t, VertexLayout>;
+
+        using VertexPtrDataList = std::vector<VertexPtrData>;
 
         template<typename VertexDataType>
-        using VertexPtrData = std::tuple<VertexDataType*, std::size_t, VertexLayout>;
+        using VertexData = std::pair<std::vector<VertexDataType>, VertexLayout>;
 
         template<typename VertexDataType>
         using VertexDataList = std::vector<VertexData<VertexDataType>>;
-
-        template<typename VertexDataType>
-        using VertexPtrDataList = std::vector<VertexPtrData<VertexDataType>>;
 
         /**
          * \brief Mesh constructor that requires data pointers and byte sizes as input.
@@ -66,15 +64,14 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        template<typename VertexDataType, typename IndexDataType>
-        Mesh(std::vector<VertexDataType*> const& vertex_data,
-             std::vector<std::size_t> const&     vertex_data_byte_sizes,
-             std::vector<VertexLayout> const&    vertex_descriptor,
-             IndexDataType const*                index_data,
-             std::size_t const                   index_data_byte_size,
-             GLenum const                        index_type = GL_UNSIGNED_INT,
-             GLenum const                        primitive_type = GL_TRIANGLES,
-             GLenum const                        usage = GL_STATIC_DRAW);
+        Mesh(std::vector<void const*> const&  vertex_data,
+             std::vector<std::size_t> const&  vertex_data_byte_sizes,
+             std::vector<VertexLayout> const& vertex_descriptor,
+             void const*                      index_data,
+             std::size_t const                index_data_byte_size,
+             GLenum const                     index_type = GL_UNSIGNED_INT,
+             GLenum const                     primitive_type = GL_TRIANGLES,
+             GLenum const                     usage = GL_STATIC_DRAW);
 
         /**
          * \brief Mesh constructor that requires data pointers and byte sizes as input.
@@ -85,13 +82,12 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        template<typename VertexDataType, typename IndexDataType>
-        Mesh(VertexPtrDataList<VertexDataType> const& vertex_data,
-             IndexDataType const*                     index_data,
-             std::size_t const                        index_data_byte_size,
-             GLenum const                             index_type = GL_UNSIGNED_INT,
-             GLenum const                             primitive_type = GL_TRIANGLES,
-             GLenum const                             usage = GL_STATIC_DRAW);
+        Mesh(VertexPtrDataList const& vertex_data,
+             void const*              index_data,
+             std::size_t const        index_data_byte_size,
+             GLenum const             index_type = GL_UNSIGNED_INT,
+             GLenum const             primitive_type = GL_TRIANGLES,
+             GLenum const             usage = GL_STATIC_DRAW);
 
         /**
          * \brief Mesh constructor that requires data in std vectors as input.
@@ -223,15 +219,14 @@ namespace glowl
         void checkError();
     };
 
-    template<typename VertexDataType, typename IndexDataType>
-    inline Mesh::Mesh(std::vector<VertexDataType*> const& vertex_data,
-                      std::vector<std::size_t> const&     vertex_data_byte_sizes,
-                      std::vector<VertexLayout> const&    vertex_descriptor,
-                      IndexDataType const*                index_data,
-                      std::size_t const                   index_data_byte_size,
-                      GLenum const                        index_type,
-                      GLenum const                        primitive_type,
-                      GLenum const                        usage)
+    inline Mesh::Mesh(std::vector<void const*> const&  vertex_data,
+                      std::vector<std::size_t> const&  vertex_data_byte_sizes,
+                      std::vector<VertexLayout> const& vertex_descriptor,
+                      void const*                      index_data,
+                      std::size_t const                index_data_byte_size,
+                      GLenum const                     index_type,
+                      GLenum const                     primitive_type,
+                      GLenum const                     usage)
         : m_va_handle(0),
           m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
           m_vertex_descriptor(vertex_descriptor),
@@ -257,13 +252,12 @@ namespace glowl
         checkError();
     }
 
-    template<typename VertexDataType, typename IndexDataType>
-    inline Mesh::Mesh(VertexPtrDataList<VertexDataType> const& vertex_data,
-                      IndexDataType const*                     index_data,
-                      std::size_t const                        index_data_byte_size,
-                      GLenum const                             index_type,
-                      GLenum const                             primitive_type,
-                      GLenum const                             usage)
+    inline Mesh::Mesh(VertexPtrDataList const& vertex_data,
+                      void const*              index_data,
+                      std::size_t const        index_data_byte_size,
+                      GLenum const             index_type,
+                      GLenum const             primitive_type,
+                      GLenum const             usage)
         : m_va_handle(0),
           m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
           m_vertex_descriptor(),
