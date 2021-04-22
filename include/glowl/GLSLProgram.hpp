@@ -135,7 +135,7 @@ namespace glowl
         /**
          * \brief Return the position of a uniform.
          */
-        GLuint getUniformLocation(GLchar const* name);
+        GLint getUniformLocation(GLchar const* name);
 
         /**
          * \brief Prints a list if active shader uniforms to std outstream.
@@ -413,7 +413,7 @@ namespace glowl
     }
 #endif
 
-    inline GLuint GLSLProgram::getUniformLocation(GLchar const* name)
+    inline GLint GLSLProgram::getUniformLocation(GLchar const* name)
     {
         return glGetUniformLocation(m_handle, name);
     }
