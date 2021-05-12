@@ -112,6 +112,8 @@ namespace glowl
 
         std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
 
+        std::shared_ptr<Texture2D> getDepthStencil() const;
+
         /**
          * \brief Bind this framebuffer object with all its color attachments
          */
@@ -316,6 +318,11 @@ namespace glowl
     inline std::shared_ptr<Texture2D> FramebufferObject::getColorAttachment(unsigned int index) const
     {
         return index < m_colorbuffers.size() ? m_colorbuffers[index] : nullptr;
+    }
+
+    inline std::shared_ptr<Texture2D> FramebufferObject::getDepthStencil() const
+    {
+        return m_depth_stencil;
     }
 
     inline void FramebufferObject::bind()
