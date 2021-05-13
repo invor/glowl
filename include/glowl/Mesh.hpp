@@ -48,35 +48,76 @@ namespace glowl
     public:
         typedef std::unique_ptr<BufferObject> BufferObjectPtr;
 
+        using VertexPtrData = std::tuple<void const*, std::size_t, VertexLayout>;
+
+        using VertexPtrDataList = std::vector<VertexPtrData>;
+
+        template<typename VertexDataType>
+        using VertexData = std::pair<std::vector<VertexDataType>, VertexLayout>;
+
+        template<typename VertexDataType>
+        using VertexDataList = std::vector<VertexData<VertexDataType>>;
+
         /**
          * \brief Mesh constructor that requires data pointers and byte sizes as input.
          *
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        template<typename VertexPtr, typename IndexPtr>
-        Mesh(std::vector<VertexPtr> const&    vertex_data,
-             std::vector<size_t> const&       vertex_data_byte_sizes,
-             IndexPtr const                   index_data,
-             GLsizeiptr const                 index_data_byte_size,
+        Mesh(std::vector<void const*> const&  vertex_data,
+             std::vector<std::size_t> const&  vertex_data_byte_sizes,
              std::vector<VertexLayout> const& vertex_descriptor,
+             void const*                      index_data,
+             std::size_t const                index_data_byte_size,
              GLenum const                     index_type = GL_UNSIGNED_INT,
-             GLenum const                     usage = GL_STATIC_DRAW,
-             GLenum const                     primitive_type = GL_TRIANGLES);
+             GLenum const                     primitive_type = GL_TRIANGLES,
+             GLenum const                     usage = GL_STATIC_DRAW);
 
         /**
-         * \brief Mesh constructor that requires std containers as input.
+         * \brief Mesh constructor that requires data pointers and byte sizes as input.
+         *
+         * \param vertex_data A vector where each entry contains (in a tuple) a pointer to vertex data,
+         *  the byte size of that data and the corresponding VertexLayout
          *
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        template<typename VertexContainer, typename IndexContainer>
-        Mesh(std::vector<VertexContainer> const& vertex_data,
-             IndexContainer const&               index_data,
-             std::vector<VertexLayout> const&    vertex_descriptor,
-             GLenum const                        index_type = GL_UNSIGNED_INT,
-             GLenum const                        usage = GL_STATIC_DRAW,
-             GLenum const                        primitive_type = GL_TRIANGLES);
+        Mesh(VertexPtrDataList const& vertex_data,
+             void const*              index_data,
+             std::size_t const        index_data_byte_size,
+             GLenum const             index_type = GL_UNSIGNED_INT,
+             GLenum const             primitive_type = GL_TRIANGLES,
+             GLenum const             usage = GL_STATIC_DRAW);
+
+        /**
+         * \brief Mesh constructor that requires data in std vectors as input.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        template<typename VertexDataType, typename IndexDataType>
+        Mesh(std::vector<std::vector<VertexDataType>> const& vertex_data,
+             std::vector<VertexLayout> const&                vertex_descriptor,
+             std::vector<IndexDataType> const&               index_data,
+             GLenum const                                    index_type = GL_UNSIGNED_INT,
+             GLenum const                                    primitive_type = GL_TRIANGLES,
+             GLenum const                                    usage = GL_STATIC_DRAW);
+
+        /**
+         * \brief Mesh constructor that requires data in std vectors as input.
+         *
+         * \param vertex_data A vector where each entry contains (in a pair) the vertex data in a std vector and the
+         * corresponding VertexLayout.
+         *
+         * Note: Active OpenGL context required for construction.
+         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         */
+        template<typename VertexDataType, typename IndexDataType>
+        Mesh(VertexDataList<VertexDataType> const& vertex_data,
+             std::vector<IndexDataType> const&     index_data,
+             GLenum const                          index_type = GL_UNSIGNED_INT,
+             GLenum const                          primitive_type = GL_TRIANGLES,
+             GLenum const                          usage = GL_STATIC_DRAW);
 
         ~Mesh()
         {
@@ -88,13 +129,15 @@ namespace glowl
         Mesh& operator=(Mesh&& rhs) = delete;
         Mesh& operator=(const Mesh& rhs) = delete;
 
-        template<typename VertexContainer>
-        void bufferVertexSubData(size_t vbo_idx, VertexContainer const& vertices, GLsizeiptr byte_offset);
+        template<typename VertexDataType>
+        void bufferVertexSubData(std::size_t                        vbo_idx,
+                                 std::vector<VertexDataType> const& vertices,
+                                 GLsizeiptr                         byte_offset);
 
-        void bufferVertexSubData(size_t idx, GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset);
+        void bufferVertexSubData(std::size_t vbo_idx, GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset);
 
-        template<typename IndexContainer>
-        void bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset);
+        template<typename IndexDataType>
+        void bufferIndexSubData(std::vector<IndexDataType> const& indices, GLsizeiptr byte_offset);
 
         void bufferIndexSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset);
 
@@ -135,7 +178,7 @@ namespace glowl
             return m_primitive_type;
         }
 
-        GLsizeiptr getVertexBufferByteSize(size_t vbo_idx) const
+        GLsizeiptr getVertexBufferByteSize(std::size_t vbo_idx) const
         {
             if (vbo_idx < m_vbos.size())
                 return m_vbos[vbo_idx]->getByteSize();
@@ -143,210 +186,198 @@ namespace glowl
                 return 0;
             // TODO: log some kind of error?
         }
+
         GLsizeiptr getIndexBufferByteSize() const
         {
             return m_ibo.getByteSize();
         }
 
-        std::vector<BufferObjectPtr> const& getVbo() const
+        std::vector<BufferObjectPtr> const& getVbos() const
         {
             return m_vbos;
         }
+
         BufferObject const& getIbo() const
         {
             return m_ibo;
         }
 
     private:
+        GLuint                       m_va_handle;
         std::vector<BufferObjectPtr> m_vbos;
         BufferObject                 m_ibo;
-        GLuint                       m_va_handle;
 
         std::vector<VertexLayout> m_vertex_descriptor;
 
         GLuint m_indices_cnt;
         GLenum m_index_type;
-        GLenum m_usage;
         GLenum m_primitive_type;
+        GLenum m_usage;
 
         void createVertexArray();
+        void setIndicesCount(GLuint index_data_byte_size);
+        void checkError();
     };
 
-    template<typename VertexPtr, typename IndexPtr>
-    inline Mesh::Mesh(std::vector<VertexPtr> const&    vertex_data,
-                      std::vector<size_t> const&       vertex_data_byte_sizes,
-                      IndexPtr const                   index_data,
-                      GLsizeiptr const                 index_data_byte_size,
+    inline Mesh::Mesh(std::vector<void const*> const&  vertex_data,
+                      std::vector<std::size_t> const&  vertex_data_byte_sizes,
                       std::vector<VertexLayout> const& vertex_descriptor,
-                      GLenum const                     indices_type,
-                      GLenum const                     usage,
-                      GLenum const                     primitive_type)
-    try : m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
-          m_va_handle(0),
+                      void const*                      index_data,
+                      std::size_t const                index_data_byte_size,
+                      GLenum const                     index_type,
+                      GLenum const                     primitive_type,
+                      GLenum const                     usage)
+        : m_va_handle(0),
+          m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
           m_vertex_descriptor(vertex_descriptor),
           m_indices_cnt(0),
-          m_index_type(indices_type),
-          m_usage(usage),
-          m_primitive_type(primitive_type)
+          m_index_type(index_type),
+          m_primitive_type(primitive_type),
+          m_usage(usage)
     {
-        try
+        if (vertex_data.size() != vertex_data_byte_sizes.size() || vertex_data.size() != vertex_descriptor.size())
         {
-            for (unsigned int i = 0; i < vertex_data.size(); ++i)
-            {
-                m_vbos.emplace_back(
-                    std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
-            }
-
-            createVertexArray();
-        }
-        catch (...)
-        {
-            throw;
+            throw std::invalid_argument("Mesh::Mesh - Vector parameters of different size!");
         }
 
-        switch (m_index_type)
+        for (unsigned int i = 0; i < vertex_data.size(); ++i)
         {
-        case GL_UNSIGNED_INT:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
-            break;
-        case GL_UNSIGNED_SHORT:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 2);
-            break;
-        case GL_UNSIGNED_BYTE:
-            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
-            break;
+            m_vbos.emplace_back(
+                std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], vertex_data_byte_sizes[i], usage));
         }
 
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
-        }
-    }
-    catch (...)
-    {
-        throw;
+        createVertexArray();
+        setIndicesCount(index_data_byte_size);
+
+        checkError();
     }
 
-    template<typename VertexContainer, typename IndexContainer>
-    inline Mesh::Mesh(std::vector<VertexContainer> const& vertex_data,
-                      IndexContainer const&               index_data,
-                      std::vector<VertexLayout> const&    vertex_descriptor,
-                      GLenum                              indices_type,
-                      GLenum                              usage,
-                      GLenum                              primitive_type)
-    try : m_ibo(GL_ELEMENT_ARRAY_BUFFER,
+    inline Mesh::Mesh(VertexPtrDataList const& vertex_data,
+                      void const*              index_data,
+                      std::size_t const        index_data_byte_size,
+                      GLenum const             index_type,
+                      GLenum const             primitive_type,
+                      GLenum const             usage)
+        : m_va_handle(0),
+          m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, index_data_byte_size, usage),
+          m_vertex_descriptor(),
+          m_indices_cnt(0),
+          m_index_type(index_type),
+          m_primitive_type(primitive_type),
+          m_usage(usage)
+    {
+        for (unsigned int i = 0; i < vertex_data.size(); ++i)
+        {
+            m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER,
+                                                               std::get<0>(vertex_data[i]),
+                                                               std::get<1>(vertex_data[i]),
+                                                               usage));
+            m_vertex_descriptor.push_back(std::get<2>(vertex_data[i]));
+        }
+
+        createVertexArray();
+        setIndicesCount(index_data_byte_size);
+
+        checkError();
+    }
+
+    template<typename VertexDataType, typename IndexDataType>
+    inline Mesh::Mesh(std::vector<std::vector<VertexDataType>> const& vertex_data,
+                      std::vector<VertexLayout> const&                vertex_descriptor,
+                      std::vector<IndexDataType> const&               index_data,
+                      GLenum const                                    index_type,
+                      GLenum const                                    primitive_type,
+                      GLenum const                                    usage)
+        : m_va_handle(0),
+          m_ibo(GL_ELEMENT_ARRAY_BUFFER,
                 index_data,
                 usage), // TODO ibo generation in constructor might fail? needs a bound vao?
-          m_va_handle(0),
           m_vertex_descriptor(vertex_descriptor),
           m_indices_cnt(0),
-          m_index_type(indices_type),
-          m_usage(usage),
-          m_primitive_type(primitive_type)
+          m_index_type(index_type),
+          m_primitive_type(primitive_type),
+          m_usage(usage)
     {
-        // Some sanity checks
-        // TODO check if vertex buffer count matches attribute count, throw exception if not?
-        try
+        if (vertex_data.size() != vertex_descriptor.size())
         {
-            for (unsigned int i = 0; i < vertex_data.size(); ++i)
-                m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
+            throw std::invalid_argument("Mesh::Mesh - Vector parameters of different size!");
         }
-        catch (...)
+
+        for (unsigned int i = 0; i < vertex_data.size(); ++i)
         {
-            throw;
+            m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data[i], m_usage));
         }
 
         createVertexArray();
 
-        GLuint vi_size = static_cast<GLuint>(index_data.size() * sizeof(typename IndexContainer::value_type));
+        GLuint vi_size =
+            static_cast<GLuint>(index_data.size() * sizeof(typename std::vector<IndexDataType>::value_type));
+        setIndicesCount(vi_size);
 
-        switch (m_index_type)
-        {
-        case GL_UNSIGNED_INT:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 4);
-            break;
-        case GL_UNSIGNED_SHORT:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 2);
-            break;
-        case GL_UNSIGNED_BYTE:
-            m_indices_cnt = static_cast<GLuint>(vi_size / 1);
-            break;
-        }
-
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
-        }
-    }
-    catch (...)
-    {
-        throw;
+        checkError();
     }
 
-    template<typename VertexContainer>
-    inline void Mesh::bufferVertexSubData(size_t vbo_idx, VertexContainer const& vertices, GLsizeiptr byte_offset)
+    template<typename VertexDataType, typename IndexDataType>
+    inline Mesh::Mesh(VertexDataList<VertexDataType> const& vertex_data_list,
+                      std::vector<IndexDataType> const&     index_data,
+                      GLenum const                          index_type,
+                      GLenum const                          primitive_type,
+                      GLenum const                          usage)
+        : m_va_handle(0),
+          m_ibo(GL_ELEMENT_ARRAY_BUFFER, index_data, usage),
+          m_indices_cnt(0),
+          m_index_type(index_type),
+          m_primitive_type(primitive_type),
+          m_usage(usage)
     {
-        if (vbo_idx < m_vbos.size())
+        for (auto const& vertex_data : vertex_data_list)
         {
-            try
-            {
-                m_vbos[vbo_idx]->bufferSubData<VertexContainer>(vertices, byte_offset);
-            }
-            catch (...)
-            {
-                throw;
-            }
+            m_vbos.emplace_back(std::make_unique<BufferObject>(GL_ARRAY_BUFFER, vertex_data.first, m_usage));
+            m_vertex_descriptor.push_back(vertex_data.second);
         }
-        else
+
+        createVertexArray();
+
+        GLuint vi_size =
+            static_cast<GLuint>(index_data.size() * sizeof(typename std::vector<IndexDataType>::value_type));
+        setIndicesCount(vi_size);
+
+        checkError();
+    }
+
+    template<typename VertexDataType>
+    inline void Mesh::bufferVertexSubData(std::size_t                        vbo_idx,
+                                          std::vector<VertexDataType> const& vertices,
+                                          GLsizeiptr                         byte_offset)
+    {
+        if (vbo_idx >= m_vbos.size())
         {
             throw MeshException("Mesh::bufferVertexSubData - vertex buffer index out of range");
         }
+        m_vbos[vbo_idx]->bufferSubData<std::vector<VertexDataType>>(vertices, byte_offset);
     }
 
-    inline void Mesh::bufferVertexSubData(size_t vbo_idx, GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
+    inline void Mesh::bufferVertexSubData(std::size_t   vbo_idx,
+                                          GLvoid const* data,
+                                          GLsizeiptr    byte_size,
+                                          GLsizeiptr    byte_offset)
     {
-        if (vbo_idx < m_vbos.size())
-        {
-            try
-            {
-                m_vbos[vbo_idx]->bufferSubData(data, byte_size, byte_offset);
-            }
-            catch (...)
-            {
-                throw;
-            }
-        }
-        else
+        if (vbo_idx >= m_vbos.size())
         {
             throw MeshException("Mesh::bufferVertexSubData - vertex buffer index out of range");
         }
+        m_vbos[vbo_idx]->bufferSubData(data, byte_size, byte_offset);
     }
 
-    template<typename IndexContainer>
-    inline void Mesh::bufferIndexSubData(IndexContainer const& indices, GLsizeiptr byte_offset)
+    template<typename IndexDataType>
+    inline void Mesh::bufferIndexSubData(std::vector<IndexDataType> const& indices, GLsizeiptr byte_offset)
     {
-        try
-        {
-            m_ibo.bufferSubData<IndexContainer>(indices, byte_offset);
-        }
-        catch (...)
-        {
-            throw;
-        }
+        m_ibo.bufferSubData<std::vector<IndexDataType>>(indices, byte_offset);
     }
 
     inline void Mesh::bufferIndexSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset)
     {
-        try
-        {
-            m_ibo.bufferSubData(data, byte_size, byte_offset);
-        }
-        catch (...)
-        {
-            throw;
-        }
+        m_ibo.bufferSubData(data, byte_size, byte_offset);
     }
 
     inline void Mesh::createVertexArray()
@@ -355,7 +386,7 @@ namespace glowl
 
         GLuint attrib_idx = 0;
 
-        for (size_t vertex_layout_idx = 0; vertex_layout_idx < m_vertex_descriptor.size(); ++vertex_layout_idx)
+        for (std::size_t vertex_layout_idx = 0; vertex_layout_idx < m_vertex_descriptor.size(); ++vertex_layout_idx)
         {
             glVertexArrayVertexBuffer(m_va_handle,
                                       vertex_layout_idx,
@@ -363,7 +394,7 @@ namespace glowl
                                       0, // offset not really needed since we just created a new vbo
                                       m_vertex_descriptor[vertex_layout_idx].stride);
 
-            for (size_t local_attrib_idx = 0;
+            for (std::size_t local_attrib_idx = 0;
                  local_attrib_idx < m_vertex_descriptor[vertex_layout_idx].attributes.size();
                  ++local_attrib_idx)
             {
@@ -382,20 +413,21 @@ namespace glowl
                     break;
                 case GL_INT:
                     glVertexArrayAttribIFormat(m_va_handle,
-                                              attrib_idx,
-                                              attribute.size,
-                                              attribute.type,
-                                              attribute.offset);
+                                               attrib_idx,
+                                               attribute.size,
+                                               attribute.type,
+                                               attribute.offset);
                     break;
                 case GL_DOUBLE:
                     glVertexArrayAttribLFormat(m_va_handle,
-                                              attrib_idx,
-                                              attribute.size,
-                                              attribute.type,
-                                              attribute.offset);
+                                               attrib_idx,
+                                               attribute.size,
+                                               attribute.type,
+                                               attribute.offset);
                     break;
                 default:
-                    throw MeshException("Mesh::createVertexArray - invalid vertex shader input type given (use float, double or int)");
+                    throw MeshException(
+                        "Mesh::createVertexArray - invalid vertex shader input type given (use float, double or int)");
                     break;
                 }
                 glVertexArrayAttribBinding(m_va_handle, attrib_idx, vertex_layout_idx);
@@ -405,6 +437,31 @@ namespace glowl
         }
 
         glVertexArrayElementBuffer(m_va_handle, m_ibo.getName());
+    }
+
+    inline void Mesh::setIndicesCount(GLuint index_data_byte_size)
+    {
+        switch (m_index_type)
+        {
+        case GL_UNSIGNED_INT:
+            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 4);
+            break;
+        case GL_UNSIGNED_SHORT:
+            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 2);
+            break;
+        case GL_UNSIGNED_BYTE:
+            m_indices_cnt = static_cast<GLuint>(index_data_byte_size / 1);
+            break;
+        }
+    }
+
+    inline void Mesh::checkError()
+    {
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw MeshException("Mesh::Mesh - OpenGL error " + std::to_string(err));
+        }
     }
 
 } // namespace glowl
