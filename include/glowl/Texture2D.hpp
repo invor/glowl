@@ -50,16 +50,6 @@ namespace glowl
          */
         void bindTexture() const;
 
-        /**
-        * \brief Generate texture by glGenTextures
-        */
-        void genTexture();
-
-        /**
-         * \brief Deletes texture
-         */
-        void deleteTexture();
-
         void updateMipmaps();
 
         /**
@@ -135,16 +125,6 @@ namespace glowl
         glBindTexture(GL_TEXTURE_2D, m_name);
     }
 
-    inline void Texture2D::genTexture()
-    {
-        glGenTextures(1, &m_name);
-    }
-
-    inline void Texture2D::deleteTexture()
-    {
-        glDeleteTextures(1, &m_name);
-    }
-
     inline void Texture2D::updateMipmaps()
     {
         glGenerateTextureMipmap(m_name);
@@ -158,26 +138,11 @@ namespace glowl
         m_format = layout.format;
         m_type = layout.type;
         m_levels = layout.levels;
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
-        }
+
         glDeleteTextures(1, &m_name);
-        err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
-        }
+
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
-        err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
-        }
+
         for (auto& pname_pvalue : layout.int_parameters)
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
 
@@ -192,12 +157,6 @@ namespace glowl
 
         glTextureStorage2D(m_name, m_levels, m_internal_format, m_width, m_height);
 
-        err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
-        }
         if (data != nullptr)
         {
             glTextureSubImage2D(m_name, 0, 0, 0, m_width, m_height, m_format, m_type, data);
@@ -208,7 +167,7 @@ namespace glowl
             glGenerateTextureMipmap(m_name);
         }
 
-        err = glGetError();
+        GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
             throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
