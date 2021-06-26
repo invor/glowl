@@ -2,7 +2,7 @@
  * Texture2D.hpp
  *
  * MIT License
- * Copyright (c) 2019 Michael Becher
+ * Copyright (c) 2021 Michael Becher
  */
 
 #ifndef GLOWL_TEXTURE2D_HPP
@@ -59,7 +59,7 @@ namespace glowl
          * \param data Pointer to the actual texture data.
          * \param generateMipmap Specifies whether a mipmap will be created for the texture
          */
-        void reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false);
+        void reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false, bool customLevels = false);
 
         TextureLayout getTextureLayout() const;
 
@@ -130,13 +130,14 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture2D::reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
+    inline void Texture2D::reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap, bool customLevels)
     {
         m_width = layout.width;
         m_height = layout.height;
         m_internal_format = layout.internal_format;
         m_format = layout.format;
         m_type = layout.type;
+        m_levels = layout.levels;
 
         glDeleteTextures(1, &m_name);
 
@@ -148,14 +149,12 @@ namespace glowl
         for (auto& pname_pvalue : layout.float_parameters)
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
 
-        GLsizei levels = 1;
-
-        if (generateMipmap)
+        if (generateMipmap && !customLevels)
         {
-            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
+                m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
-        glTextureStorage2D(m_name, levels, m_internal_format, m_width, m_height);
+        glTextureStorage2D(m_name, m_levels, m_internal_format, m_width, m_height);
 
         if (data != nullptr)
         {
