@@ -44,6 +44,15 @@ namespace glowl
 
         void updateMipmaps();
 
+        /**
+         * \brief Reload the texturearray with any new format, type and size.
+         *
+         * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
+         * \param data Pointer to the actual texture data.
+         * \param generateMipmap Specifies whether a mipmap will be created for the texture
+         */
+        void reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false);
+
         TextureLayout getTextureLayout() const;
 
         unsigned int getWidth() const;
@@ -120,6 +129,52 @@ namespace glowl
     inline void Texture2DArray::updateMipmaps()
     {
         glGenerateTextureMipmap(m_name);
+    }
+
+    inline void Texture2DArray::reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
+    {
+        m_width = layout.width;
+        m_height = layout.height;
+        m_layers = layout.depth;
+        m_internal_format = layout.internal_format;
+        m_format = layout.format;
+        m_type = layout.type;
+
+        glDeleteTextures(1, &m_name);
+
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_name);
+
+        for (auto& pname_pvalue : layout.int_parameters)
+            glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
+
+        for (auto& pname_pvalue : layout.float_parameters)
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
+
+        GLsizei levels = 1;
+
+        if (generateMipmap)
+        {
+            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
+        }
+
+        glTextureStorage3D(m_name, levels, m_internal_format, m_width, m_height, m_layers);
+
+        if (data != nullptr)
+        {
+            glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
+        }
+
+        if (generateMipmap)
+        {
+            glGenerateTextureMipmap(m_name);
+        }
+
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw TextureException("Texture2DArray::reload - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
+        }
     }
 
     inline TextureLayout Texture2DArray::getTextureLayout() const
