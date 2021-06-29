@@ -149,9 +149,8 @@ namespace glowl
         for (auto& pname_pvalue : layout.float_parameters)
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
 
-        if (generateMipmap)
+        if (generateMipmap && !customLevels)
         {
-            if (!customLevels)
                 m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 

@@ -2,7 +2,7 @@
  * Texture2DView.hpp
  *
  * MIT License
- * Copyright (c) 2021 Michael Becher
+ * Copyright (c) 2021 Michael Becher, Dominik Sellenthin
  */
 
 #ifndef GLOWL_TEXTURE2DVIEW_HPP
