@@ -141,9 +141,15 @@ namespace glowl
 
         virtual void bindTexture() const = 0;
 
+        // TODO: Deprecate simplified function in the future
         void bindImage(GLuint location, GLenum access) const
         {
             glBindImageTexture(location, m_name, 0, GL_TRUE, 0, access, m_internal_format);
+        }
+
+        void bindImage(GLuint location, GLint level, GLboolean layered, GLint layer, GLenum access) const
+        {
+            glBindImageTexture(location, m_name, level, layered, layer, access, m_internal_format);
         }
 
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE

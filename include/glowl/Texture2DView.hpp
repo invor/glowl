@@ -2,17 +2,17 @@
  * Texture2DView.hpp
  *
  * MIT License
- * Copyright (c) 2021 Michael Becher
+ * Copyright (c) 2021 Michael Becher, Dominik Sellenthin
  */
 
 #ifndef GLOWL_TEXTURE2DVIEW_HPP
 #define GLOWL_TEXTURE2DVIEW_HPP
 
-#include "glowl/Exceptions.hpp"
-#include "glowl/Texture.hpp"
-#include "glowl/Texture2D.hpp"
+#include "Exceptions.hpp"
+#include "Texture.hpp"
+#include "Texture2D.hpp"
 
-#include "glowl/glinclude.h"
+#include "glinclude.h"
 
 namespace glowl
 {
