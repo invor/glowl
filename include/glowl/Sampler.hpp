@@ -81,7 +81,9 @@ namespace glowl
      */
     class Sampler {
     public:
-        Sampler(std::string id) : m_id(id) {}
+        Sampler(std::string id) : m_id(id) {
+            glCreateSamplers(1, &m_name);
+        }
 
         Sampler(std::string id, SamplerLayout const& layout) : m_id(id) {
             glCreateSamplers(1, &m_name);
