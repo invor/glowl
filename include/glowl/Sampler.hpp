@@ -224,18 +224,6 @@ namespace glowl
             return m_name;
         }
 
-        // TODO: ??
-//#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
-//        GLuint64 getTextureHandle() const
-//        {
-//            return m_texture_handle;
-//        }
-//        GLuint64 getImageHandle(GLint level, GLboolean layered, GLint layer) const
-//        {
-//            return glGetImageHandleARB(m_name, level, layered, layer, m_internal_format);
-//        }
-//#endif
-
         GLint getTextureMinFilter() const {
             return m_texture_min_filter;
         }
@@ -312,9 +300,6 @@ namespace glowl
         std::string m_id; ///< Identifier set by application to help identifying samplers
 
         GLuint m_name; ///< OpenGL sampler name given by glCreateSampler
-#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
-        GLuint64 m_sampler_handle; ///< Actual OpenGL sampler handle (used for bindless)
-#endif
 
         GLint m_texture_min_filter;
         GLint m_texture_mag_filter;
