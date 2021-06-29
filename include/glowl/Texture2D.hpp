@@ -38,7 +38,11 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        Texture2D(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false);
+        Texture2D(std::string          id,
+                  TextureLayout const& layout,
+                  GLvoid const*        data,
+                  bool                 generateMipmap = false,
+                  bool                 customLevels = false);
         Texture2D(const Texture2D&) = delete;
         Texture2D(Texture2D&& other) = delete;
         Texture2D& operator=(const Texture2D& rhs) = delete;
@@ -59,7 +63,10 @@ namespace glowl
          * \param data Pointer to the actual texture data.
          * \param generateMipmap Specifies whether a mipmap will be created for the texture
          */
-        void reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false, bool customLevels = false);
+        void reload(TextureLayout const& layout,
+                    GLvoid const*        data,
+                    bool                 generateMipmap = false,
+                    bool                 customLevels = false);
 
         TextureLayout getTextureLayout() const;
 
@@ -72,27 +79,31 @@ namespace glowl
         unsigned int m_height;
     };
 
-    inline Texture2D::Texture2D(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
+    inline Texture2D::Texture2D(std::string          id,
+                                TextureLayout const& layout,
+                                GLvoid const*        data,
+                                bool                 generateMipmap,
+                                bool                 customLevels)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
           m_width(layout.width),
           m_height(layout.height)
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters)
+        for (auto& pname_pvalue : layout.int_parameters) {
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
-
-        for (auto& pname_pvalue : layout.float_parameters)
-            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
-
-        GLsizei levels = 1;
-
-        if (generateMipmap)
-        {
-            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
-        glTextureStorage2D(m_name, levels, m_internal_format, m_width, m_height);
+        for (auto& pname_pvalue : layout.float_parameters) {
+            glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
+        }
+
+        if (generateMipmap && !customLevels)
+        {
+            m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
+        }
+
+        glTextureStorage2D(m_name, m_levels, m_internal_format, m_width, m_height);
 
         if (data != nullptr)
         {
@@ -130,7 +141,10 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture2D::reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap, bool customLevels)
+    inline void Texture2D::reload(TextureLayout const& layout,
+                                  GLvoid const*        data,
+                                  bool                 generateMipmap,
+                                  bool                 customLevels)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -143,11 +157,13 @@ namespace glowl
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters)
+        for (auto& pname_pvalue : layout.int_parameters) {
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
+        }
 
-        for (auto& pname_pvalue : layout.float_parameters)
+        for (auto& pname_pvalue : layout.float_parameters) {
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
+        }
 
         if (generateMipmap && !customLevels)
         {

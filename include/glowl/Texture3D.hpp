@@ -33,7 +33,11 @@ namespace glowl
          * Note: Active OpenGL context required for construction.
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
-        Texture3D(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap = false);
+        Texture3D(std::string          id,
+                  TextureLayout const& layout,
+                  GLvoid const*        data,
+                  bool                 generateMipmap = false,
+                  bool                 customLevels = false);
         Texture3D(const Texture3D&) = delete;
         Texture3D(Texture3D&& other) = delete;
         Texture3D& operator=(const Texture3D& rhs) = delete;
@@ -51,7 +55,10 @@ namespace glowl
          * \brief Reload the texture.
          * \param data Pointer to the new texture data.
          */
-        void reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap);
+        void reload(TextureLayout const& layout,
+                    GLvoid const*        data,
+                    bool                 generateMipmap = false,
+                    bool                 customLevels = false);
 
         TextureLayout getTextureLayout() const;
 
@@ -65,7 +72,11 @@ namespace glowl
         unsigned int m_depth;
     };
 
-    inline Texture3D::Texture3D(std::string id, TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
+    inline Texture3D::Texture3D(std::string          id,
+                                TextureLayout const& layout,
+                                GLvoid const*        data,
+                                bool                 generateMipmap,
+                                bool                 customLevels)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
           m_width(layout.width),
           m_height(layout.height),
@@ -83,14 +94,12 @@ namespace glowl
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        GLsizei levels = 1;
-
-        if (generateMipmap)
+        if (generateMipmap && !customLevels)
         {
-            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_depth,std::max(m_width, m_height)))));
+            m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_depth, std::max(m_width, m_height)))));
         }
 
-        glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_depth);
+        glTextureStorage3D(m_name, m_levels, m_internal_format, m_width, m_height, m_depth);
 
         if (data != nullptr)
         {
@@ -129,7 +138,10 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture3D::reload(TextureLayout const& layout, GLvoid const* data, bool generateMipmap)
+    inline void Texture3D::reload(TextureLayout const& layout,
+                                  GLvoid const*        data,
+                                  bool                 generateMipmap,
+                                  bool                 customLevels)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -152,11 +164,9 @@ namespace glowl
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        GLsizei levels = 1;
-
-        if (generateMipmap)
+        if (generateMipmap && !customLevels)
         {
-            levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_depth, std::max(m_width, m_height)))));
+            m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_depth, std::max(m_width, m_height)))));
         }
 
         glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_depth);
