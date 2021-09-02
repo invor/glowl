@@ -303,16 +303,16 @@ namespace glowl
 
         GLuint m_name; ///< OpenGL sampler name given by glCreateSampler
 
-        GLint m_texture_min_filter;
-        GLint m_texture_mag_filter;
-        GLfloat m_texture_min_lod;
-        GLfloat m_texture_max_lod;
-        GLint m_texture_wrap_s;
-        GLint m_texture_wrap_t;
-        GLint m_texture_wrap_r;
-        std::array<GLfloat, 4> m_texture_border_color;
-        GLint m_texture_compare_mode;
-        GLint m_texture_compare_func;
+        GLint m_texture_min_filter = GL_TEXTURE_MIN_FILTER;
+        GLint m_texture_mag_filter = GL_LINEAR;
+        GLfloat m_texture_min_lod = -1000;
+        GLfloat m_texture_max_lod = 1000;
+        GLint m_texture_wrap_s = GL_REPEAT;
+        GLint m_texture_wrap_t = GL_REPEAT;
+        GLint m_texture_wrap_r = GL_REPEAT;
+        std::array<GLfloat, 4> m_texture_border_color = {0.f, 0.f, 0.f, 0.f};
+        GLint m_texture_compare_mode = GL_NONE;
+        GLint m_texture_compare_func = GL_LEQUAL;
     };
 
 } // namespace glowl
