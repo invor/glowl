@@ -68,6 +68,8 @@ namespace glowl
                     bool                 generateMipmap = false,
                     bool                 customLevels = false);
 
+        void clearTexImage(GLvoid const* data, GLint level = 0);
+
         TextureLayout getTextureLayout() const;
 
         unsigned int getWidth() const;
@@ -188,6 +190,11 @@ namespace glowl
             throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
                                    std::to_string(err));
         }
+    }
+
+    inline void Texture2D::clearTexImage(GLvoid const* data, GLint level)
+    {
+        glClearTexImage(m_name, level, m_format, m_type, data);
     }
 
     inline TextureLayout Texture2D::getTextureLayout() const
