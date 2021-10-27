@@ -39,10 +39,10 @@ namespace glowl
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
         Texture2D(std::string          id,
-                  TextureLayout const& layout,
-                  GLvoid const*        data,
-                  bool                 generateMipmap = false,
-                  bool                 customLevels = false);
+            TextureLayout const& layout,
+            GLvoid const* data,
+            bool                 generateMipmap = false,
+            bool                 customLevels = false);
         Texture2D(const Texture2D&) = delete;
         Texture2D(Texture2D&& other) = delete;
         Texture2D& operator=(const Texture2D& rhs) = delete;
@@ -57,6 +57,13 @@ namespace glowl
         void updateMipmaps();
 
         /**
+        * \brief Copies a texture.
+        *
+        * \param copy The texture which gets copied
+        */
+        void copyTexture(const std::shared_ptr<Texture2D>& src);
+
+        /**
          * \brief Reload the texture with any new format, type and size.
          *
          * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
@@ -64,9 +71,9 @@ namespace glowl
          * \param generateMipmap Specifies whether a mipmap will be created for the texture
          */
         void reload(TextureLayout const& layout,
-                    GLvoid const*        data,
-                    bool                 generateMipmap = false,
-                    bool                 customLevels = false);
+            GLvoid const* data,
+            bool                 generateMipmap = false,
+            bool                 customLevels = false);
 
         void clearTexImage(GLvoid const* data, GLint level = 0);
 
@@ -82,13 +89,13 @@ namespace glowl
     };
 
     inline Texture2D::Texture2D(std::string          id,
-                                TextureLayout const& layout,
-                                GLvoid const*        data,
-                                bool                 generateMipmap,
-                                bool                 customLevels)
+        TextureLayout const& layout,
+        GLvoid const* data,
+        bool                 generateMipmap,
+        bool                 customLevels)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
-          m_width(layout.width),
-          m_height(layout.height)
+        m_width(layout.width),
+        m_height(layout.height)
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
@@ -130,7 +137,7 @@ namespace glowl
 
     inline Texture2D::~Texture2D()
     {
-        glDeleteTextures(1,&m_name);
+        glDeleteTextures(1, &m_name);
     }
 
     inline void Texture2D::bindTexture() const
@@ -143,10 +150,27 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
+    inline void Texture2D::copyTexture(const std::shared_ptr<Texture2D>& src) {
+        // TODO: check for same layout
+        TextureLayout src_ly = src->getTextureLayout();
+        // create fbo
+        GLuint fbo;
+        glCreateFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        GLenum att[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, att);
+
+        src->bindTexture();
+        glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, src->getName(), 0);
+        //glBindTexture(GL_TEXTURE_2D, m_name);
+        glCopyTextureSubImage2D(m_name, 0, 0, 0, 0, 0, m_width, m_height);
+        //glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     inline void Texture2D::reload(TextureLayout const& layout,
-                                  GLvoid const*        data,
-                                  bool                 generateMipmap,
-                                  bool                 customLevels)
+        GLvoid const* data,
+        bool                 generateMipmap,
+        bool                 customLevels)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -169,7 +193,7 @@ namespace glowl
 
         if (generateMipmap && !customLevels)
         {
-                m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
+            m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
         glTextureStorage2D(m_name, m_levels, m_internal_format, m_width, m_height);
@@ -188,7 +212,7 @@ namespace glowl
         if (err != GL_NO_ERROR)
         {
             throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
+                std::to_string(err));
         }
     }
 
