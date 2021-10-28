@@ -14,6 +14,7 @@
 #include "Exceptions.hpp"
 #include "Texture.hpp"
 
+
 namespace glowl
 {
 
@@ -39,10 +40,10 @@ namespace glowl
          * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
         Texture2D(std::string          id,
-            TextureLayout const& layout,
-            GLvoid const* data,
-            bool                 generateMipmap = false,
-            bool                 customLevels = false);
+                  TextureLayout const& layout,
+                  GLvoid const*        data,
+                  bool                 generateMipmap = false,
+                  bool                 customLevels = false);
         Texture2D(const Texture2D&) = delete;
         Texture2D(Texture2D&& other) = delete;
         Texture2D& operator=(const Texture2D& rhs) = delete;
@@ -57,10 +58,10 @@ namespace glowl
         void updateMipmaps();
 
         /**
-        * \brief Copies a texture.
-        *
-        * \param copy The texture which gets copied
-        */
+         * \brief Copies a texture.
+         *
+         * \param src The texture to be copied
+         */
         void copyTexture(const std::shared_ptr<Texture2D>& src);
 
         /**
@@ -71,9 +72,9 @@ namespace glowl
          * \param generateMipmap Specifies whether a mipmap will be created for the texture
          */
         void reload(TextureLayout const& layout,
-            GLvoid const* data,
-            bool                 generateMipmap = false,
-            bool                 customLevels = false);
+                    GLvoid const*        data,
+                    bool                 generateMipmap = false,
+                    bool                 customLevels = false);
 
         void clearTexImage(GLvoid const* data, GLint level = 0);
 
@@ -89,21 +90,23 @@ namespace glowl
     };
 
     inline Texture2D::Texture2D(std::string          id,
-        TextureLayout const& layout,
-        GLvoid const* data,
-        bool                 generateMipmap,
-        bool                 customLevels)
+                                TextureLayout const& layout,
+                                GLvoid const*        data,
+                                bool                 generateMipmap,
+                                bool                 customLevels)
         : Texture(id, layout.internal_format, layout.format, layout.type, layout.levels),
-        m_width(layout.width),
-        m_height(layout.height)
+          m_width(layout.width),
+          m_height(layout.height)
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
@@ -131,7 +134,8 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw TextureException("Texture2D::Texture2D - texture id: " + m_id + " - OpenGL error " + std::to_string(err));
+            throw TextureException("Texture2D::Texture2D - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 
@@ -150,27 +154,43 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture2D::copyTexture(const std::shared_ptr<Texture2D>& src) {
-        // TODO: check for same layout
-        TextureLayout src_ly = src->getTextureLayout();
-        // create fbo
+    inline void Texture2D::copyTexture(const std::shared_ptr<Texture2D>& src)
+    {
+        // get active fbo to rebind it at the end
+        GLint active_draw_fbo;
+        GLint active_read_fbo;
+        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &active_draw_fbo);
+        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &active_read_fbo);
+
+        // create fbo to which the source is bound to
         GLuint fbo;
         glCreateFramebuffers(1, &fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        GLenum att[] = { GL_COLOR_ATTACHMENT0 };
-        glDrawBuffers(1, att);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, src->getName(), 0);
 
-        src->bindTexture();
-        glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, src->getName(), 0);
-        //glBindTexture(GL_TEXTURE_2D, m_name);
-        glCopyTextureSubImage2D(m_name, 0, 0, 0, 0, 0, m_width, m_height);
-        //glBindTexture(GL_TEXTURE_2D, 0);
+        // copy current fbo attachment (i.e. source) to target texture
+        glBindTexture(GL_TEXTURE_2D, m_name);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_width, m_height);
+
+        // rebind previously active fbo
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, active_draw_fbo);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, active_read_fbo);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDeleteFramebuffers(1, &fbo);
+
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw TextureException("Texture2D::copyTexture - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
+        }
     }
 
     inline void Texture2D::reload(TextureLayout const& layout,
-        GLvoid const* data,
-        bool                 generateMipmap,
-        bool                 customLevels)
+                                  GLvoid const*        data,
+                                  bool                 generateMipmap,
+                                  bool                 customLevels)
     {
         m_width = layout.width;
         m_height = layout.height;
@@ -183,11 +203,13 @@ namespace glowl
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
@@ -212,7 +234,7 @@ namespace glowl
         if (err != GL_NO_ERROR)
         {
             throw TextureException("Texture2D::reload - texture id: " + m_id + " - OpenGL error " +
-                std::to_string(err));
+                                   std::to_string(err));
         }
     }
 
