@@ -58,7 +58,9 @@ namespace glowl
         void updateMipmaps();
 
         /**
-         * \brief Copies a texture.
+         * Copies a texture. This is not the most efficient way to accomplish this.
+         * If you want to copy multiple textures or need a more efficient way to do this,
+         * consider using a simple pass through shader.
          *
          * \param src The texture to be copied
          */
