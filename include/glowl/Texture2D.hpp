@@ -66,7 +66,7 @@ namespace glowl
          * \param src The texture to be copied
          * \param tgt The target texture
          */
-        static void copy(std::shared_ptr<Texture2D> src, std::shared_ptr<Texture2D> tgt);
+        static void copy(Texture2D* src, Texture2D* tgt);
 
         /**
          * \brief Reload the texture with any new format, type and size.
@@ -158,7 +158,7 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture2D::copy(std::shared_ptr<Texture2D> src, std::shared_ptr<Texture2D> tgt)
+    inline void Texture2D::copy(Texture2D* src, Texture2D* tgt)
     {
         // TODO: probably check for layout compatibility
         glCopyImageSubData(src->getName(),
