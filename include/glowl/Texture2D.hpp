@@ -13,6 +13,7 @@
 
 #include "Exceptions.hpp"
 #include "Texture.hpp"
+#include "BufferObject.hpp"
 
 
 namespace glowl
@@ -63,8 +64,9 @@ namespace glowl
          * consider using a simple pass through shader.
          *
          * \param src The texture to be copied
+         * \param tgt The target texture
          */
-        void copyTexture(const std::shared_ptr<Texture2D>& src);
+        static void copy(std::shared_ptr<Texture2D> src, std::shared_ptr<Texture2D> tgt);
 
         /**
          * \brief Reload the texture with any new format, type and size.
@@ -156,37 +158,24 @@ namespace glowl
         glGenerateTextureMipmap(m_name);
     }
 
-    inline void Texture2D::copyTexture(const std::shared_ptr<Texture2D>& src)
+    inline void Texture2D::copy(std::shared_ptr<Texture2D> src, std::shared_ptr<Texture2D> tgt)
     {
-        // get active fbo to rebind it at the end
-        GLint active_draw_fbo;
-        GLint active_read_fbo;
-        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &active_draw_fbo);
-        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &active_read_fbo);
-
-        // create fbo to which the source is bound to
-        GLuint fbo;
-        glCreateFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, src->getName(), 0);
-
-        // copy current fbo attachment (i.e. source) to target texture
-        glBindTexture(GL_TEXTURE_2D, m_name);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_width, m_height);
-
-        // rebind previously active fbo
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, active_draw_fbo);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, active_read_fbo);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDeleteFramebuffers(1, &fbo);
-
-        auto err = glGetError();
-        if (err != GL_NO_ERROR)
-        {
-            throw TextureException("Texture2D::copyTexture - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
-        }
+        // TODO: probably check for layout compatibility
+        glCopyImageSubData(src->getName(),
+                           GL_TEXTURE_2D,
+                           0,
+                           0,
+                           0,
+                           0,
+                           tgt->getName(),
+                           GL_TEXTURE_2D,
+                           0,
+                           0,
+                           0,
+                           0,
+                           src->getWidth(),
+                           src->getHeight(),
+                           1);
     }
 
     inline void Texture2D::reload(TextureLayout const& layout,
