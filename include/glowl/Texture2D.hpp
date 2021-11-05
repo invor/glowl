@@ -160,7 +160,6 @@ namespace glowl
 
     inline void Texture2D::copy(Texture2D* src, Texture2D* tgt)
     {
-        // TODO: probably check for layout compatibility
         glCopyImageSubData(src->getName(),
                            GL_TEXTURE_2D,
                            0,
@@ -176,6 +175,15 @@ namespace glowl
                            src->getWidth(),
                            src->getHeight(),
                            1);
+
+        // because checking layout and subranges seem moderatly complex,
+        // let's check for gl errors afterwars using the oldschool appraoch
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw TextureException("Texture2D::copy - texture ids: " + src->getId() + "," + tgt->getId() + " - OpenGL error " +
+                                   std::to_string(err));
+        }
     }
 
     inline void Texture2D::reload(TextureLayout const& layout,
