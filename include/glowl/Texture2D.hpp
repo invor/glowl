@@ -13,8 +13,6 @@
 
 #include "Exceptions.hpp"
 #include "Texture.hpp"
-#include "BufferObject.hpp"
-
 
 namespace glowl
 {
@@ -181,8 +179,8 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw TextureException("Texture2D::copy - texture ids: " + src->getId() + "," + tgt->getId() + " - OpenGL error " +
-                                   std::to_string(err));
+            throw TextureException("Texture2D::copy - texture ids: " + src->getId() + "," + tgt->getId() +
+                                   " - OpenGL error " + std::to_string(err));
         }
     }
 
