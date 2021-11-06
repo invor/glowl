@@ -57,6 +57,16 @@ namespace glowl
         void updateMipmaps();
 
         /**
+         * Copies a texture. This is not the most efficient way to accomplish this.
+         * If you want to copy multiple textures or need a more efficient way to do this,
+         * consider using a simple pass through shader.
+         *
+         * \param src The texture to be copied
+         * \param tgt The target texture
+         */
+        static void copy(Texture2D* src, Texture2D* tgt);
+
+        /**
          * \brief Reload the texture with any new format, type and size.
          *
          * \param layout A TextureLayout struct that specifies size, format and parameters for the texture
@@ -92,11 +102,13 @@ namespace glowl
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
@@ -124,13 +136,14 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw TextureException("Texture2D::Texture2D - texture id: " + m_id + " - OpenGL error " + std::to_string(err));
+            throw TextureException("Texture2D::Texture2D - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
     }
 
     inline Texture2D::~Texture2D()
     {
-        glDeleteTextures(1,&m_name);
+        glDeleteTextures(1, &m_name);
     }
 
     inline void Texture2D::bindTexture() const
@@ -141,6 +154,34 @@ namespace glowl
     inline void Texture2D::updateMipmaps()
     {
         glGenerateTextureMipmap(m_name);
+    }
+
+    inline void Texture2D::copy(Texture2D* src, Texture2D* tgt)
+    {
+        glCopyImageSubData(src->getName(),
+                           GL_TEXTURE_2D,
+                           0,
+                           0,
+                           0,
+                           0,
+                           tgt->getName(),
+                           GL_TEXTURE_2D,
+                           0,
+                           0,
+                           0,
+                           0,
+                           src->getWidth(),
+                           src->getHeight(),
+                           1);
+
+        // because checking layout and subranges seem moderatly complex,
+        // let's check for gl errors afterwars using the oldschool appraoch
+        auto err = glGetError();
+        if (err != GL_NO_ERROR)
+        {
+            throw TextureException("Texture2D::copy - texture ids: " + src->getId() + "," + tgt->getId() +
+                                   " - OpenGL error " + std::to_string(err));
+        }
     }
 
     inline void Texture2D::reload(TextureLayout const& layout,
@@ -159,17 +200,19 @@ namespace glowl
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
 
-        for (auto& pname_pvalue : layout.int_parameters) {
+        for (auto& pname_pvalue : layout.int_parameters)
+        {
             glTextureParameteri(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
-        for (auto& pname_pvalue : layout.float_parameters) {
+        for (auto& pname_pvalue : layout.float_parameters)
+        {
             glTextureParameterf(m_name, pname_pvalue.first, pname_pvalue.second);
         }
 
         if (generateMipmap && !customLevels)
         {
-                m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
+            m_levels = 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height))));
         }
 
         glTextureStorage2D(m_name, m_levels, m_internal_format, m_width, m_height);
