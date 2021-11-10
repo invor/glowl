@@ -141,6 +141,8 @@ namespace glowl
 
         std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
 
+        ColorAttachmentSemantic getColorAttachmentSemantic(unsigned int index) const;
+
         std::shared_ptr<Texture2D> getDepthStencil() const;
 
         /**
@@ -353,6 +355,12 @@ namespace glowl
     inline std::shared_ptr<Texture2D> FramebufferObject::getColorAttachment(unsigned int index) const
     {
         return index < m_colorbuffers.size() ? std::get<0>(m_colorbuffers[index]) : nullptr;
+    }
+
+    inline FramebufferObject::ColorAttachmentSemantic FramebufferObject::getColorAttachmentSemantic(
+        unsigned int index) const
+    {
+        return index < m_colorbuffers.size() ? std::get<1>(m_colorbuffers[index]) : ColorAttachmentSemantic();
     }
 
     inline std::shared_ptr<Texture2D> FramebufferObject::getDepthStencil() const
