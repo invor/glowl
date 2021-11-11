@@ -107,6 +107,8 @@ namespace glowl
         * \param internalFormat Specifies channels+size (e.g. GL_R32F)
         * \param format Specifies channels (e.g. GL_RED)
         * \param type Specifies datatype (e.g. GL_FLOAT)
+        * \param semantic Optional semantic information of a user-defined type,
+                          e.g. enum class Semantic : uint32_t {COLOR,NORMAL,DEPTH};
         * \return Returns true if a color attachment was added, false otherwise
         */
         void createColorAttachment(GLenum internalFormat, GLenum format, GLenum type, std::any semantic = std::any());
