@@ -9,6 +9,7 @@
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
 /* Include system libraries */
+#include <any>
 #include <memory>
 #include <string>
 #include <vector>
@@ -33,37 +34,11 @@ namespace glowl
      */
     class FramebufferObject
     {
-    public:
-        struct ColorAttachmentSemantic
-        {
-            enum class ChannelSemantic : uint32_t
-            {
-                Unused,
-                Unknown,
-                Color_R,
-                Color_G,
-                Color_B,
-                Normal_X,
-                Normal_Y,
-                Normal_Z,
-                Depth,
-                Roughness,
-                Metalness,
-                AmbientOcclusion
-                // Add all possible things..
-            };
-
-            ChannelSemantic r = ChannelSemantic::Unknown;
-            ChannelSemantic g = ChannelSemantic::Unknown;
-            ChannelSemantic b = ChannelSemantic::Unknown;
-            ChannelSemantic a = ChannelSemantic::Unknown;
-        };
-
     private:
         /** Handle of the FBO */
         GLuint m_handle;
         /** Colorbuffers attached to the FBO */
-        std::vector<std::pair<std::shared_ptr<Texture2D>, ColorAttachmentSemantic>> m_colorbuffers;
+        std::vector<std::pair<std::shared_ptr<Texture2D>, std::any>> m_colorbuffers;
 
         /** Optional depth (and stencil) buffer texture */
         std::shared_ptr<Texture2D> m_depth_stencil;
@@ -134,14 +109,12 @@ namespace glowl
         * \param type Specifies datatype (e.g. GL_FLOAT)
         * \return Returns true if a color attachment was added, false otherwise
         */
-        void createColorAttachment(GLenum                  internalFormat,
-                                   GLenum                  format,
-                                   GLenum                  type,
-                                   ColorAttachmentSemantic semantic = ColorAttachmentSemantic());
+        void createColorAttachment(GLenum internalFormat, GLenum format, GLenum type, std::any semantic = std::any());
 
         std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
 
-        ColorAttachmentSemantic getColorAttachmentSemantic(unsigned int index) const;
+        template<typename SemanticType>
+        SemanticType getColorAttachmentSemantic(unsigned int index) const;
 
         std::shared_ptr<Texture2D> getDepthStencil() const;
 
@@ -309,10 +282,10 @@ namespace glowl
         glDeleteFramebuffers(1, &m_handle);
     }
 
-    inline void FramebufferObject::createColorAttachment(GLenum                  internalFormat,
-                                                         GLenum                  format,
-                                                         GLenum                  type,
-                                                         ColorAttachmentSemantic semantic)
+    inline void FramebufferObject::createColorAttachment(GLenum   internalFormat,
+                                                         GLenum   format,
+                                                         GLenum   type,
+                                                         std::any semantic)
     {
         GLint maxAttachments;
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxAttachments);
@@ -357,10 +330,11 @@ namespace glowl
         return index < m_colorbuffers.size() ? std::get<0>(m_colorbuffers[index]) : nullptr;
     }
 
-    inline FramebufferObject::ColorAttachmentSemantic FramebufferObject::getColorAttachmentSemantic(
-        unsigned int index) const
+    template<typename SemanticType>
+    inline SemanticType FramebufferObject::getColorAttachmentSemantic(unsigned int index) const
     {
-        return index < m_colorbuffers.size() ? std::get<1>(m_colorbuffers[index]) : ColorAttachmentSemantic();
+        return index < m_colorbuffers.size() ? std::any_cast<SemanticType>(std::get<1>(m_colorbuffers[index]))
+                                             : SemanticType();
     }
 
     inline std::shared_ptr<Texture2D> FramebufferObject::getDepthStencil() const
