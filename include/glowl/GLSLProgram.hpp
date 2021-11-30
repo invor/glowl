@@ -45,6 +45,10 @@ namespace glowl
             TessEvaluation = GL_TESS_EVALUATION_SHADER,
             Geometry       = GL_GEOMETRY_SHADER,
             Fragment       = GL_FRAGMENT_SHADER,
+        #ifdef GL_NV_mesh_shader
+            Mesh           = GL_MESH_SHADER_NV,
+            Task           = GL_TASK_SHADER_NV,
+        #endif
             Compute        = GL_COMPUTE_SHADER
             // clang-format on
         };
