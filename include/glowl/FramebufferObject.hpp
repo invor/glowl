@@ -190,6 +190,15 @@ namespace glowl
         {
             return m_log;
         }
+
+        /**
+         * \brief Get the count of the frambuffer object's color attachments
+         * \return Returns the number of color attachments.
+         */
+        size_t getNumColorAttachments() const
+        {
+            return m_colorbuffers.size();   
+        }
     };
 
     inline FramebufferObject::FramebufferObject(int width, int height, DepthStencilType depth_stencil_type)
