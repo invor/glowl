@@ -14,45 +14,45 @@
 namespace glowl
 {
     // Use a common base class for all glowl exceptions to allow combined catching.
-    class GlowlException : public std::runtime_error
+    class BaseException : public std::runtime_error
     {
         using std::runtime_error::runtime_error;
     };
 
-    class BufferObjectException : public GlowlException
+    class BufferObjectException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 
-    class FramebufferObjectException : public GlowlException
+    class FramebufferObjectException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 
-    class GLSLProgramException : public GlowlException
+    class GLSLProgramException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 
-    class MeshException : public GlowlException
+    class MeshException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 
-    class TextureException : public GlowlException
+    class TextureException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 
-    class SamplerException : public GlowlException
+    class SamplerException : public BaseException
     {
     public:
-        using GlowlException::GlowlException;
+        using BaseException::BaseException;
     };
 } // namespace glowl
 
