@@ -13,47 +13,40 @@
 
 namespace glowl
 {
-    class BaseException : public std::exception
+    // Use a common base class for all glowl exceptions to allow combined catching.
+    class GlowlException : public std::runtime_error
     {
-    public:
-        BaseException(std::string const& message) : m_message(message) {}
-        virtual const char* what() const noexcept
-        {
-            return m_message.c_str();
-        }
-
-    private:
-        std::string m_message;
+        using std::runtime_error::runtime_error;
     };
 
-    class BufferObjectException : public BaseException
+    class BufferObjectException : public GlowlException
     {
     public:
-        using BaseException::BaseException;
+        using GlowlException::GlowlException;
     };
 
-    class FramebufferObjectException : public BaseException
+    class FramebufferObjectException : public GlowlException
     {
     public:
-        using BaseException::BaseException;
+        using GlowlException::GlowlException;
     };
 
-    class GLSLProgramException : public BaseException
+    class GLSLProgramException : public GlowlException
     {
     public:
-        using BaseException::BaseException;
+        using GlowlException::GlowlException;
     };
 
-    class MeshException : public BaseException
+    class MeshException : public GlowlException
     {
     public:
-        using BaseException::BaseException;
+        using GlowlException::GlowlException;
     };
 
-    class TextureException : public BaseException
+    class TextureException : public GlowlException
     {
     public:
-        using BaseException::BaseException;
+        using GlowlException::GlowlException;
     };
 } // namespace glowl
 
