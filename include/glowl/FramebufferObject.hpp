@@ -207,9 +207,9 @@ namespace glowl
         glCreateFramebuffers(1, &m_handle);
 
         if (depth_stencil_type != FramebufferObject::DepthStencilType::NONE) {
-            GLint  internal_format;
+            GLint  internal_format = 0;
             GLenum format = GL_DEPTH_COMPONENT;
-            GLenum type;
+            GLenum type = 0;
 
             switch (depth_stencil_type)
             {
@@ -358,7 +358,7 @@ namespace glowl
     inline void FramebufferObject::bindToRead(unsigned int index)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_handle);
-        GLenum readBuffer;
+        GLenum readBuffer = 0;
         if (index < static_cast<unsigned int>(m_colorbuffers.size()))
             readBuffer = (GL_COLOR_ATTACHMENT0 + index);
 
