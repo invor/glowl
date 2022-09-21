@@ -111,10 +111,6 @@ namespace glowl
             glGenerateTextureMipmap(m_name);
         }
 
-#ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
-        m_texture_handle = glGetTextureHandleARB(m_name);
-#endif
-
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
