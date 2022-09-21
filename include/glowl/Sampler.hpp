@@ -112,8 +112,8 @@ namespace glowl
                     setTextureCompareFunc(p.second);
                     break;
                 default:
-                    throw BaseException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
-                                        std::to_string(p.first) + " is wrong");
+                    throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
+                                           std::to_string(p.first) + " is wrong");
                 }
             }
 
@@ -126,8 +126,8 @@ namespace glowl
                     setTextureMaxLod(p.second);
                     break;
                 default:
-                    throw BaseException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
-                                        std::to_string(p.first) + " is wrong");
+                    throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
+                                           std::to_string(p.first) + " is wrong");
                 }
             }
 
@@ -135,8 +135,8 @@ namespace glowl
 
             auto err = glGetError();
             if (err != GL_NO_ERROR) {
-                throw BaseException(
-                    "Sampler::Sampler - sampler id: " + m_id + " - OpenGL error " + std::to_string(err));
+                throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - OpenGL error " +
+                                       std::to_string(err));
             }
         }
 
@@ -167,16 +167,16 @@ namespace glowl
                     setTextureCompareFunc(p.second);
                     break;
                 default:
-                    throw BaseException(
-                        "Sampler::Sampler - sampler id: " + m_id + " - parameter " + std::to_string(p.first) + " is wrong");
+                    throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
+                                           std::to_string(p.first) + " is wrong");
                 }
             }
 
             auto err = glGetError();
             if (err != GL_NO_ERROR)
             {
-                throw BaseException("Sampler::Sampler - sampler id: " + m_id + " - OpenGL error " +
-                                    std::to_string(err));
+                throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - OpenGL error " +
+                                       std::to_string(err));
             }
         }
 
@@ -192,16 +192,16 @@ namespace glowl
                     setTextureMaxLod(p.second);
                     break;
                 default:
-                    throw BaseException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
-                                        std::to_string(p.first) + " is wrong");
+                    throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - parameter " +
+                                           std::to_string(p.first) + " is wrong");
                 }
             }
 
             auto err = glGetError();
             if (err != GL_NO_ERROR)
             {
-                throw BaseException("Sampler::Sampler - sampler id: " + m_id + " - OpenGL error " +
-                                    std::to_string(err));
+                throw SamplerException("Sampler::Sampler - sampler id: " + m_id + " - OpenGL error " +
+                                       std::to_string(err));
             }
         }
 

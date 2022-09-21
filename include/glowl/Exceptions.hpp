@@ -48,6 +48,12 @@ namespace glowl
     public:
         using GlowlException::GlowlException;
     };
+
+    class SamplerException : public GlowlException
+    {
+    public:
+        using GlowlException::GlowlException;
+    };
 } // namespace glowl
 
 #endif // GLOWL_EXCEPTIONS_HPP
