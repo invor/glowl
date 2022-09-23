@@ -9,6 +9,7 @@
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
 /* Include system libraries */
+#include <any>
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,12 +38,12 @@ namespace glowl
         /** Handle of the FBO */
         GLuint m_handle;
         /** Colorbuffers attached to the FBO */
-        std::vector<std::shared_ptr<Texture2D>> m_colorbuffers;
+        std::vector<std::pair<std::shared_ptr<Texture2D>, std::any>> m_colorbuffers;
 
         /** Optional depth (and stencil) buffer texture */
         std::shared_ptr<Texture2D> m_depth_stencil;
 
-        //TODO additional Texture2DView for read access of stencil buffer
+        // TODO additional Texture2DView for read access of stencil buffer
 
         /** Width of the framebuffer i.e. it's color attachments */
         int m_width;
@@ -58,8 +59,8 @@ namespace glowl
         std::string m_log;
 
     public:
-
-        enum DepthStencilType {
+        enum DepthStencilType
+        {
             NONE,
             DEPTH16,
             DEPTH24,
@@ -106,11 +107,16 @@ namespace glowl
         * \param internalFormat Specifies channels+size (e.g. GL_R32F)
         * \param format Specifies channels (e.g. GL_RED)
         * \param type Specifies datatype (e.g. GL_FLOAT)
+        * \param semantic Optional semantic information of a user-defined type,
+                          e.g. enum class Semantic : uint32_t {COLOR,NORMAL,DEPTH};
         * \return Returns true if a color attachment was added, false otherwise
         */
-        void createColorAttachment(GLenum internalFormat, GLenum format, GLenum type);
+        void createColorAttachment(GLenum internalFormat, GLenum format, GLenum type, std::any semantic = std::any());
 
         std::shared_ptr<Texture2D> getColorAttachment(unsigned int index) const;
+
+        template<typename SemanticType>
+        SemanticType getColorAttachmentSemantic(unsigned int index) const;
 
         std::shared_ptr<Texture2D> getDepthStencil() const;
 
@@ -202,11 +208,13 @@ namespace glowl
     };
 
     inline FramebufferObject::FramebufferObject(int width, int height, DepthStencilType depth_stencil_type)
-        : m_width(width), m_height(height)
+        : m_width(width),
+          m_height(height)
     {
         glCreateFramebuffers(1, &m_handle);
 
-        if (depth_stencil_type != FramebufferObject::DepthStencilType::NONE) {
+        if (depth_stencil_type != FramebufferObject::DepthStencilType::NONE)
+        {
             GLint  internal_format = 0;
             GLenum format = GL_DEPTH_COMPONENT;
             GLenum type = 0;
@@ -250,7 +258,7 @@ namespace glowl
                                                 {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
                                                {});
 
-            m_depth_stencil = std::make_shared<Texture2D>("",depth_stencil_layout,nullptr);
+            m_depth_stencil = std::make_shared<Texture2D>("", depth_stencil_layout, nullptr);
 
             if (depth_stencil_type == FramebufferObject::DepthStencilType::DEPTH24_STENCIL8 ||
                 depth_stencil_type == FramebufferObject::DepthStencilType::DEPTH32F_STENCIL8)
@@ -261,9 +269,7 @@ namespace glowl
             {
                 glNamedFramebufferTexture(m_handle, GL_DEPTH_ATTACHMENT, m_depth_stencil->getName(), 0);
             }
-
         }
-        
     }
 
     inline FramebufferObject::FramebufferObject(std::string const& debug_label,
@@ -274,8 +280,10 @@ namespace glowl
     {
         m_debug_label = debug_label;
 #if _DEBUG
-        glObjectLabel(
-            GL_FRAMEBUFFER, this->m_handle, static_cast<GLsizei>(m_debug_label.length()), m_debug_label.c_str());
+        glObjectLabel(GL_FRAMEBUFFER,
+                      this->m_handle,
+                      static_cast<GLsizei>(m_debug_label.length()),
+                      m_debug_label.c_str());
 #endif
     }
 
@@ -285,7 +293,10 @@ namespace glowl
         glDeleteFramebuffers(1, &m_handle);
     }
 
-    inline void FramebufferObject::createColorAttachment(GLenum internalFormat, GLenum format, GLenum type)
+    inline void FramebufferObject::createColorAttachment(GLenum   internalFormat,
+                                                         GLenum   format,
+                                                         GLenum   type,
+                                                         std::any semantic)
     {
         GLint maxAttachments;
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxAttachments);
@@ -300,33 +311,41 @@ namespace glowl
         unsigned int bufsSize = static_cast<unsigned int>(m_colorbuffers.size());
 
         TextureLayout color_attach_layout(internalFormat,
-                             m_width,
-                             m_height,
-                             1,
-                             format,
-                             type,
-                             1,
-                             {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
-                              {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
-                              {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
-                              {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
-                             {});
-        m_colorbuffers.push_back(
-            std::make_shared<Texture2D>(
-                "fbo_" + std::to_string(m_handle) + "_color_attachment_" +
-                std::to_string(bufsSize),
-                color_attach_layout,
-                nullptr)
-        );
+                                          m_width,
+                                          m_height,
+                                          1,
+                                          format,
+                                          type,
+                                          1,
+                                          {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
+                                           {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
+                                           {GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE},
+                                           {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
+                                          {});
+        m_colorbuffers.push_back({std::make_shared<Texture2D>("fbo_" + std::to_string(m_handle) + "_color_attachment_" +
+                                                                  std::to_string(bufsSize),
+                                                              color_attach_layout,
+                                                              nullptr),
+                                  semantic});
 
-        glNamedFramebufferTexture(m_handle, GL_COLOR_ATTACHMENT0 + bufsSize, m_colorbuffers.back()->getName(), 0);
+        glNamedFramebufferTexture(m_handle,
+                                  GL_COLOR_ATTACHMENT0 + bufsSize,
+                                  std::get<0>(m_colorbuffers.back())->getName(),
+                                  0);
 
         m_drawBufs.push_back(GL_COLOR_ATTACHMENT0 + bufsSize);
     }
 
     inline std::shared_ptr<Texture2D> FramebufferObject::getColorAttachment(unsigned int index) const
     {
-        return index < m_colorbuffers.size() ? m_colorbuffers[index] : nullptr;
+        return index < m_colorbuffers.size() ? std::get<0>(m_colorbuffers[index]) : nullptr;
+    }
+
+    template<typename SemanticType>
+    inline SemanticType FramebufferObject::getColorAttachmentSemantic(unsigned int index) const
+    {
+        return index < m_colorbuffers.size() ? std::any_cast<SemanticType>(std::get<1>(m_colorbuffers[index]))
+                                             : SemanticType();
     }
 
     inline std::shared_ptr<Texture2D> FramebufferObject::getDepthStencil() const
@@ -380,7 +399,7 @@ namespace glowl
     inline void FramebufferObject::bindColorbuffer(unsigned int index)
     {
         if (index < m_colorbuffers.size())
-            m_colorbuffers[index]->bindTexture();
+            std::get<0>(m_colorbuffers[index])->bindTexture();
     }
 
     inline void FramebufferObject::bindDepthbuffer()
@@ -390,7 +409,7 @@ namespace glowl
 
     inline GLenum FramebufferObject::checkStatus(GLenum target) const
     {
-        return glCheckNamedFramebufferStatus(m_handle,GL_FRAMEBUFFER);
+        return glCheckNamedFramebufferStatus(m_handle, GL_FRAMEBUFFER);
     }
 
     inline void FramebufferObject::resize(int new_width, int new_height)
@@ -403,12 +422,12 @@ namespace glowl
         for (auto& colorbuffer : m_colorbuffers)
         {
             // TODO add more convienient method
-            TextureLayout color_attach_layout(colorbuffer->getInternalFormat(),
+            TextureLayout color_attach_layout(std::get<0>(colorbuffer)->getInternalFormat(),
                                               m_width,
                                               m_height,
                                               1,
-                                              colorbuffer->getFormat(),
-                                              colorbuffer->getType(),
+                                              std::get<0>(colorbuffer)->getFormat(),
+                                              std::get<0>(colorbuffer)->getType(),
                                               1,
                                               {{GL_TEXTURE_MIN_FILTER, GL_NEAREST},
                                                {GL_TEXTURE_MAG_FILTER, GL_NEAREST},
@@ -416,9 +435,9 @@ namespace glowl
                                                {GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE}},
                                               {});
 
-            colorbuffer->reload(color_attach_layout, nullptr);
+            std::get<0>(colorbuffer)->reload(color_attach_layout, nullptr);
 
-            glNamedFramebufferTexture(m_handle, attachment_point++, colorbuffer->getName(), 0);
+            glNamedFramebufferTexture(m_handle, attachment_point++, std::get<0>(colorbuffer)->getName(), 0);
         }
 
         // resize depth buffer
