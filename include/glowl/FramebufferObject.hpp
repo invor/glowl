@@ -162,7 +162,7 @@ namespace glowl
          * \brief Check the framebuffer object for completeness.
          * \return Returns true if the framebuffer object is complete, false otherwise.
          */
-        GLenum checkStatus(GLenum target) const;
+        GLenum checkStatus() const;
 
         /**
          * \brief Resize the framebuffer object, i.e. it's color attachments.
@@ -405,7 +405,7 @@ namespace glowl
         m_depth_stencil->bindTexture();
     }
 
-    inline GLenum FramebufferObject::checkStatus(GLenum target) const
+    inline GLenum FramebufferObject::checkStatus() const
     {
         return glCheckNamedFramebufferStatus(m_handle, GL_FRAMEBUFFER);
     }

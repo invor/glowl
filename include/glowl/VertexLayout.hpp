@@ -99,7 +99,7 @@ namespace glowl
 
         if (lhs.attributes.size() == rhs.attributes.size())
         {
-            for (size_t i = 0; i < lhs.attributes.size(); ++i)
+            for (std::size_t i = 0; i < lhs.attributes.size(); ++i)
             {
                 rtn &= (lhs.attributes[i] == rhs.attributes[i]);
             }
@@ -112,9 +112,9 @@ namespace glowl
         return rtn;
     }
 
-    static constexpr size_t computeByteSize(GLenum value_type)
+    inline constexpr std::size_t computeByteSize(GLenum value_type)
     {
-        size_t retval = 0;
+        std::size_t retval = 0;
 
         switch (value_type)
         {
@@ -164,7 +164,7 @@ namespace glowl
         return retval;
     }
 
-    static size_t computeAttributeByteSize(VertexLayout::Attribute attrib_desc)
+    inline std::size_t computeAttributeByteSize(VertexLayout::Attribute attrib_desc)
     {
         return computeByteSize(attrib_desc.type) * attrib_desc.size;
     }
