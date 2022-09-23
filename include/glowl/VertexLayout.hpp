@@ -25,12 +25,14 @@ namespace glowl
      * actual stride in bytes), e.g.:
      *
      * Non-interleaved, tightly packed vertex data,
-     * e.g. two attribs in two buffers {vec3,vec3,...} and {vec2,vec2,...} have strides 12 and 8 in two diffrent vertex layouts
-     * 
-     * Partly interleaved (or non-tightly packed) vertex data,
-     * e.g. three attribs in two buffers {vec3,vec3,...} and {{vec3,vec2},{vec3,vec2},...} have strides 12 and 20 in two different vertex layouts
+     * e.g. two attribs in two buffers {vec3,vec3,...} and {vec2,vec2,...} have strides 12 and 8 in two diffrent vertex
+     * layouts
      *
-     * Fully interleaved vertex data, 
+     * Partly interleaved (or non-tightly packed) vertex data,
+     * e.g. three attribs in two buffers {vec3,vec3,...} and {{vec3,vec2},{vec3,vec2},...} have strides 12 and 20 in two
+     * different vertex layouts
+     *
+     * Fully interleaved vertex data,
      * e.g. three attribs in one buffer {{vec3,vec3,vec2},{vec3,vec3,vec2},...} have stride 32 in a single vertex layout
      *
      * \author Michael Becher
@@ -44,7 +46,11 @@ namespace glowl
                       GLboolean normalized,
                       GLsizei   offset,
                       GLenum    shader_input_type = GL_FLOAT)
-                : size(size), type(type), normalized(normalized), offset(offset), shader_input_type(shader_input_type)
+                : size(size),
+                  type(type),
+                  normalized(normalized),
+                  offset(offset),
+                  shader_input_type(shader_input_type)
             {
             }
 
@@ -63,8 +69,7 @@ namespace glowl
          * for all attributes (see VertexLayout member documentation).
          *
          */
-        VertexLayout(GLsizei stride, std::vector<Attribute> const& attributes)
-            : stride(stride), attributes(attributes)
+        VertexLayout(GLsizei stride, std::vector<Attribute> const& attributes) : stride(stride), attributes(attributes)
         {
         }
         /**
@@ -74,10 +79,7 @@ namespace glowl
          * for all attributes (see VertexLayout member documentation).
          *
          */
-        VertexLayout(GLsizei stride, std::vector<Attribute>&& attributes)
-            : stride(stride), attributes(attributes)
-        {
-        }
+        VertexLayout(GLsizei stride, std::vector<Attribute>&& attributes) : stride(stride), attributes(attributes) {}
 
         GLsizei                stride;
         std::vector<Attribute> attributes;

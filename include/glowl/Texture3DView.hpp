@@ -88,7 +88,7 @@ namespace glowl
         if (err != GL_NO_ERROR)
         {
             throw TextureException("Texture3DView::Texture3DView - texture id: " + m_id + " - OpenGL error " +
-                                     std::to_string(err));
+                                   std::to_string(err));
         }
     }
 

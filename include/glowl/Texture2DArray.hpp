@@ -96,7 +96,8 @@ namespace glowl
 
         if (generateMipmap && !customLevels)
         {
-            m_levels = std::min(layout.levels, 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height)))));
+            m_levels =
+                std::min(layout.levels, 1 + static_cast<GLsizei>(std::floor(std::log2(std::max(m_width, m_height)))));
         }
 
         glTextureStorage3D(m_name, m_levels, m_internal_format, m_width, m_height, m_layers);
@@ -119,7 +120,8 @@ namespace glowl
         }
     }
 
-    inline Texture2DArray::~Texture2DArray() {
+    inline Texture2DArray::~Texture2DArray()
+    {
         glDeleteTextures(1, &m_name);
     }
 

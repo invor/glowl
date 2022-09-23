@@ -203,7 +203,7 @@ namespace glowl
          */
         size_t getNumColorAttachments() const
         {
-            return m_colorbuffers.size();   
+            return m_colorbuffers.size();
         }
     };
 

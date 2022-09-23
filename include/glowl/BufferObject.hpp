@@ -103,7 +103,10 @@ namespace glowl
     }
 
     inline BufferObject::BufferObject(GLenum target, GLvoid const* data, GLsizeiptr byte_size, GLenum usage)
-        : m_target(target), m_name(0), m_byte_size(byte_size), m_usage(usage)
+        : m_target(target),
+          m_name(0),
+          m_byte_size(byte_size),
+          m_usage(usage)
     {
         glCreateBuffers(1, &m_name);
         glNamedBufferData(m_name, m_byte_size, data, m_usage);
@@ -131,8 +134,10 @@ namespace glowl
             throw BufferObjectException("BufferObject::bufferSubData - given data too large for buffer");
         }
 
-        glNamedBufferSubData(
-            m_name, byte_offset, datastorage.size() * sizeof(typename Container::value_type), datastorage.data());
+        glNamedBufferSubData(m_name,
+                             byte_offset,
+                             datastorage.size() * sizeof(typename Container::value_type),
+                             datastorage.data());
     }
 
     inline void BufferObject::bufferSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset) const
