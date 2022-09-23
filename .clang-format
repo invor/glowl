@@ -9,7 +9,7 @@ UseTab: Never
 Language: Cpp
 
 AccessModifierOffset: -4
-AlignConsecutiveDeclarations: true
+AlignConsecutiveDeclarations: Consecutive
 AlignEscapedNewlines: Left
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false

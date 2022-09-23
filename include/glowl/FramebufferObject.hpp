@@ -8,13 +8,11 @@
 #ifndef GLOWL_FRAMEBUFFEROBJECT_HPP
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
-/* Include system libraries */
 #include <any>
 #include <memory>
 #include <string>
 #include <vector>
 
-/* Include glowl files */
 #include "Exceptions.hpp"
 #include "Texture2D.hpp"
 #include "glinclude.h"
@@ -164,7 +162,7 @@ namespace glowl
          * \brief Check the framebuffer object for completeness.
          * \return Returns true if the framebuffer object is complete, false otherwise.
          */
-        GLenum checkStatus(GLenum target) const;
+        GLenum checkStatus() const;
 
         /**
          * \brief Resize the framebuffer object, i.e. it's color attachments.
@@ -203,7 +201,7 @@ namespace glowl
          */
         size_t getNumColorAttachments() const
         {
-            return m_colorbuffers.size();   
+            return m_colorbuffers.size();
         }
     };
 
@@ -215,9 +213,9 @@ namespace glowl
 
         if (depth_stencil_type != FramebufferObject::DepthStencilType::NONE)
         {
-            GLint  internal_format;
+            GLint  internal_format = 0;
             GLenum format = GL_DEPTH_COMPONENT;
-            GLenum type;
+            GLenum type = 0;
 
             switch (depth_stencil_type)
             {
@@ -377,7 +375,7 @@ namespace glowl
     inline void FramebufferObject::bindToRead(unsigned int index)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_handle);
-        GLenum readBuffer;
+        GLenum readBuffer = 0;
         if (index < static_cast<unsigned int>(m_colorbuffers.size()))
             readBuffer = (GL_COLOR_ATTACHMENT0 + index);
 
@@ -407,7 +405,7 @@ namespace glowl
         m_depth_stencil->bindTexture();
     }
 
-    inline GLenum FramebufferObject::checkStatus(GLenum target) const
+    inline GLenum FramebufferObject::checkStatus() const
     {
         return glCheckNamedFramebufferStatus(m_handle, GL_FRAMEBUFFER);
     }

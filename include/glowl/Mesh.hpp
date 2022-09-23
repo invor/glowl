@@ -8,12 +8,10 @@
 #ifndef GLOWL_MESH_HPP
 #define GLOWL_MESH_HPP
 
-// Include std libs
 #include <memory>
 #include <string>
 #include <vector>
 
-// Include glowl files
 #include "BufferObject.hpp"
 #include "VertexLayout.hpp"
 #include "glinclude.h"
@@ -247,7 +245,7 @@ namespace glowl
         }
 
         createVertexArray();
-        setIndicesCount(index_data_byte_size);
+        setIndicesCount(static_cast<GLuint>(index_data_byte_size));
 
         checkError();
     }
@@ -276,7 +274,7 @@ namespace glowl
         }
 
         createVertexArray();
-        setIndicesCount(index_data_byte_size);
+        setIndicesCount(static_cast<GLuint>(index_data_byte_size));
 
         checkError();
     }
@@ -389,7 +387,7 @@ namespace glowl
         for (std::size_t vertex_layout_idx = 0; vertex_layout_idx < m_vertex_descriptor.size(); ++vertex_layout_idx)
         {
             glVertexArrayVertexBuffer(m_va_handle,
-                                      vertex_layout_idx,
+                                      static_cast<GLuint>(vertex_layout_idx),
                                       m_vbos[vertex_layout_idx]->getName(),
                                       0, // offset not really needed since we just created a new vbo
                                       m_vertex_descriptor[vertex_layout_idx].stride);
@@ -430,7 +428,7 @@ namespace glowl
                         "Mesh::createVertexArray - invalid vertex shader input type given (use float, double or int)");
                     break;
                 }
-                glVertexArrayAttribBinding(m_va_handle, attrib_idx, vertex_layout_idx);
+                glVertexArrayAttribBinding(m_va_handle, attrib_idx, static_cast<GLuint>(vertex_layout_idx));
 
                 ++attrib_idx;
             }

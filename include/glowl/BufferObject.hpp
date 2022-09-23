@@ -28,25 +28,25 @@ namespace glowl
          * \brief BufferObject constructor that uses std containers as input.
          *
          * Note: Active OpenGL context required for construction.
-         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         * Use std::unique_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
         template<typename Container>
         BufferObject(GLenum target, Container const& datastorage, GLenum usage = GL_DYNAMIC_DRAW);
 
         /**
-         * \brief Bufferobject constructor that uses data pointer and byte size as input.
+         * \brief BufferObject constructor that uses data pointer and byte size as input.
          *
          * Note: Active OpenGL context required for construction.
-         * Use std::unqiue_ptr (or shared_ptr) for delayed construction of class member variables of this type.
+         * Use std::unique_ptr (or shared_ptr) for delayed construction of class member variables of this type.
          */
         BufferObject(GLenum target, GLvoid const* data, GLsizeiptr byte_size, GLenum usage = GL_DYNAMIC_DRAW);
 
         ~BufferObject();
 
-        BufferObject(const BufferObject& cpy) = delete;
-        BufferObject(BufferObject&& other) = delete;
-        BufferObject& operator=(BufferObject&& rhs) = delete;
-        BufferObject& operator=(const BufferObject& rhs) = delete;
+        BufferObject(const BufferObject&) = delete;
+        BufferObject(BufferObject&&) = delete;
+        BufferObject& operator=(BufferObject&&) = delete;
+        BufferObject& operator=(const BufferObject&) = delete;
 
         template<typename Container>
         void bufferSubData(Container const& datastorage, GLsizeiptr byte_offset = 0) const;
@@ -103,7 +103,10 @@ namespace glowl
     }
 
     inline BufferObject::BufferObject(GLenum target, GLvoid const* data, GLsizeiptr byte_size, GLenum usage)
-        : m_target(target), m_name(0), m_byte_size(byte_size), m_usage(usage)
+        : m_target(target),
+          m_name(0),
+          m_byte_size(byte_size),
+          m_usage(usage)
     {
         glCreateBuffers(1, &m_name);
         glNamedBufferData(m_name, m_byte_size, data, m_usage);
@@ -131,8 +134,10 @@ namespace glowl
             throw BufferObjectException("BufferObject::bufferSubData - given data too large for buffer");
         }
 
-        glNamedBufferSubData(
-            m_name, byte_offset, datastorage.size() * sizeof(typename Container::value_type), datastorage.data());
+        glNamedBufferSubData(m_name,
+                             byte_offset,
+                             datastorage.size() * sizeof(typename Container::value_type),
+                             datastorage.data());
     }
 
     inline void BufferObject::bufferSubData(GLvoid const* data, GLsizeiptr byte_size, GLsizeiptr byte_offset) const

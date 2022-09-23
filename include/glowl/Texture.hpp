@@ -8,6 +8,7 @@
 #ifndef GLOWL_TEXTURE_HPP
 #define GLOWL_TEXTURE_HPP
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -123,7 +124,7 @@ namespace glowl
 
         GLuint m_name; ///< OpenGL texture name given by glCreateTexture
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
-        GLuint64 m_texture_handle; ///< Actual OpenGL texture handle (used for bindless)
+        std::optional<GLuint64> m_texture_handle; ///< Actual OpenGL texture handle (used for bindless)
 #endif
 
         GLenum m_internal_format;
@@ -135,7 +136,13 @@ namespace glowl
         // TODO: Store texture parameters as well ?
     public:
         Texture(std::string id, GLint internal_format, GLenum format, GLenum type, GLsizei levels)
-            : m_id(id), m_internal_format(internal_format), m_format(format), m_type(type), m_levels(levels) {}
+            : m_id(id),
+              m_internal_format(internal_format),
+              m_format(format),
+              m_type(type),
+              m_levels(levels)
+        {
+        }
         virtual ~Texture() {}
         Texture(const Texture&) = delete;
 
@@ -155,11 +162,11 @@ namespace glowl
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
         void makeResident()
         {
-            glMakeTextureHandleResidentARB(m_texture_handle);
+            glMakeTextureHandleResidentARB(getTextureHandle());
         }
         void makeNonResident()
         {
-            glMakeTextureHandleNonResidentARB(m_texture_handle);
+            glMakeTextureHandleNonResidentARB(getTextureHandle());
         }
 #endif
 
@@ -177,9 +184,15 @@ namespace glowl
             return m_name;
         }
 #ifndef GLOWL_NO_ARB_BINDLESS_TEXTURE
-        GLuint64 getTextureHandle() const
+        GLuint64 getTextureHandle()
         {
-            return m_texture_handle;
+            // Initialize on demand to avoid OpenGL extension function calls in constructor. This improves
+            // compatibility with external graphics debuggers for all code paths which not actively use thit feature.
+            if (!m_texture_handle.has_value())
+            {
+                m_texture_handle = glGetTextureHandleARB(m_name);
+            }
+            return m_texture_handle.value();
         }
         GLuint64 getImageHandle(GLint level, GLboolean layered, GLint layer) const
         {

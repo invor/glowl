@@ -90,7 +90,10 @@ namespace glowl
                                                     GLsizei       levels,
                                                     GLvoid const* data,
                                                     bool          generateMipmap)
-        : Texture(id, internal_format, format, type, levels), m_width(width), m_height(height), m_layers(layers)
+        : Texture(id, internal_format, format, type, levels),
+          m_width(width),
+          m_height(height),
+          m_layers(layers)
     {
         glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_name);
 
@@ -102,7 +105,8 @@ namespace glowl
 
         glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_layers);
 
-        if (data != nullptr) {
+        if (data != nullptr)
+        {
             glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
         }
 
@@ -115,8 +119,8 @@ namespace glowl
         auto err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            throw TextureException("TextureCubemapArray::TextureCubemapArray - texture id: " + m_id + " - OpenGL error " +
-                                   std::to_string(err));
+            throw TextureException("TextureCubemapArray::TextureCubemapArray - texture id: " + m_id +
+                                   " - OpenGL error " + std::to_string(err));
         }
     }
 
@@ -147,7 +151,8 @@ namespace glowl
 
         glTextureStorage3D(m_name, 1, m_internal_format, m_width, m_height, m_layers);
 
-        if (data != nullptr) {
+        if (data != nullptr)
+        {
             glTextureSubImage3D(m_name, 0, 0, 0, 0, m_width, m_height, m_layers, m_format, m_type, data);
         }
 

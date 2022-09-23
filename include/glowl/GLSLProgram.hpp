@@ -14,12 +14,18 @@
 #include <utility>
 #include <vector>
 
+// Auto detect glm header availability
+#ifndef GLOWL_USE_GLM
 #if __has_include(<glm/glm.hpp>)
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #define GLOWL_USE_GLM 1
 #else
 #define GLOWL_USE_GLM 0
+#endif
+#endif
+
+#if GLOWL_USE_GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #endif
 
 #include "Exceptions.hpp"
@@ -45,11 +51,11 @@ namespace glowl
             TessEvaluation = GL_TESS_EVALUATION_SHADER,
             Geometry       = GL_GEOMETRY_SHADER,
             Fragment       = GL_FRAGMENT_SHADER,
-        #ifdef GL_NV_mesh_shader
+            Compute        = GL_COMPUTE_SHADER,
+#ifdef GLOWL_USE_NV_MESH_SHADER
             Mesh           = GL_MESH_SHADER_NV,
             Task           = GL_TASK_SHADER_NV,
-        #endif
-            Compute        = GL_COMPUTE_SHADER
+#endif
             // clang-format on
         };
 
@@ -95,7 +101,8 @@ namespace glowl
         /**
          * \brief Associate several vertex shader attribute variables with specific vertex attribute indices.
          * Useful if mesh vertex attribute order is different from order given in vertex shader.
-         * \param location_name_pairs A vector of pairs of location (i.e. vertex attribute index) and vertex shader attribute variable name
+         * \param location_name_pairs A vector of pairs of location (i.e. vertex attribute index) and vertex shader
+         * attribute variable name
          */
         void bindAttribLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs);
 
@@ -108,7 +115,8 @@ namespace glowl
         /**
          * \brief Associates fragment shader output variables with specific output indices.
          * Ignored if output locations statically defined in shader.
-         * \param location_name_pairs A vector of pairs of location (i.e. output index) and fragment shader output variable name
+         * \param location_name_pairs A vector of pairs of location (i.e. output index) and fragment shader output
+         * variable name
          */
         void bindFragDataLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs);
 
@@ -284,30 +292,32 @@ namespace glowl
     inline void GLSLProgram::bindAttribLocation(GLuint location, GLchar const* name)
     {
         glBindAttribLocation(m_handle, location, name);
-        link(); // relink program to apply attrib location binding 
+        link(); // relink program to apply attrib location binding
     }
 
     inline void GLSLProgram::bindAttribLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs)
     {
-        for (auto& location_name : location_name_pairs) {
+        for (auto& location_name : location_name_pairs)
+        {
             glBindAttribLocation(m_handle, location_name.first, location_name.second.c_str());
         }
-        link(); // relink program to apply attrib location binding 
+        link(); // relink program to apply attrib location binding
     }
 
     inline void GLSLProgram::bindFragDataLocation(GLuint location, char const* name)
     {
         glBindFragDataLocation(m_handle, location, name);
-        link(); // relink program to apply frag data location binding 
+        link(); // relink program to apply frag data location binding
     }
 
-    inline void GLSLProgram::bindFragDataLocations(std::vector<std::pair<GLuint, std::string>> const& location_name_pairs)
+    inline void GLSLProgram::bindFragDataLocations(
+        std::vector<std::pair<GLuint, std::string>> const& location_name_pairs)
     {
         for (auto& location_name : location_name_pairs)
         {
             glBindFragDataLocation(m_handle, location_name.first, location_name.second.c_str());
         }
-        link(); // relink program to apply frag data location binding 
+        link(); // relink program to apply frag data location binding
     }
 
     inline void GLSLProgram::setUniform(GLchar const* name, GLfloat v0)

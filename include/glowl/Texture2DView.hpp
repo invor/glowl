@@ -11,7 +11,6 @@
 #include "Exceptions.hpp"
 #include "Texture.hpp"
 #include "Texture2D.hpp"
-
 #include "glinclude.h"
 
 namespace glowl
@@ -35,7 +34,7 @@ namespace glowl
          */
         template<typename T>
         Texture2DView(std::string          id,
-                      T const&     source_texture,
+                      T const&             source_texture,
                       TextureLayout const& layout,
                       GLuint               minlevel,
                       GLuint               numlevels,
@@ -60,13 +59,12 @@ namespace glowl
          * \param numlayers The number of layers of the view
          */
         template<class T>
-        void reload(
-            T const& source_texture,
-            TextureLayout const& layout,
-            GLuint minlevel,
-            GLuint numlevels,
-            GLuint minlayer,
-            GLuint numlayers);
+        void reload(T const&             source_texture,
+                    TextureLayout const& layout,
+                    GLuint               minlevel,
+                    GLuint               numlevels,
+                    GLuint               minlayer,
+                    GLuint               numlayers);
 
         unsigned int getWidth();
         unsigned int getHeight();
@@ -82,7 +80,7 @@ namespace glowl
     // original texture, but it's still nice to have them available
     template<typename T>
     inline Texture2DView::Texture2DView(std::string          id,
-                                        T const&     source_texture,
+                                        T const&             source_texture,
                                         TextureLayout const& layout,
                                         GLuint               minlevel,
                                         GLuint               numlevels,
@@ -115,7 +113,7 @@ namespace glowl
         if (err != GL_NO_ERROR)
         {
             throw TextureException("Texture2DView::Texture2DView - texture id: " + m_id + " - OpenGL error " +
-                                     std::to_string(err));
+                                   std::to_string(err));
         }
     }
 
@@ -129,7 +127,8 @@ namespace glowl
         glBindTexture(GL_TEXTURE_2D, m_name);
     }
 
-    inline void Texture2DView::updateMipmaps() {
+    inline void Texture2DView::updateMipmaps()
+    {
         glGenerateTextureMipmap(m_name);
     }
 
@@ -139,13 +138,13 @@ namespace glowl
     }
 
     template<class T>
-    inline void Texture2DView::reload(
-        T const& source_texture,
-        TextureLayout const& layout,
-        GLuint minlevel,
-        GLuint numlevels,
-        GLuint minlayer,
-        GLuint numlayers) {
+    inline void Texture2DView::reload(T const&             source_texture,
+                                      TextureLayout const& layout,
+                                      GLuint               minlevel,
+                                      GLuint               numlevels,
+                                      GLuint               minlayer,
+                                      GLuint               numlayers)
+    {
 
         m_width = layout.width;
         m_height = layout.height;
@@ -158,8 +157,14 @@ namespace glowl
 
         glGenTextures(1, &m_name);
 
-        glTextureView(m_name, GL_TEXTURE_2D, source_texture.getName(), m_internal_format, minlevel, numlevels, minlayer,
-            numlayers);
+        glTextureView(m_name,
+                      GL_TEXTURE_2D,
+                      source_texture.getName(),
+                      m_internal_format,
+                      minlevel,
+                      numlevels,
+                      minlayer,
+                      numlayers);
 
         glBindTexture(GL_TEXTURE_2D, m_name);
 
@@ -172,9 +177,10 @@ namespace glowl
         m_depth = (unsigned int) d;
 
         GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            throw TextureException(
-                "Texture2DView::Texture2DView - texture id: " + m_id + " - OpenGL error " + std::to_string(err));
+        if (err != GL_NO_ERROR)
+        {
+            throw TextureException("Texture2DView::Texture2DView - texture id: " + m_id + " - OpenGL error " +
+                                   std::to_string(err));
         }
 
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -184,7 +190,7 @@ namespace glowl
     {
         return m_width;
     }
-    
+
     inline unsigned int Texture2DView::getHeight()
     {
         return m_height;
