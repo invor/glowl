@@ -11,7 +11,6 @@
 #include "Exceptions.hpp"
 #include "Texture.hpp"
 #include "Texture2D.hpp"
-
 #include "glinclude.h"
 
 namespace glowl

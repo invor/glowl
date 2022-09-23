@@ -14,12 +14,18 @@
 #include <utility>
 #include <vector>
 
+// Auto detect glm header availability
+#ifndef GLOWL_USE_GLM
 #if __has_include(<glm/glm.hpp>)
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #define GLOWL_USE_GLM 1
 #else
 #define GLOWL_USE_GLM 0
+#endif
+#endif
+
+#if GLOWL_USE_GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #endif
 
 #include "Exceptions.hpp"
@@ -45,11 +51,11 @@ namespace glowl
             TessEvaluation = GL_TESS_EVALUATION_SHADER,
             Geometry       = GL_GEOMETRY_SHADER,
             Fragment       = GL_FRAGMENT_SHADER,
-        #ifdef GL_NV_mesh_shader
+            Compute        = GL_COMPUTE_SHADER,
+#ifdef GLOWL_USE_NV_MESH_SHADER
             Mesh           = GL_MESH_SHADER_NV,
             Task           = GL_TASK_SHADER_NV,
-        #endif
-            Compute        = GL_COMPUTE_SHADER
+#endif
             // clang-format on
         };
 

@@ -8,12 +8,10 @@
 #ifndef GLOWL_MESH_HPP
 #define GLOWL_MESH_HPP
 
-// Include std libs
 #include <memory>
 #include <string>
 #include <vector>
 
-// Include glowl files
 #include "BufferObject.hpp"
 #include "VertexLayout.hpp"
 #include "glinclude.h"

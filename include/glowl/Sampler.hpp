@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "Exceptions.hpp"
-
 #include "glinclude.h"
 
 namespace glowl

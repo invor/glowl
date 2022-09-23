@@ -8,13 +8,11 @@
 #ifndef GLOWL_FRAMEBUFFEROBJECT_HPP
 #define GLOWL_FRAMEBUFFEROBJECT_HPP
 
-/* Include system libraries */
 #include <any>
 #include <memory>
 #include <string>
 #include <vector>
 
-/* Include glowl files */
 #include "Exceptions.hpp"
 #include "Texture2D.hpp"
 #include "glinclude.h"

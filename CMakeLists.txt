@@ -1,10 +1,16 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-project(glowl VERSION 0.4.0 LANGUAGES CXX)
+project(glowl
+  VERSION 0.4.0
+  LANGUAGES CXX)
 
-# Build options
+# Options
 set(GLOWL_OPENGL_INCLUDE "NONE" CACHE STRING "Choose OpenGL include.")
 set_property(CACHE GLOWL_OPENGL_INCLUDE PROPERTY STRINGS "NONE" "GLAD" "GLAD2" "GL3W" "GLEW")
+option(GLOWL_USE_ARB_BINDLESS_TEXTURE "Enable bindless texture functions." ON)
+set(GLOWL_USE_GLM "AUTO" CACHE STRING "Enable glm functions.")
+set_property(CACHE GLOWL_USE_GLM PROPERTY STRINGS "AUTO" "ON" "OFF")
+option(GLOWL_USE_NV_MESH_SHADER "Enable mesh shader defines." OFF)
 
 # The library
 add_library(glowl INTERFACE)
@@ -15,8 +21,22 @@ target_include_directories(glowl INTERFACE
   $<INSTALL_INTERFACE:include>)
 
 if (NOT GLOWL_OPENGL_INCLUDE STREQUAL "NONE")
-  target_compile_definitions(glowl INTERFACE
-    "GLOWL_OPENGL_INCLUDE_${GLOWL_OPENGL_INCLUDE}")
+  target_compile_definitions(glowl INTERFACE "GLOWL_OPENGL_INCLUDE_${GLOWL_OPENGL_INCLUDE}")
+endif ()
+
+if (NOT GLOWL_USE_ARB_BINDLESS_TEXTURE)
+  target_compile_definitions(glowl INTERFACE "GLOWL_NO_ARB_BINDLESS_TEXTURE")
+endif ()
+
+string(TOUPPER "${GLOWL_USE_GLM}" GLOWL_USE_GLM)
+if ("${GLOWL_USE_GLM}" STREQUAL ON)
+  target_compile_definitions(glowl INTERFACE "GLOWL_USE_GLM=1")
+elseif ("${GLOWL_USE_GLM}" STREQUAL OFF)
+  target_compile_definitions(glowl INTERFACE "GLOWL_USE_GLM=0")
+endif ()
+
+if (GLOWL_USE_NV_MESH_SHADER)
+  target_compile_definitions(glowl INTERFACE "GLOWL_USE_NV_MESH_SHADER")
 endif ()
 
 # Install
@@ -25,7 +45,8 @@ include(GNUInstallDirs)
 install(DIRECTORY include/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(TARGETS glowl EXPORT glowlTargets)
+install(TARGETS glowl
+  EXPORT glowlTargets)
 
 install(EXPORT glowlTargets
   FILE glowlConfig.cmake
