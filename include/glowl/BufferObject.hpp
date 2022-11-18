@@ -78,6 +78,8 @@ namespace glowl
 
         GLsizeiptr getByteSize() const;
 
+        GLenum getUsage() const;
+
     private:
         GLenum     m_target;
         GLuint     m_name;
@@ -238,6 +240,11 @@ namespace glowl
     inline GLsizeiptr BufferObject::getByteSize() const
     {
         return m_byte_size;
+    }
+
+    inline GLenum BufferObject::getUsage() const
+    {
+        return m_usage;
     }
 
 } // namespace glowl
